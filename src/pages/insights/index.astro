@@ -1,0 +1,55 @@
+---
+import { getEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import { insights } from '../../lib/content';
+const page = (await getEntry('pages', 'insights'))!;
+const posts = await insights();
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<Page title={page.data.seo.title} description={page.data.seo.description} heading={page.data.title} lead={page.data.lead} crumbs={[{ name: 'Insights', href: '/insights/' }]} pageType="CollectionPage">
+  <section class="section" data-theme="paper">
+    <div class="wrap">
+      {
+        posts.length ? (
+          <ul class="list">
+            {posts.map((p) => (
+              <li>
+                <a href={`/insights/${p.id}/`}>
+                  <p class="t-label t-muted">
+                    <time datetime={p.data.published.toISOString()}>{fmt(p.data.published)}</time>
+                    {p.data.draft && <span class="to-confirm">DRAFT</span>}
+                  </p>
+                  <h2 class="t-h3">{p.data.title}</h2>
+                  <p class="t-muted">{p.data.description}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="t-muted">The first articles are on their way.</p>
+        )
+      }
+    </div>
+  </section>
+</Page>
+
+<style>
+  .section {
+    padding-block: clamp(4rem, 8vw, 7rem);
+  }
+  .list {
+    display: grid;
+    gap: 0;
+  }
+  .list a {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.75rem 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .list a:hover h2 {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

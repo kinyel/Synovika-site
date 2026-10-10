@@ -1,0 +1,30 @@
+---
+/** A product's status button and the line under it (D-032). */
+import StatusChip from './StatusChip.astro';
+import { ctaOf, type Product } from '../../lib/content';
+interface Props {
+  product: Product;
+  chip?: boolean;
+}
+const { product, chip = true } = Astro.props;
+const cta = ctaOf(product);
+---
+
+<div class="status-cta">
+  {chip && <StatusChip status={product.data.status} />}
+  <a class="btn btn-primary" href={cta.href}><span class="signal" aria-hidden="true"></span>{cta.label}<span class="sr-only">: {product.data.name}</span></a>
+  <p class="t-muted status-note">{cta.note}</p>
+</div>
+
+<style>
+  .status-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+  .status-note {
+    flex-basis: 100%;
+    font-size: var(--text-small);
+  }
+</style>

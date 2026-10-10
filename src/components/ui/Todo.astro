@@ -1,0 +1,10 @@
+---
+/** A TODO(hero) placeholder. Rendered only in dev and draft builds (D-007). */
+import { SHOW_DRAFTS } from '../../lib/drafts';
+interface Props {
+  need: string;
+}
+const { need } = Astro.props;
+---
+
+{SHOW_DRAFTS && <span class="todo">TODO(hero): {need}</span>}

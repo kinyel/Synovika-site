@@ -1,0 +1,25 @@
+---
+/** Contact. The form and its Pages Function arrive in Phase 5; for now, email and WhatsApp. */
+import ContentPage from '../../components/layout/ContentPage.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { SITE } from '../../data/site';
+---
+
+<ContentPage id="contact" crumbs={[{ name: 'Contact', href: '/contact/' }]} pageType="ContactPage">
+  <div class="ways">
+    <a class="btn btn-primary" href={`mailto:${SITE.email}`}><Icon name="mail" />{SITE.email}</a>
+    <a class="btn btn-secondary" href={SITE.whatsapp} rel="noopener"><Icon name="chat" />WhatsApp {SITE.phone.display}</a>
+  </div>
+  <p class="t-muted area">{SITE.areaServed.sentence}</p>
+</ContentPage>
+
+<style>
+  .ways {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .area {
+    margin-top: 1.5rem;
+  }
+</style>

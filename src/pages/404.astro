@@ -1,0 +1,19 @@
+---
+import ContentPage from '../components/layout/ContentPage.astro';
+---
+
+<ContentPage id="not-found" noindex>
+  <ul class="next">
+    <li><a class="btn btn-primary" href="/"><span class="signal" aria-hidden="true"></span>Home</a></li>
+    <li><a class="btn btn-secondary" href="/products/">Products</a></li>
+    <li><a class="btn btn-secondary" href="/contact/">Contact</a></li>
+  </ul>
+</ContentPage>
+
+<style>
+  .next {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+</style>

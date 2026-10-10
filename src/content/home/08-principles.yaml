@@ -1,0 +1,13 @@
+order: 8
+eyebrow: What we hold to
+heading: Four promises, kept on every project.
+lead: They're simple, and we'd rather keep a few promises than make many.
+items:
+  - title: We start from how you actually work.
+    body: Before we suggest anything, we watch and ask. The software fits your business, not the other way round.
+  - title: Plain language, no surprises.
+    body: You'll always know what we're doing, what it costs and what's next, in words you don't need a dictionary for.
+  - title: Tested on the phones your customers use.
+    body: Your customers are probably on an Android phone, often on patchy data. That's where we test, not just on our own laptops.
+  - title: We stay after launch.
+    body: Launch day isn't the end. We're still here to fix, update and improve what we built.

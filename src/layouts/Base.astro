@@ -1,0 +1,120 @@
+---
+/**
+ * Every page: the head (title, description, canonical, Open Graph, JSON-LD,
+ * fonts, icons, prefetch rules), the motion setting applied before first
+ * paint, the header, the page and the footer.
+ */
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import { SITE } from '../data/site';
+import { SHOW_DRAFTS } from '../lib/drafts';
+import { services } from '../lib/content';
+import { absolute, ogPath } from '../lib/seo';
+import { breadcrumbs, graph, organization, webPage, website } from '../lib/schema';
+import type { Thing } from 'schema-dts';
+
+export interface Crumb {
+  name: string;
+  href: string;
+}
+interface Props {
+  /** The full <title>, already ending in "| Synovika" where the brief asks. */
+  title: string;
+  description: string;
+  /** Breadcrumbs after Home (inner pages). */
+  crumbs?: Crumb[];
+  /** Extra JSON-LD nodes for this page. */
+  schema?: Exclude<Thing, string>[];
+  pageType?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
+  /** The page's name in structured data (defaults to the title without the suffix). */
+  name?: string;
+  /** Register of the first section, so the header starts in the right colours. */
+  navTheme?: 'dark' | 'paper' | 'teal';
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+}
+const { title, description, crumbs = [], schema = [], pageType = 'WebPage', name, navTheme = 'dark', ogType = 'website', noindex = false } = Astro.props;
+const path = Astro.url.pathname;
+const canonical = absolute(path);
+// Pages without their own card (404, /lab) share the home card.
+const image = absolute(/^\/(404|lab)/.test(path) ? '/og/home.png' : ogPath(path));
+// A draft build is never indexed (D-007), and neither is anything marked noindex.
+const hidden = noindex || (SHOW_DRAFTS && import.meta.env.PROD);
+const svc = await services();
+const pageName = name ?? title.split(' | ')[0]!;
+const ld = graph([
+  organization(svc.map((s) => s.data.name)),
+  website(),
+  webPage(path, pageName, description, pageType, crumbs.length > 0),
+  ...(crumbs.length ? [breadcrumbs(path, crumbs)] : []),
+  ...schema,
+]);
+// Prefetch same-site pages on hover (moderate eagerness), never the API or the thank-you page (D-014).
+const speculation = {
+  prefetch: [
+    {
+      where: { and: [{ href_matches: '/*' }, { not: { href_matches: ['/api/*', '/contact/thanks/', '/og/*'] } }, { not: { selector_matches: '[rel~=nofollow], [download]' } }] },
+      eagerness: 'moderate',
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en-NG" data-nav-theme={navTheme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {hidden && <meta name="robots" content="noindex, nofollow" />}
+    <Font cssVariable="--font-urbanist" preload />
+    <Font cssVariable="--font-geist-mono" />
+    <script is:inline>
+      // Motion setting before first paint (D-023): stored choice, else the system setting.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var m = null;
+        try {
+          m = localStorage.getItem('synovika:motion');
+        } catch (e) {}
+        var reduced = m ? m === 'reduced' : matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced) d.classList.add('reduced-motion');
+        d.dataset.motion = reduced ? 'reduced' : 'full';
+      })();
+    </script>
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#171717" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.shortName} />
+    <meta property="og:locale" content="en_NG" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${pageName}. Synovika, built around reality.`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+    <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+    <script type="speculationrules" set:html={JSON.stringify(speculation)} />
+    <slot name="head" />
+  </head>
+  <body>
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

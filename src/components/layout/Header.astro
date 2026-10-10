@@ -1,0 +1,566 @@
+---
+/**
+ * The site header (brief section 7). A clear bar at the top of the page that
+ * draws in to a floating dock once you scroll, with a page-progress line
+ * along its foot. Services and Products open one morphing flyout. On phones
+ * the menu is a native <details> sheet, so it works without JavaScript.
+ * Behaviour lives in src/scripts/nav.ts; colours follow the section under
+ * the header through html[data-nav-theme].
+ */
+import Logo from '../brand/Logo.astro';
+import Icon from '../ui/Icon.astro';
+import StatusChip from '../ui/StatusChip.astro';
+import { products, services } from '../../lib/content';
+import { SITE } from '../../data/site';
+
+const path = Astro.url.pathname;
+const svc = await services();
+const prod = await products();
+const links = [
+  { label: 'How we work', href: '/how-we-work/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Insights', href: '/insights/' },
+];
+const current = (href: string) => (path === href || path.startsWith(href) ? 'page' : undefined);
+---
+
+<header class="hdr" data-header>
+  <a href="#main" class="skip">Skip to content</a>
+  <div class="hdr-bar">
+    <div class="hdr-dock">
+      <a href="/" class="hdr-logo" aria-label="Synovika, home"><Logo height={42} /></a>
+
+      <nav class="hdr-nav" aria-label="Main" data-nav>
+        <span class="hdr-hover" aria-hidden="true" data-hover></span>
+        <ul class="hdr-list">
+          <li class="hdr-item" data-item="services">
+            <a class="hdr-link" href="/services/" aria-current={current('/services/')}>Services</a>
+            <button class="hdr-toggle" type="button" aria-expanded="false" aria-controls="menu-services" data-toggle="services">
+              <span class="sr-only">Show services</span>
+              <Icon name="chevron" />
+            </button>
+          </li>
+          <li class="hdr-item" data-item="products">
+            <a class="hdr-link" href="/products/" aria-current={current('/products/')}>Products</a>
+            <button class="hdr-toggle" type="button" aria-expanded="false" aria-controls="menu-products" data-toggle="products">
+              <span class="sr-only">Show products</span>
+              <Icon name="chevron" />
+            </button>
+          </li>
+          {
+            links.map((l) => (
+              <li class="hdr-item">
+                <a class="hdr-link" href={l.href} aria-current={current(l.href)}>
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="flyout" data-flyout>
+          <div class="flyout-clip" data-clip>
+            <div class="pane" id="menu-services" data-pane="services" hidden>
+              <p class="pane-label t-label">Services</p>
+              <ul class="pane-grid">
+                {
+                  svc.map((s) => (
+                    <li>
+                      <a class="pane-item" href={`/services/${s.id}/`}>
+                        <span class="pane-title">{s.data.name}</span>
+                        <span class="pane-body">{s.data.blurb}</span>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <a class="pane-all" href="/services/">All services <Icon name="arrow" /></a>
+            </div>
+            <div class="pane" id="menu-products" data-pane="products" hidden>
+              <p class="pane-label t-label">Products</p>
+              <ul class="pane-list">
+                {
+                  prod.map((p) => (
+                    <li>
+                      <a class="pane-item pane-product" href={`/products/${p.id}/`}>
+                        <span class="pane-title">{p.data.name}</span>
+                        <span class="pane-body">{p.data.descriptor.charAt(0).toUpperCase() + p.data.descriptor.slice(1)}</span>
+                        <StatusChip status={p.data.status} class="pane-chip" />
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <a class="pane-all" href="/products/">All products <Icon name="arrow" /></a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="hdr-actions">
+        <a class="btn btn-primary hdr-cta" href="/contact/" aria-current={current('/contact/')}><span class="signal" aria-hidden="true"></span>Start a project</a>
+        <details class="sheet" data-sheet>
+          <summary class="hdr-burger" aria-label="Menu"><span></span><span></span></summary>
+          <div class="sheet-panel" data-theme="dark">
+            <nav class="sheet-nav wrap" aria-label="Main">
+              <p class="t-label t-muted">Services</p>
+              <ul class="sheet-sub">
+                {
+                  svc.map((s) => (
+                    <li>
+                      <a href={`/services/${s.id}/`}>{s.data.name}</a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <p class="t-label t-muted">Products</p>
+              <ul class="sheet-sub">
+                {
+                  prod.map((p) => (
+                    <li>
+                      <a href={`/products/${p.id}/`}>{p.data.name}</a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <ul class="sheet-main">
+                {
+                  links.map((l) => (
+                    <li>
+                      <a href={l.href} aria-current={current(l.href)}>
+                        {l.label}
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <div class="sheet-actions">
+                <a class="btn btn-primary" href="/contact/"><span class="signal" aria-hidden="true"></span>Start a project</a>
+                <a class="btn btn-secondary" href={SITE.whatsapp} rel="noopener"><Icon name="chat" />WhatsApp</a>
+              </div>
+            </nav>
+          </div>
+        </details>
+      </div>
+      <span class="hdr-progress" aria-hidden="true"><i data-progress></i></span>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    --hdr-ink: var(--color-white);
+    --hdr-muted: var(--color-neutral-500);
+    --hdr-surface: rgb(23 23 23 / 0.74);
+    --hdr-panel: var(--color-neutral-850);
+    --hdr-line: rgb(255 255 255 / 0.12);
+    --hdr-hover: rgb(255 255 255 / 0.08);
+    --color-focus: var(--color-teal-400);
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--hdr-ink);
+    pointer-events: none;
+  }
+  :global(html[data-nav-theme='paper']) .hdr {
+    --hdr-ink: var(--color-neutral-900);
+    --hdr-muted: var(--color-neutral-700);
+    --hdr-surface: rgb(255 255 255 / 0.8);
+    --hdr-panel: var(--color-white);
+    --hdr-line: rgb(23 23 23 / 0.12);
+    --hdr-hover: rgb(23 23 23 / 0.06);
+    --color-focus: var(--color-blue-600);
+  }
+  :global(html[data-nav-theme='teal']) .hdr {
+    --hdr-surface: rgb(19 78 74 / 0.8);
+    --hdr-panel: var(--color-teal-800);
+    --hdr-muted: var(--color-teal-100);
+    --hdr-line: rgb(255 255 255 / 0.16);
+    --color-focus: var(--color-white);
+  }
+
+  .skip {
+    position: absolute;
+    left: 1rem;
+    top: 0.75rem;
+    z-index: 2;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--color-white);
+    color: var(--color-neutral-900);
+    font-weight: 600;
+    pointer-events: auto;
+    translate: 0 -200%;
+  }
+  .skip:focus-visible {
+    translate: 0 0;
+    outline-color: var(--color-blue-600);
+  }
+
+  .hdr-bar {
+    padding: max(0.5rem, env(safe-area-inset-top)) max(0.75rem, env(safe-area-inset-right)) 0 max(0.75rem, env(safe-area-inset-left));
+    transition: padding var(--dur-3) var(--ease-out);
+  }
+  .hdr-dock {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: calc(var(--grid-max) + 2 * var(--grid-margin));
+    height: var(--header-height);
+    margin-inline: auto;
+    padding-inline: calc(var(--grid-margin) - 0.75rem);
+    border-radius: var(--radius-lg);
+    pointer-events: auto;
+    transition:
+      max-width var(--dur-4) var(--ease-out),
+      height var(--dur-3) var(--ease-out),
+      background-color var(--dur-3) var(--ease-out),
+      box-shadow var(--dur-3) var(--ease-out);
+  }
+  /* Drawn in once the page scrolls: a floating dock. */
+  .hdr[data-condensed] .hdr-dock {
+    max-width: 72rem;
+    height: 3.75rem;
+    padding-inline: 1rem 0.6rem;
+    background: var(--hdr-surface);
+    backdrop-filter: blur(16px) saturate(1.3);
+    box-shadow:
+      inset 0 0 0 1px var(--hdr-line),
+      0 18px 40px -24px rgb(0 0 0 / 0.5);
+  }
+  /* Without JavaScript the header never condenses, so give it a surface from the start. */
+  :global(html:not(.js)) .hdr-dock {
+    background: var(--hdr-surface);
+    backdrop-filter: blur(16px);
+  }
+
+  .hdr-logo {
+    flex: none;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    border-radius: var(--radius-sm);
+    view-transition-name: site-logo;
+  }
+  .hdr[data-condensed] .hdr-logo :global(.logo) {
+    height: 36px;
+  }
+  .hdr-logo :global(.logo) {
+    transition: height var(--dur-3) var(--ease-out);
+  }
+
+  .hdr-nav {
+    position: relative;
+    display: none;
+    margin-inline: auto;
+  }
+  @media (min-width: 64rem) {
+    .hdr-nav {
+      display: block;
+    }
+  }
+  .hdr-list {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+  }
+  .hdr-item {
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-full);
+  }
+  .hdr-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 0.85rem;
+    font-size: 0.975rem;
+    font-weight: 500;
+    color: var(--hdr-ink);
+    border-radius: var(--radius-full);
+  }
+  .hdr-item[data-item] .hdr-link {
+    padding-right: 0.15rem;
+  }
+  .hdr-link[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.45em;
+  }
+  .hdr-toggle {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 44px;
+    margin-right: 0.3rem;
+    color: var(--hdr-muted);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+  }
+  .hdr-toggle :global(.icon) {
+    width: 1rem;
+    height: 1rem;
+    transition: rotate var(--dur-3) var(--ease-out);
+  }
+  .hdr-toggle[aria-expanded='true'] :global(.icon) {
+    rotate: 180deg;
+  }
+  /* The gliding hover highlight. */
+  .hdr-hover {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 2.5rem;
+    width: var(--w, 0);
+    translate: var(--x, 0) -50%;
+    border-radius: var(--radius-full);
+    background: var(--hdr-hover);
+    opacity: var(--o, 0);
+    transition:
+      translate var(--dur-3) var(--ease-out),
+      width var(--dur-3) var(--ease-out),
+      opacity var(--dur-2) var(--ease-out);
+    pointer-events: none;
+  }
+
+  /* One flyout; it morphs to fit whichever pane is open. */
+  .flyout {
+    position: absolute;
+    top: calc(100% + 0.9rem);
+    left: 0;
+    translate: var(--fx, 0) 0.4rem;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      translate var(--dur-3) var(--ease-out),
+      opacity var(--dur-2) var(--ease-out),
+      visibility 0s linear var(--dur-2);
+  }
+  .flyout[data-open] {
+    translate: var(--fx, 0) 0;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      translate var(--dur-3) var(--ease-out),
+      opacity var(--dur-2) var(--ease-out);
+  }
+  .flyout-clip {
+    position: relative;
+    width: var(--fw, 30rem);
+    height: var(--fh, 20rem);
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--hdr-panel);
+    color: var(--hdr-ink);
+    box-shadow:
+      inset 0 0 0 1px var(--hdr-line),
+      0 30px 60px -30px rgb(0 0 0 / 0.6);
+    transition:
+      width var(--dur-3) var(--ease-out),
+      height var(--dur-3) var(--ease-out);
+  }
+  .pane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: max-content;
+    padding: 1.25rem;
+    opacity: 0;
+    transition: opacity var(--dur-2) var(--ease-out);
+  }
+  .pane[data-shown] {
+    opacity: 1;
+  }
+  .pane-label {
+    padding: 0 0.6rem 0.75rem;
+    color: var(--hdr-muted);
+  }
+  .pane-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 16rem);
+    gap: 0.25rem;
+  }
+  .pane-list {
+    display: grid;
+    gap: 0.25rem;
+    width: 26rem;
+  }
+  .pane-item {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.7rem 0.75rem;
+    border-radius: var(--radius-md);
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+  .pane-item:hover {
+    background: var(--hdr-hover);
+  }
+  .pane-product {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 1rem;
+  }
+  .pane-product .pane-body {
+    grid-column: 1;
+  }
+  .pane-product :global(.pane-chip) {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .pane-title {
+    font-weight: 600;
+  }
+  .pane-body {
+    font-size: var(--text-small);
+    line-height: 1.4;
+    color: var(--hdr-muted);
+  }
+  .pane-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    margin: 0.5rem 0.75rem 0;
+    font-size: var(--text-small);
+    font-weight: 600;
+  }
+  .pane-all :global(.icon) {
+    width: 1rem;
+    height: 1rem;
+    transition: translate var(--dur-2) var(--ease-out);
+  }
+  .pane-all:hover :global(.icon) {
+    translate: 3px 0;
+  }
+
+  .hdr-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-left: auto;
+  }
+  @media (min-width: 64rem) {
+    .hdr-actions {
+      margin-left: 0;
+    }
+  }
+  .hdr-cta {
+    min-height: 2.75rem;
+    padding-block: 0.7rem;
+  }
+  @media (max-width: 23.9rem) {
+    .hdr-cta {
+      display: none;
+    }
+  }
+
+  /* Page progress along the foot of the dock. */
+  .hdr-progress {
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 0;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease-out);
+  }
+  .hdr[data-condensed] .hdr-progress {
+    opacity: 1;
+  }
+  .hdr-progress i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--color-teal-400));
+    transform-origin: 0 50%;
+    transform: scaleX(var(--progress, 0));
+  }
+
+  /* Phone and tablet sheet. */
+  .sheet {
+    display: block;
+  }
+  @media (min-width: 64rem) {
+    .sheet {
+      display: none;
+    }
+  }
+  .hdr-burger {
+    display: grid;
+    place-content: center;
+    gap: 6px;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius-full);
+    box-shadow: inset 0 0 0 1px var(--hdr-line);
+    cursor: pointer;
+    list-style: none;
+  }
+  .hdr-burger::-webkit-details-marker {
+    display: none;
+  }
+  .hdr-burger span {
+    display: block;
+    width: 1.1rem;
+    height: 1.5px;
+    background: currentColor;
+    transition:
+      translate var(--dur-3) var(--ease-out),
+      rotate var(--dur-3) var(--ease-out);
+  }
+  .sheet[open] .hdr-burger span:first-child {
+    translate: 0 3.75px;
+    rotate: 45deg;
+  }
+  .sheet[open] .hdr-burger span:last-child {
+    translate: 0 -3.75px;
+    rotate: -45deg;
+  }
+  .sheet-panel {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-top: calc(var(--header-height) + 1.5rem + env(safe-area-inset-top));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+  .sheet-nav {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .sheet-sub {
+    display: grid;
+    margin-bottom: 1rem;
+  }
+  .sheet-sub a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 1.35rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .sheet-main a {
+    display: flex;
+    align-items: center;
+    min-height: 3.5rem;
+    font-size: clamp(2rem, 9vw, 2.75rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    border-top: 1px solid var(--color-line);
+  }
+  .sheet-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding-top: 1.5rem;
+  }
+</style>
+
+<script>
+  import { initNav } from '../../scripts/nav';
+  initNav();
+</script>

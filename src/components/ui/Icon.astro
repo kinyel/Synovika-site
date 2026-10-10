@@ -1,0 +1,40 @@
+---
+/**
+ * Icons, hand-drawn on a 24 px grid with one 1.5 px stroke (brief section 5).
+ * Decorative by default; pass `label` when an icon stands alone.
+ */
+interface Props {
+  name: keyof typeof PATHS;
+  label?: string;
+  class?: string;
+}
+const PATHS = {
+  arrow: 'M5 12h14M13 6l6 6-6 6',
+  'arrow-up-right': 'M7 17L17 7M8 7h9v9',
+  chevron: 'M6 9l6 6 6-6',
+  chat: 'M4 5.5h16v10H9l-4 3.5v-3.5H4z M8 10.5h.01M12 10.5h.01M16 10.5h.01',
+  mail: 'M3.5 6h17v12h-17z M4 6.5l8 6.5 8-6.5',
+  phone: 'M8 3.5h8v17H8z M11 17.5h2',
+  menu: 'M4 8h16M4 16h16',
+  close: 'M6 6l12 12M18 6L6 18',
+  check: 'M5 12.5l4.5 4.5L19 7.5',
+  cross: 'M7 7l10 10M17 7L7 17',
+  copy: 'M8 8h11v11H8z M5 16V5h11',
+} as const;
+const { name, label, class: className } = Astro.props;
+---
+
+<svg
+  class:list={['icon', className]}
+  viewBox="0 0 24 24"
+  width="24"
+  height="24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  focusable="false"><path d={PATHS[name]}></path></svg>

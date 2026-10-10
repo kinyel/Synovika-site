@@ -1,0 +1,124 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import Faq from '../../components/ui/Faq.astro';
+import { products, services, type Service } from '../../lib/content';
+import { shown } from '../../lib/drafts';
+import { faqPage, service as serviceNode } from '../../lib/schema';
+
+export const getStaticPaths = (async () => (await services()).map((s) => ({ params: { slug: s.id }, props: { s } }))) satisfies GetStaticPaths;
+const { s } = Astro.props as { s: Service };
+const d = s.data;
+const path = `/services/${s.id}/`;
+const questions = d.faqs.filter(shown);
+const related = (await products()).filter((p) => d.relatedProducts.includes(p.id));
+const { Content } = await render(s);
+---
+
+<Page
+  title={d.seo.title}
+  description={d.seo.description}
+  heading={d.name}
+  lead={d.summary}
+  eyebrow="Service"
+  crumbs={[
+    { name: 'Services', href: '/services/' },
+    { name: d.name, href: path },
+  ]}
+  schema={[serviceNode(path, d.name, d.seo.description), ...(questions.length ? [faqPage(path, questions)] : [])]}
+>
+  <section class="section" data-theme="paper">
+    <div class="wrap grid-site body">
+      <blockquote class="problem t-h3">{d.problem}</blockquote>
+      <div class="col">
+        <h2 class="t-label t-muted">What we do</h2>
+        <ul class="ticks">{d.whatWeDo.map((w) => <li>{w}</li>)}</ul>
+      </div>
+      <div class="col">
+        <h2 class="t-label t-muted">What you get</h2>
+        <ul class="ticks">{d.deliverables.map((w) => <li>{w}</li>)}</ul>
+        <p class="t-muted more">Every project follows the same stages. <a class="link" href="/how-we-work/">See how we work</a>.</p>
+      </div>
+      <div class="prose"><Content /></div>
+      {
+        related.length > 0 && (
+          <div class="col">
+            <h2 class="t-label t-muted">Related products</h2>
+            <ul class="ticks">
+              {related.map((p) => (
+                <li>
+                  <a class="link" href={`/products/${p.id}/`}>
+                    {p.data.name}
+                  </a>
+                  , our {p.data.descriptor}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+      {
+        questions.length > 0 && (
+          <div class="faq-wrap">
+            <h2 class="t-label t-muted">Questions</h2>
+            <Faq items={questions} />
+          </div>
+        )
+      }
+      <div class="col cta">
+        <a class="btn btn-primary" href={`/contact/?service=${s.id}`}><span class="signal" aria-hidden="true"></span>Start a project</a>
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .section {
+    padding-block: clamp(4rem, 8vw, 7rem);
+  }
+  .body {
+    row-gap: 3rem;
+  }
+  .body > * {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 64rem) {
+    .body > .col {
+      grid-column: span 6;
+    }
+    .problem {
+      grid-column: 1 / span 9;
+    }
+  }
+  .problem {
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--color-live);
+    font-weight: 500;
+  }
+  .ticks {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .ticks li {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  .ticks li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-live);
+  }
+  .more {
+    margin-top: 1.5rem;
+  }
+  .faq-wrap h2 {
+    margin-bottom: 1rem;
+  }
+</style>

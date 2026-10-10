@@ -1,0 +1,147 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import Faq from '../../components/ui/Faq.astro';
+import StatusCta from '../../components/ui/StatusCta.astro';
+import ToConfirm from '../../components/ui/ToConfirm.astro';
+import { featuresOf, products, type Product } from '../../lib/content';
+import { shown } from '../../lib/drafts';
+import { faqPage, softwareApplication } from '../../lib/schema';
+
+export const getStaticPaths = (async () => (await products()).map((p) => ({ params: { slug: p.id }, props: { p } }))) satisfies GetStaticPaths;
+const { p } = Astro.props as { p: Product };
+const d = p.data;
+const path = `/products/${p.id}/`;
+const features = featuresOf(p);
+const questions = d.faqs.filter(shown);
+const { Content } = await render(p);
+---
+
+<Page
+  title={d.seo.title}
+  description={d.seo.description}
+  heading={d.headline}
+  lead={d.summary}
+  eyebrow="Product"
+  crumbs={[
+    { name: 'Products', href: '/products/' },
+    { name: d.name, href: path },
+  ]}
+  schema={[
+    softwareApplication(
+      path,
+      d.name,
+      d.seo.description,
+      features.filter((f) => f.confirmed).map((f) => f.title),
+    ),
+    ...(questions.length ? [faqPage(path, questions)] : []),
+  ]}
+>
+  <div slot="hero" class="hero-cta"><StatusCta product={p} /></div>
+  <section class="section" data-theme="paper">
+    <div class="wrap grid-site body">
+      <div class="prose intro"><Content /></div>
+      <div class="col">
+        <h2 class="t-label t-muted">Who it's for</h2>
+        <ul class="ticks">{d.audience.map((a) => <li>{a}</li>)}</ul>
+      </div>
+      {
+        features.length > 0 && (
+          <div class="features">
+            <h2 class="t-label t-muted">What it does</h2>
+            <ul class="feature-grid">
+              {features.map((f) => (
+                <li>
+                  <h3 class="t-h3">
+                    {f.title} <ToConfirm when={!f.confirmed} />
+                  </h3>
+                  <p class="t-muted">{f.body}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+      {
+        questions.length > 0 && (
+          <div class="faq-wrap">
+            <h2 class="t-label t-muted">Questions</h2>
+            <Faq items={questions} />
+          </div>
+        )
+      }
+      <div class="end"><StatusCta product={p} chip={false} /></div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .hero-cta {
+    margin-top: 2.25rem;
+  }
+  .section {
+    padding-block: clamp(4rem, 8vw, 7rem);
+  }
+  .body {
+    row-gap: 3.5rem;
+  }
+  .body > * {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 64rem) {
+    .intro {
+      grid-column: 1 / span 8;
+    }
+    .col {
+      grid-column: 1 / span 6;
+    }
+  }
+  .intro {
+    font-size: var(--text-lead);
+  }
+  .ticks {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .ticks li {
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  .ticks li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-live);
+  }
+  .feature-grid {
+    display: grid;
+    gap: var(--grid-gap);
+    margin-top: 1rem;
+  }
+  @media (min-width: 48rem) {
+    .feature-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .feature-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .feature-grid li {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .faq-wrap h2 {
+    margin-bottom: 1rem;
+  }
+</style>

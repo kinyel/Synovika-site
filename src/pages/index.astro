@@ -1,0 +1,215 @@
+---
+/**
+ * Home. Phase 1 lays out every section's copy in its register so the
+ * header, themes and SEO can be tested; the hero, scenes and motion arrive
+ * in Phases 2 to 4 (docs/PLAN.md).
+ */
+import Base from '../layouts/Base.astro';
+import Icon from '../components/ui/Icon.astro';
+import StatusCta from '../components/ui/StatusCta.astro';
+import Faq from '../components/ui/Faq.astro';
+import ToConfirm from '../components/ui/ToConfirm.astro';
+import { faqs, home, industries, products, services } from '../lib/content';
+import { faqPage } from '../lib/schema';
+import { SITE } from '../data/site';
+
+const h = await home();
+const hero = h.hero!;
+const [before, after] = hero.heading.split(hero.chrome ?? '\u0000');
+const prod = await products();
+const svc = await services();
+const questions = await faqs();
+const sectors = await industries();
+const sections: { key: string; theme: 'dark' | 'paper' | 'teal' }[] = [
+  { key: 'statement', theme: 'dark' },
+  { key: 'selvion', theme: 'dark' },
+  { key: 'estate', theme: 'dark' },
+  { key: 'websites', theme: 'paper' },
+  { key: 'services', theme: 'paper' },
+  { key: 'pipeline', theme: 'dark' },
+  { key: 'principles', theme: 'teal' },
+  { key: 'industries', theme: 'paper' },
+  { key: 'faq', theme: 'paper' },
+];
+const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate-entrance-security', websites: 'websites-with-admin-panel' };
+---
+
+<Base
+  title="Synovika | Software development company in Nigeria"
+  description="Synovika builds, fixes, tests and maintains software for Nigerian businesses, and makes products for fleets, estates and growing companies."
+  name="Synovika"
+  schema={questions.length ? [faqPage('/', questions.map((q) => q.data))] : []}
+>
+  <section class="hero noise vignette" data-theme="dark">
+    <div class="wrap hero-inner">
+      <p class="t-label t-eyebrow">{hero.eyebrow}</p>
+      <h1 class="t-display hero-title">{before}<span class="chrome">{hero.chrome}</span>{after}</h1>
+      <p class="t-lead hero-lead">{hero.lead}</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href={hero.ctas[0]!.href}><span class="signal" aria-hidden="true"></span>{hero.ctas[0]!.label}</a>
+        <a class="btn btn-secondary" href={hero.ctas[1]!.href}>{hero.ctas[1]!.label}</a>
+        <a class="btn btn-quiet" href={SITE.whatsapp} rel="noopener"><Icon name="chat" /><span>WhatsApp us</span></a>
+      </div>
+      <p class="t-label t-muted hero-telemetry"><span class="demo">Demo data</span> {hero.telemetry}</p>
+    </div>
+  </section>
+
+  {
+    sections.map(({ key, theme }) => {
+      const s = h[key]!;
+      const p = prod.find((x) => x.id === productFor[key]);
+      return (
+        <section class="section noise" data-theme={theme} id={key}>
+          <div class="wrap">
+            {s.eyebrow && <p class="t-label t-eyebrow">{s.eyebrow}</p>}
+            <h2 class="t-h2 section-title">{s.heading}</h2>
+            <p class="t-lead section-lead">{s.lead}</p>
+            {p && (
+              <div class="section-cta">
+                <StatusCta product={p} />
+                <a class="link" href={`/products/${p.id}/`}>
+                  More about {p.data.name}
+                </a>
+              </div>
+            )}
+            {key === 'services' && (
+              <ul class="cards">
+                {svc.map((x) => (
+                  <li>
+                    <a class="card" href={`/services/${x.id}/`}>
+                      <span class="t-h3">{x.data.name}</span>
+                      <span class="t-muted">{x.data.summary}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {s.items.length > 0 && (
+              <ol class="items">
+                {s.items.map((i, n) => (
+                  <li>
+                    <span class="t-label t-muted">{String(n + 1).padStart(2, '0')}</span>
+                    <h3 class="t-h3">{i.title}</h3>
+                    <p class="t-muted">{i.body}</p>
+                  </li>
+                ))}
+              </ol>
+            )}
+            {key === 'industries' && sectors.length > 0 && (
+              <ul class="items">
+                {sectors.map((i) => (
+                  <li>
+                    <h3 class="t-h3">
+                      {i.data.name} <ToConfirm when={!i.data.confirmed} />
+                    </h3>
+                    <p class="t-muted">{i.data.note}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {key === 'faq' && questions.length > 0 && <Faq items={questions.map((q) => q.data)} />}
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <section class="section closing noise" data-theme="dark">
+    <div class="wrap">
+      <h2 class="t-h2 section-title">{h.closing!.heading}</h2>
+      <p class="t-lead section-lead">{h.closing!.lead}</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href={h.closing!.ctas[0]!.href}><span class="signal" aria-hidden="true"></span>{h.closing!.ctas[0]!.label}</a>
+        <a class="btn btn-secondary" href={h.closing!.ctas[1]!.href}>{h.closing!.ctas[1]!.label}</a>
+        <a class="btn btn-quiet" href={`mailto:${SITE.email}`}><Icon name="mail" /><span>{SITE.email}</span></a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding-block: calc(var(--header-height) + 3rem) 4rem;
+  }
+  .hero-title {
+    max-width: 11ch;
+    margin-top: 1.5rem;
+  }
+  .hero-lead {
+    margin-top: 1.75rem;
+  }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+  .hero-telemetry {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .demo {
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+  .section {
+    padding-block: clamp(5rem, 11vw, 9rem);
+  }
+  .section-title {
+    max-width: 18ch;
+    margin-top: 1rem;
+  }
+  .section-lead {
+    margin-top: 1.25rem;
+  }
+  .section-cta {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    margin-top: 2.5rem;
+  }
+  .cards,
+  .items {
+    display: grid;
+    gap: var(--grid-gap);
+    margin-top: 3rem;
+  }
+  @media (min-width: 48rem) {
+    .cards,
+    .items {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 64rem) {
+    .cards,
+    .items {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .card {
+    display: grid;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+    transition: box-shadow var(--dur-2) var(--ease-out);
+  }
+  .card:hover {
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+  .items li {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-line);
+  }
+</style>

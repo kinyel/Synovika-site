@@ -1,0 +1,128 @@
+---
+/**
+ * An Insights article: reading time, author, dates, a table of contents
+ * from the article's own headings, sources, and related articles.
+ */
+import type { GetStaticPaths } from 'astro';
+import { render, type CollectionEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import { insights } from '../../lib/content';
+import { blogPosting } from '../../lib/schema';
+
+type Post = CollectionEntry<'insights'>;
+export const getStaticPaths = (async () => {
+  const all = await insights();
+  return all.map((p) => ({ params: { slug: p.id }, props: { p, related: all.filter((x) => x.id !== p.id).slice(0, 3) } }));
+}) satisfies GetStaticPaths;
+const { p, related } = Astro.props as { p: Post; related: Post[] };
+const d = p.data;
+const path = `/insights/${p.id}/`;
+const { Content, headings } = await render(p);
+const words = (p.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 220));
+const fmt = (date: Date) => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const toc = headings.filter((h) => h.depth === 2);
+---
+
+<Page
+  title={`${d.title} | Synovika`.length <= 70 ? `${d.title} | Synovika` : d.title}
+  description={d.description}
+  heading={d.title}
+  lead={d.description}
+  eyebrow="Insights"
+  crumbs={[
+    { name: 'Insights', href: '/insights/' },
+    { name: d.title, href: path },
+  ]}
+  schema={[blogPosting(path, d)]}
+>
+  <p slot="hero" class="meta t-muted">
+    By {d.author} · <time datetime={d.published.toISOString()}>{fmt(d.published)}</time>
+    {d.updated && <span> · Updated <time datetime={d.updated.toISOString()}>{fmt(d.updated)}</time></span>} · {minutes} min read
+  </p>
+  <section class="section" data-theme="paper">
+    <div class="wrap grid-site article">
+      {
+        toc.length > 0 && (
+          <nav class="toc" aria-label="Contents">
+            <h2 class="t-label t-muted">Contents</h2>
+            <ol>
+              {toc.map((h) => (
+                <li>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <div class="prose body"><Content /></div>
+      {
+        d.sources.length > 0 && (
+          <div class="sources">
+            <h2 class="t-label t-muted">Sources</h2>
+            <ol>
+              {d.sources.map((s) => (
+                <li>
+                  <a class="link" href={s.href} rel="noopener">
+                    {s.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )
+      }
+      {
+        related.length > 0 && (
+          <div class="related">
+            <h2 class="t-label t-muted">Read next</h2>
+            <ul>
+              {related.map((r) => (
+                <li>
+                  <a class="link" href={`/insights/${r.id}/`}>
+                    {r.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</Page>
+
+<style>
+  .meta {
+    margin-top: 1.5rem;
+    font-size: var(--text-small);
+  }
+  .section {
+    padding-block: clamp(4rem, 8vw, 7rem);
+  }
+  .article {
+    row-gap: 3rem;
+  }
+  .article > * {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 64rem) {
+    .toc {
+      grid-column: 1 / span 3;
+    }
+    .body,
+    .sources,
+    .related {
+      grid-column: 4 / span 7;
+    }
+  }
+  .toc ol,
+  .sources ol,
+  .related ul {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    font-size: var(--text-small);
+  }
+</style>

@@ -1,0 +1,10 @@
+---
+/** The "TO CONFIRM" badge on unconfirmed content. Only reachable in dev and draft builds. */
+import { SHOW_DRAFTS } from '../../lib/drafts';
+interface Props {
+  when: boolean;
+}
+const { when } = Astro.props;
+---
+
+{SHOW_DRAFTS && when && <span class="to-confirm">TO CONFIRM</span>}

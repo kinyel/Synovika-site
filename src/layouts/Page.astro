@@ -1,0 +1,83 @@
+---
+/**
+ * Inner pages: Base plus a page hero (breadcrumbs, H1 and its plain lead).
+ * The body of the page goes in the default slot.
+ */
+import Base, { type Crumb } from './Base.astro';
+import type { Thing } from 'schema-dts';
+
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+  lead: string;
+  eyebrow?: string;
+  crumbs?: Crumb[];
+  schema?: Exclude<Thing, string>[];
+  pageType?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
+  theme?: 'dark' | 'paper' | 'teal';
+  noindex?: boolean;
+}
+const { heading, lead, eyebrow, crumbs = [], theme = 'dark', ...rest } = Astro.props;
+---
+
+<Base {...rest} crumbs={crumbs} navTheme={theme}>
+  <section class="page-hero noise" data-theme={theme}>
+    <div class="wrap">
+      {
+        crumbs.length > 0 && (
+          <nav aria-label="Breadcrumb" class="crumbs">
+            <ol>
+              <li>
+                <a href="/">Home</a>
+              </li>
+              {crumbs.map((c, i) => (
+                <li>{i === crumbs.length - 1 ? <span aria-current="page">{c.name}</span> : <a href={c.href}>{c.name}</a>}</li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      {eyebrow && <p class="t-label t-eyebrow">{eyebrow}</p>}
+      <h1 class="t-display page-title">{heading}</h1>
+      <p class="t-lead page-lead">{lead}</p>
+      <slot name="hero" />
+    </div>
+  </section>
+  <slot />
+</Base>
+
+<style>
+  .page-hero {
+    padding-top: calc(var(--header-height) + clamp(3rem, 8vw, 7rem));
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+  }
+  .page-title {
+    max-width: 16ch;
+    margin-top: 1.25rem;
+    view-transition-name: page-title;
+  }
+  .page-lead {
+    margin-top: 1.5rem;
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: var(--text-small);
+    color: var(--color-ink-muted);
+  }
+  .crumbs li + li::before {
+    content: '/';
+    margin-right: 0.5rem;
+    opacity: 0.6;
+  }
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+  .crumbs a:hover {
+    color: var(--color-ink);
+  }
+</style>

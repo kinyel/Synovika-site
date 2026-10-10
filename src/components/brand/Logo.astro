@@ -1,0 +1,47 @@
+---
+/**
+ * The horizontal lockup, as cached files (D-043). Both registers are in the
+ * page and CSS shows the one that suits the background under it.
+ * The lockup is 1518 x 534 (2.843:1); never smaller than 120 px wide.
+ */
+interface Props {
+  height?: number;
+  /** Which lockup shows without the header's theme switching (for example in the footer). */
+  register?: 'dark' | 'paper' | 'auto';
+  tagline?: boolean;
+  class?: string;
+}
+const { height = 44, register = 'auto', tagline = false, class: className } = Astro.props;
+const width = Math.round(height * 2.8427);
+const suffix = tagline ? '-tagline' : '';
+---
+
+<span class:list={['logo', `logo--${register}`, className]} style={`--logo-h:${height}px`}>
+  {register !== 'paper' && <img class="logo-dark" src={`/brand/logo-dark${suffix}.svg`} alt="" width={width} height={height} decoding="async" />}
+  {register !== 'dark' && <img class="logo-paper" src={`/brand/logo-paper${suffix}.svg`} alt="" width={width} height={height} decoding="async" />}
+</span>
+
+<style>
+  .logo {
+    position: relative;
+    display: inline-block;
+    height: var(--logo-h);
+    aspect-ratio: 1518 / 534;
+  }
+  .logo img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity var(--dur-2) var(--ease-out);
+  }
+  .logo--auto .logo-paper {
+    opacity: 0;
+  }
+  :global(html[data-nav-theme='paper']) .logo--auto .logo-dark {
+    opacity: 0;
+  }
+  :global(html[data-nav-theme='paper']) .logo--auto .logo-paper {
+    opacity: 1;
+  }
+</style>

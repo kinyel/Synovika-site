@@ -1,0 +1,52 @@
+---
+import Page from '../../layouts/Page.astro';
+import { getEntry } from 'astro:content';
+import { services } from '../../lib/content';
+const page = (await getEntry('pages', 'services'))!;
+const svc = await services();
+---
+
+<Page title={page.data.seo.title} description={page.data.seo.description} heading={page.data.title} lead={page.data.lead} crumbs={[{ name: 'Services', href: '/services/' }]} pageType="CollectionPage">
+  <section class="section" data-theme="paper">
+    <div class="wrap">
+      <ul class="list">
+        {
+          svc.map((s) => (
+            <li>
+              <a href={`/services/${s.id}/`}>
+                <h2 class="t-h3">{s.data.name}</h2>
+                <p class="t-muted">{s.data.summary}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .section {
+    padding-block: clamp(4rem, 8vw, 7rem);
+  }
+  .list {
+    display: grid;
+    gap: var(--grid-gap);
+  }
+  @media (min-width: 48rem) {
+    .list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .list a {
+    display: grid;
+    gap: 0.6rem;
+    height: 100%;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .list a:hover h2 {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

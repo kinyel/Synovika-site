@@ -1,0 +1,17 @@
+---
+/**
+ * The design lab (brief section 20, Phase 1). Built only in dev and draft
+ * builds: in production getStaticPaths returns nothing, so no page exists (D-025).
+ */
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import { SHOW_DRAFTS } from '../../lib/drafts';
+
+export const getStaticPaths = (() => (SHOW_DRAFTS ? [{ params: { slug: undefined } }] : [])) satisfies GetStaticPaths;
+---
+
+<Base title="Design lab | Synovika" description="The Synovika design lab: colours, type, components, materials, motion and the 3D mark, for review before they are used on the site." noindex>
+  <section data-theme="dark" style="padding: 8rem 1rem">
+    <div class="wrap"><h1 class="t-display">Lab</h1></div>
+  </section>
+</Base>
