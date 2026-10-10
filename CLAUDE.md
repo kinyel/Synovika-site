@@ -25,7 +25,7 @@ npm run qa:fps                    # local only
 2. No claims about licences, regulators or partnerships. Name no partner company.
 3. No superlatives ("best", "leading", "No. 1", "world-class", "Nigeria's top").
 4. Every feature has `confirmed`. Unconfirmed features show only in dev and draft builds, with a "TO CONFIRM" badge.
-5. Product status sets the CTA: live gives "Book a demo", pilot gives "Join the pilot", in development gives "Talk to us about it". The default is in development.
+5. Product status sets the CTA: live gives "Book a demo", pilot gives "Join the pilot", in development gives "Join the waitlist" (Hero's change, D-032). The default is in development.
 6. Demo data is labelled "Demo data" and uses made-up names (Unit 07, Depot A, House 12).
 7. No stock photos and no AI-generated people.
 8. Legal pages show "Draft: to be reviewed by a lawyer" until Hero removes it.

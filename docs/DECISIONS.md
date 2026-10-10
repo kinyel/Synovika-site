@@ -58,7 +58,7 @@ Rejected: `@lhci/cli` (old engine; its server and upload features are unused her
 `@astrojs/check` 0.9.10 declares `typescript: ^5.0.0 || ^6.0.0`. TypeScript 7 waits until it is supported.
 
 **D-005. npm, Node 24, git on `main`.**
-npm as in Hero's other repos. `.nvmrc` holds `24`; CI uses Node 24. The repository was created with `git init -b main` on 10 October 2026. No remote yet (question 10).
+npm as in Hero's other repos. `.nvmrc` holds `24`; CI uses Node 24. The repository was created with `git init -b main` on 10 October 2026. Hero creates the GitHub repository and pushes the code themselves (D-036), so no remote is configured here.
 
 **D-006. The frontend-design skill is not available in this session.**
 The brief asks for it, but the skill is not installed here. Design work follows the brief's sections 4, 5 and 12 directly, plus the look-at-your-own-work loop in section 2 (screenshots at 390 × 844 and 1440 × 900, three mid-animation frames per scene, the three weakest things fixed each round). If the skill becomes available, it is used from then on.
@@ -152,3 +152,41 @@ It is a dynamic route whose `getStaticPaths` returns nothing in production, so t
 **D-029. The credit link on client sites is `rel="nofollow"`** (the brief's default).
 
 **D-030. The site language is `en-NG`.** British spelling throughout, including in these docs. No em dashes anywhere, docs included.
+
+---
+
+## Hero's answers to the Phase 0 questions (10 October 2026)
+
+**D-031. Facts confirmed by Hero.**
+- Domain: `synovika.com`, so `PUBLIC_SITE_URL=https://synovika.com`.
+- Public email: `hero@synovika.com`. This is also the default `CONTACT_TO`.
+- WhatsApp: `07062319781`. Hero did not object to the default, so it is also the public phone number (D-033).
+- Area served: all of Nigeria, and worldwide (D-034).
+- Products: all three are in development. Hero has more products in development, which are not shown until Hero names them.
+- Selvion features confirmed: ignition alerts, live map tracking, geofences, phone alerts, trip reports, and remote immobilisation.
+- Estate Entrance Security System: the system flow is not designed yet, so none of its features are confirmed (D-035).
+- The SRS may be used to draft Selvion's feature list. Every item drafted from it is unconfirmed until Hero confirms it, apart from the six above.
+- GitHub: Hero creates the repository and pushes.
+
+**D-032. In-development products get a waitlist, not "Talk to us about it" (Hero's decision; changes brief section 3, rule 5).**
+- `in-development`: the button reads **"Join the waitlist"**, with the line "Be one of the first to use it when it launches." under it. Hero edits the exact words in the content files.
+- `pilot` and `live` keep "Join the pilot" and "Book a demo".
+- How it works: the button opens the contact page in waitlist mode (`/contact/?waitlist=<product>`). The form is short (name, email, optional phone and company, consent) and goes through the same Pages Function as the contact form. The function forwards it to `CONTACT_TO` by email, marked as a waitlist sign-up, and stores nothing, as brief section 15 requires.
+- Rejected: a list kept at the email provider (Resend contacts). It would store personal data with a third party and need more in the privacy notice. We can add it later if Hero wants a managed list.
+- Copy rule: product copy says what the product does, and the "In development" status chip sits beside every CTA, so no page suggests the product can be bought today.
+
+**D-033. Phone and WhatsApp formats.**
+- Shown as `+234 706 231 9781`, the international form, because we serve clients abroad.
+- Links: `tel:+2347062319781` and `https://wa.me/2347062319781`.
+- In structured data: `telephone: "+234-706-231-9781"`.
+
+**D-034. Area served: Nigeria first, worldwide too.**
+- Titles, keywords and the hero copy still lead with Nigeria (brief section 11).
+- The footer, the FAQ ("Do you work outside Nigeria?") and About say "across Nigeria and worldwide".
+- Structured data: `areaServed` is `[{ "@type": "Country", "name": "Nigeria" }, "Worldwide"]`.
+- We say nothing about how we work abroad (remote, on site) until Hero says.
+
+**D-035. The estate story is data-driven and stays out of production for now.**
+The five stations from brief 8.4 are built as drafted, each tied to an unconfirmed feature in `products/estate-entrance-security.md`. When Hero designs the flow, the stations change in that file only: headings, order, and which visual each step uses. Until then, production shows the product's summary, status chip and waitlist CTA, without the story.
+
+**D-036. CI is written but runs only once Hero pushes.** `.github/workflows/ci.yml` is part of Phase 1 as planned. The QA scripts also run locally, so nothing waits for the repository.

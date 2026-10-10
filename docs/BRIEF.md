@@ -3,6 +3,8 @@
 > **Source.** Part B of Hero's brief, pasted on 10 October 2026 and copied here word for word. Part A was not included in that message. Section 21 refers to "the list at the end of Part A"; until Part A arrives, the running list of what Hero owes lives in `docs/PROGRESS.md`.
 >
 > **Paths.** The brief's `../synov-timer` is the folder `../raleston-web` on this machine (its git remote is `kinyel/synov-timer`). See DECISIONS.md, D-001.
+>
+> **Changes since.** Hero's later answers and changes are recorded in DECISIONS.md from D-031 on, and they override this text where the two differ. The main one: in-development products show "Join the waitlist", not "Talk to us about it" (D-032).
 
 ---
 

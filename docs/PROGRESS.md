@@ -2,7 +2,7 @@
 
 ## Now
 
-**Phase 0 (Plan): done, waiting at the gate.** Hero answers the ten questions below, then Phase 1 starts.
+**Phase 1 (Foundation and brand lab): in progress.** Gate: Hero approves the look on `/lab`.
 
 ## Done
 
@@ -10,48 +10,33 @@
 - Read the brief (Part B), synov-timer's README, `reference/AUDIT.md`, `references/NOTES.md`, and every file listed in brief section 6 (`../raleston-web`, see D-001).
 - Checked every package version with `npm view` (the table in DECISIONS.md). Measured the font files: 50.9 KB for both variable fonts (Latin), against a budget of 80 KB.
 - Read the Astro 7 upgrade guide, the Fonts API docs, and Cloudflare's guide to moving from Pages to Workers.
-- Wrote `docs/BRIEF.md` (the brief, word for word), `docs/DECISIONS.md`, `docs/PLAN.md`, this file and `CLAUDE.md`.
-- `git init -b main`; source logo copied to `brand/synovika-logo.png`.
+- Wrote `docs/BRIEF.md`, `docs/DECISIONS.md`, `docs/PLAN.md`, this file and `CLAUDE.md`.
+- Hero answered the questions on the same day (D-031 to D-036). The answers that change the site:
+  - In-development products get "Join the waitlist" (D-032).
+  - Selvion's five story features and remote immobilisation are confirmed.
+  - The estate system's flow is not designed yet (D-035).
 
 ## Next
 
-Phase 1: foundation and brand lab (PLAN.md). It starts with the scaffold, then tokens and contrast, then the traced logo, because everything else depends on the mark.
-
-## Questions for Hero (Phase 0 gate)
-
-Each can be answered in a word. My recommended default is in brackets: if you skip a question, that is what I will do.
-
-1. **Production domain?** (none: builds use `PUBLIC_SITE_URL`, which is a placeholder until you tell me)
-2. **Public email address?** (`hello@` your domain)
-3. **WhatsApp number, and may I show it as the phone number too?** (a `TODO(hero)` placeholder until given; yes, the same number)
-4. **Area served: all of Nigeria, or a city or state first?** (all of Nigeria, working remotely)
-5. **Product statuses: are all three still in development?** (yes: every CTA reads "Talk to us about it")
-6. **Selvion: are ignition alerts, live map tracking, geofences, phone alerts and trip reports all confirmed features?** (no: unconfirmed stations stay out of production builds; see D-011)
-7. **Estate system: are one-time six-digit codes, sending the code by message, the guard entering it, the entry log and notifying the resident all confirmed features?** (no, as above)
-8. **Estate system: does it control the barrier?** (no: the guard opens the gate)
-9. **May I draft Selvion's feature list from your SRS in `Synovika files/tracking-portal/`, with every item unconfirmed?** (yes)
-10. **GitHub: will you create a private repo for this site and give me its URL?** (yes, named `synovika-website`)
-
-Also: **Part A of the brief wasn't in your message.** Section 21 says your list of what you still owe me is at its end. If it holds anything beyond the list below, please paste it.
+Phase 1, in order: scaffold; tokens and contrast; fonts; the traced logo and icons; the 3D mark and poster; `/lab`; header and footer; Base layout and SEO; content collections; QA scripts and CI.
 
 ## Open `TODO(hero)` items
 
-Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft builds only) and the production guard fails on it.
+Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft builds only) and the production guard fails on it. Part A of the brief, which has Hero's own list, has not been shared; this list is built from Part B and Hero's answers.
 
-**Facts and contacts**
-- Production domain (Q1). Canonical host: bare domain unless you say otherwise (D-027).
-- Public email (Q2), WhatsApp number and phone (Q3).
-- Area served (Q4).
+**Facts**
 - CAC business name (BN) number, once registration completes.
 - Social profiles to list in `sameAs` (only real ones).
-- A privacy contact for the privacy notice (brief section 15).
+- A privacy contact for the privacy notice (brief section 15). It could be `hero@synovika.com`; Hero to confirm.
 - A public address, only if you want one shown (it switches the structured data to `ProfessionalService`).
 
 **Products**
-- Status of each product (Q5).
-- Confirmation of each feature, per product (Q6 to Q8, and the full feature lists in Phase 5).
+- The estate system's flow, then confirmation of each of its features (D-035).
+- Selvion's other features, drafted from the SRS in Phase 5 for you to confirm.
+- The websites product's feature list beyond "change the text, add pages" (Phase 5).
 - Names for the estate and websites products, if and when they get names (one edit each in their content files).
 - A Selvion logo, if one is made. Until then: a wordmark in the display face with "by Synovika".
+- The waitlist wording (drafted as "Join the waitlist" and "Be one of the first to use it when it launches.").
 - Prices or durations: none are shown unless you give them.
 
 **Content to review**
@@ -64,7 +49,7 @@ Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft
 **Accounts and settings (Phase 5 and 7)**
 - Cloudflare account with the Pages project.
 - Turnstile site and secret keys.
-- A Resend account with a verified sending domain, plus `CONTACT_TO` and `CONTACT_FROM`.
+- A Resend account with `synovika.com` verified as a sending domain, plus `CONTACT_FROM` (for example `Synovika website <web@synovika.com>`).
 - AI training crawlers: allow (the default, D-028) or block.
 - Google Search Console, Bing Webmaster Tools, Google Business Profile, Bing Places and Apple Business Connect: you create the profiles, I write the text.
 - A lawyer's review of the privacy, cookies and terms pages.
