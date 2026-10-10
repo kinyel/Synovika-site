@@ -29,7 +29,8 @@ npm run qa:fps                    # local only
 6. Demo data is labelled "Demo data" and uses made-up names (Unit 07, Depot A, House 12).
 7. No stock photos and no AI-generated people.
 8. Legal pages show "Draft: to be reviewed by a lawyer" until Hero removes it.
-9. Copy: British spelling, plain words, short sentences, no em dashes, no buzzwords. Every headline has one plain sentence under it.
+9. Copy: British spelling, plain words, short sentences, no buzzwords. Every headline has one plain sentence under it. It must sound like a person wrote it (D-037).
+   **No em dashes anywhere, ever:** not in copy, alt text, metadata, structured data, comments or docs. No spaced en dash used as a dash either. `npm run qa:copy` enforces this.
 10. Placeholders are written `TODO(hero): what's needed`. The production guard fails if `TODO(hero)`, `TO CONFIRM` or an unconfirmed feature reaches `dist/`.
 
 Write "Selvion" exactly. On each page, the first mention says what it is ("Selvion, our fleet tracking platform"). Copy lives in `src/content/`, never in components. Ask Hero only when an answer changes what visitors are told (facts, claims, prices, names); otherwise pick a sensible default and record it in DECISIONS.md.

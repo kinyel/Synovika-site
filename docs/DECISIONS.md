@@ -190,3 +190,37 @@ It is a dynamic route whose `getStaticPaths` returns nothing in production, so t
 The five stations from brief 8.4 are built as drafted, each tied to an unconfirmed feature in `products/estate-entrance-security.md`. When Hero designs the flow, the stations change in that file only: headings, order, and which visual each step uses. Until then, production shows the product's summary, status chip and waitlist CTA, without the story.
 
 **D-036. CI is written but runs only once Hero pushes.** `.github/workflows/ci.yml` is part of Phase 1 as planned. The QA scripts also run locally, so nothing waits for the repository.
+
+**D-037. Copy must read as if a person wrote it. Em dashes are banned everywhere (Hero, 10 October 2026).**
+- Voice: write the way Hero would explain it to a client across a table. Use contractions ("we'll", "you don't"), "we" and "you", and concrete nouns (drivers, gates, pages). Vary sentence length.
+- Avoid the patterns that make text sound machine-written: no triplets for rhythm's sake ("fast, reliable and scalable"), no "not just X, it's Y", no rhetorical questions as openers, no "In today's world", no "Whether you're X or Y", and no stacked adjectives.
+- No em dashes (U+2014) in any copy, code comment that reaches the page, alt text, metadata, structured data or docs. No spaced en dash used as a dash (" – ") either. Use a full stop, a comma, a colon or brackets instead.
+- Enforced by `scripts/copy-lint.mjs` (`npm run qa:copy`). It scans `src/` and `dist/` for em dashes, spaced en dashes, the banned buzzwords and superlatives (brief section 3, rules 3 and 9), and wrong forms of the product name ("Synovika Selvion", "Selvion™"). It fails the build. It runs in CI, and the production guard runs it too.
+
+**D-038. The www redirect is a Cloudflare Redirect Rule, not a `_redirects` line.**
+Cloudflare's Pages docs list domain-level redirects as unsupported in `_redirects` (a source must be a path). The rule `www.synovika.com/*` to `https://synovika.com/${1}` (301, query string kept) goes in `docs/LAUNCH.md`. `_redirects` holds path redirects only.
+
+**D-039. Headers per build.** `public/_headers` holds the production headers. On a draft build, a small integration in `astro.config.mjs` appends `X-Robots-Tag: noindex` for every path to `dist/_headers`, so a draft deployment can never be indexed, even on a custom domain. The `*.pages.dev` noindex rule is in the production file too, as the brief asks.
+
+---
+
+## Brand assets (Phase 1)
+
+**D-040. How the logo was vectorised (`scripts/trace-logo.mjs`).**
+- **Masks.** Your rule (green and blue each more than 25 above red) splits teal from silver. Connected parts identify the four faces of the S (teal top, teal tail, silver top, silver bowl), the two spheres and the ring.
+- **The ring is two fitted ellipses, not a trace.** It is a flat band seen at an angle: wide at the ends of its major axis, thin at the top and bottom. Its outer and inner edges were sampled along the centre line and each was fitted as a true ellipse (Nelder-Mead, Huber loss). Both fits are within about 1 px. The ring is drawn whole behind the S, then its front half again in front, with a 4 px gap cut into the S where it crosses, so it reads on any background.
+- **The spheres are true circles** from their alpha-weighted area. The ring sphere is snapped onto the ring's centre line (parameter t = 0.761), so the 3D sphere can ride exactly that orbit.
+- **Faces are traced with potrace at 4x.** The brief's settings are scaled to that size (turdSize 40 and optTolerance 0.4, both in the logo's own pixels), after an edge blur of 1.5 logo px for the S and 1 px for the wordmark. Every face is filled in under the ring, because the small mark and the 3D ring need whole faces.
+- **Folds are drawn by hand (`scripts/lib/logo-folds.mjs`).** Thresholding the render's smooth shading gave lumpy blobs, so each fold line was placed from the original at 3x zoom as a smooth curve and clipped to its face. The rule: faces turned away from the light in the render take the darker step. That is the front face of the top curl and the tail's top band in teal-800, and the outer face of the bowl's D in neutral-500. Rejected: no folds (it flattens the ribbon), and threshold folds (they look accidental).
+- **The tagline is set, not traced.** At about 2 px its strokes are too thin to trace (the counters filled in). It is Urbanist Light, turned into outlines with satori, with each word placed where it starts in the original. The fit is letter spacing 0.45em at 37 px, within 4.5 px of each word's width.
+- **The wordmark is traced** (custom letterforms, as the brief says), with every traced path using the even-odd fill rule so the counters stay open.
+
+**D-041. Lockup colours.**
+- **On dark:** the flat teal mark, with the chrome gradient (white, #C0C0C0, #8A8A8A) on the silver faces, the ring and the wordmark.
+- **On white:** the teal faces stay teal; the silver faces become neutral-700 with a neutral-800 fold (silver on white is 1.82:1); the wordmark is neutral-800.
+- **Mono white and mono black:** one colour, with a 1.5 px hairline between the teal and silver faces so the S keeps its structure.
+All of these are for Hero to approve on `/lab`.
+
+**D-042. A small mark for the favicon.** The full mark does not read at 16 px (the ring turns to noise). `favicon.svg` and `favicon.ico` use the S and a larger sphere, with no ring, on a neutral-900 rounded tile, so it reads on light and dark tab bars. The apple-touch icon, the app icons, the maskable icon and `logo-512.png` use the full mark on neutral-900.
+
+**D-043. The header loads the logo as an `<img>` from `/brand/`, not inline SVG.** Web copies of the lockups are 13 to 20 KB (coarser precision, svgo). Inline on every page they would eat into the 60 KB home HTML budget, while as a file they are cached once for the whole site.

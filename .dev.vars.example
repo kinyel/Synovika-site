@@ -1,0 +1,8 @@
+# Runtime settings for the contact function (functions/api/contact.ts).
+# Copy to .dev.vars for `npm run preview`. In production these live only in
+# Cloudflare Pages > Settings > Environment variables (secrets encrypted).
+
+TURNSTILE_SECRET_KEY=
+RESEND_API_KEY=
+CONTACT_TO=
+CONTACT_FROM=

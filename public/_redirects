@@ -1,0 +1,2 @@
+# Path redirects only. The www to bare-domain redirect is a Cloudflare
+# Redirect Rule (docs/DECISIONS.md, D-038).

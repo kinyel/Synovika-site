@@ -1,0 +1,226 @@
+/*
+ * Design tokens: the only place a colour, size, radius, duration or ease is
+ * defined. Tailwind reads the @theme block, plain CSS uses the custom
+ * properties, and scripts and the 3D mark read the same file through
+ * src/lib/tokens.ts. Tailwind's own palette is switched off, so only these
+ * colours exist.
+ *
+ * Colour carries meaning, the same way in every scene:
+ *   teal   live, healthy, verified, the primary action
+ *   blue   data, interface, links, information
+ *   wine   alert, denied, a security event
+ *   silver structure, hardware, chrome, borders
+ *   grey   secondary text and inactive states
+ */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --ease-*: initial;
+  --radius-*: initial;
+  --text-*: initial;
+  --tracking-*: initial;
+  --leading-*: initial;
+  --shadow-*: initial;
+  --blur-*: initial;
+  --drop-shadow-*: initial;
+  --inset-shadow-*: initial;
+  --perspective-*: initial;
+
+  /* ── Ramps ─────────────────────────────────────────────────────────── */
+  --color-teal-50: #f0fdfa;
+  --color-teal-100: #ccfbf1;
+  --color-teal-200: #99f6e4;
+  --color-teal-300: #5eead4;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488; /* brand teal */
+  --color-teal-700: #0f766e;
+  --color-teal-800: #115e59;
+  --color-teal-900: #134e4a;
+  --color-teal-950: #042f2e;
+
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb; /* brand blue */
+  --color-blue-700: #1d4ed8;
+  --color-blue-900: #1e3a8a;
+  --color-blue-950: #172554;
+
+  --color-wine-50: #fff1f2;
+  --color-wine-100: #fbe3e4;
+  --color-wine-200: #fbc9cb;
+  --color-wine-300: #f4a5aa;
+  --color-wine-400: #d2868b;
+  --color-wine-500: #b6656c;
+  --color-wine-600: #9c4d55;
+  --color-wine-700: #853942;
+  --color-wine-800: #722f37; /* brand wine */
+  --color-wine-900: #4e1920;
+  --color-wine-950: #37030e;
+
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f4f4f4;
+  --color-neutral-200: #e6e6e6;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #c0c0c0; /* brand silver */
+  --color-neutral-500: #a3a3a3;
+  --color-neutral-600: #808080; /* brand grey */
+  --color-neutral-700: #5c5c5c;
+  --color-neutral-800: #2e2e2e;
+  --color-neutral-850: #222222;
+  --color-neutral-900: #171717; /* brand black */
+  --color-neutral-950: #0d0d0d;
+
+  --color-white: #ffffff;
+
+  /*
+   * ── Semantic aliases ─────────────────────────────────────────────────
+   * These are the dark register's values. [data-theme] blocks below
+   * redefine them, so a section only says which register it is in.
+   * "-ink" variants are the text-safe versions of each meaning (AA on
+   * that register's surface); the plain ones are for fills, lines and light.
+   */
+  --color-surface: #171717;
+  --color-surface-raised: #222222;
+  --color-ink: #ffffff;
+  --color-ink-muted: #a3a3a3;
+  --color-live: #14b8a6;
+  --color-live-ink: #2dd4bf;
+  --color-data: #2563eb;
+  --color-data-ink: #60a5fa;
+  --color-alert: #722f37;
+  --color-alert-ink: #f4a5aa;
+  --color-structure: #c0c0c0;
+  --color-line: rgb(255 255 255 / 0.12);
+  --color-focus: #2dd4bf;
+  /* The primary button: white text on teal-700 in every register (5.47:1). */
+  --color-action: #0f766e;
+  --color-action-hover: #115e59;
+  --color-on-action: #ffffff;
+
+  /* ── Type ─────────────────────────────────────────────────────────── */
+  --font-sans: var(--font-urbanist);
+  --font-display: var(--font-urbanist);
+  --font-mono: var(--font-geist-mono);
+
+  /* 12 px mono labels, tracked wide like the tagline. */
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.24em;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.5;
+  /* Body: 17 px on phones, 18 px on desktop. */
+  --text-body: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
+  --text-body--line-height: 1.6;
+  --text-lead: clamp(1.1875rem, 1.06rem + 0.55vw, 1.4375rem);
+  --text-lead--line-height: 1.5;
+  --text-h3: clamp(1.375rem, 1.21rem + 0.7vw, 1.75rem);
+  --text-h3--line-height: 1.15;
+  --text-h3--letter-spacing: -0.02em;
+  --text-h2: clamp(2.25rem, 1.55rem + 2.9vw, 4.25rem);
+  --text-h2--line-height: 1;
+  --text-h2--letter-spacing: -0.03em;
+  --text-display: clamp(3rem, 1.55rem + 6.2vw, 7.5rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.035em;
+  /* Giant outlined words behind objects. */
+  --text-giant: clamp(6rem, 21vw, 24rem);
+  --text-giant--line-height: 0.8;
+  --text-giant--letter-spacing: -0.04em;
+
+  --tracking-label: 0.24em;
+  --tracking-wide: 0.4em;
+  --tracking-tight: -0.02em;
+
+  /* ── Shape ────────────────────────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+
+  /* ── Motion ───────────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* A gentle spring (one soft overshoot) for magnetic buttons. */
+  --ease-spring: linear(0, 0.157 4.6%, 0.551 13.2%, 0.86 21.5%, 1.004 28.7%, 1.06 35.3%, 1.064 41.5%, 1.03 53.4%, 0.996 70.4%, 1);
+}
+
+:root {
+  /* Durations. JavaScript reads the same values through tokens.ts. */
+  --dur-1: 120ms;
+  --dur-2: 240ms;
+  --dur-3: 480ms;
+  --dur-4: 800ms;
+
+  /* Pinned sections, in svh (brief 8.1 and 12). */
+  --pin-hero: 50svh;
+  --pin-hero-phone: 45svh;
+  --pin-station-dwell: 70svh;
+  --pin-station-travel: 50svh;
+
+  /* Grid: 12 columns on desktop, 4 on phones, on a 4 px baseline. */
+  --grid-columns: 4;
+  --grid-margin: clamp(1rem, 4.4vw, 5rem);
+  --grid-gap: clamp(1rem, 1.6vw, 1.5rem);
+  --grid-max: 90rem;
+  --header-height: 4.5rem;
+
+  /* The chrome material: white through silver to a darker steel. */
+  --chrome-top: #ffffff;
+  --chrome-mid: #c0c0c0;
+  --chrome-low: #8a8a8a;
+}
+@media (min-width: 64rem) {
+  :root {
+    --grid-columns: 12;
+  }
+}
+
+/* ── Registers ────────────────────────────────────────────────────────
+ * The dark register is the default above. Every section names its own. */
+[data-theme='dark'] {
+  --color-surface: #171717;
+  --color-surface-raised: #222222;
+  --color-ink: #ffffff;
+  --color-ink-muted: #a3a3a3;
+  --color-live: #14b8a6;
+  --color-live-ink: #2dd4bf;
+  --color-data: #2563eb;
+  --color-data-ink: #60a5fa;
+  --color-alert: #722f37;
+  --color-alert-ink: #f4a5aa;
+  --color-structure: #c0c0c0;
+  --color-line: rgb(255 255 255 / 0.12);
+  --color-focus: #2dd4bf;
+}
+[data-theme='paper'] {
+  --color-surface: #ffffff;
+  --color-surface-raised: #fafafa;
+  --color-ink: #171717;
+  --color-ink-muted: #5c5c5c;
+  --color-live: #0d9488;
+  --color-live-ink: #0f766e;
+  --color-data: #2563eb;
+  --color-data-ink: #2563eb;
+  --color-alert: #722f37;
+  --color-alert-ink: #722f37;
+  --color-structure: #808080;
+  --color-line: rgb(23 23 23 / 0.12);
+  --color-focus: #2563eb;
+}
+[data-theme='teal'] {
+  --color-surface: #134e4a;
+  --color-surface-raised: #115e59;
+  --color-ink: #ffffff;
+  --color-ink-muted: #ccfbf1;
+  --color-live: #5eead4;
+  --color-live-ink: #5eead4;
+  --color-data: #60a5fa;
+  /* Blue-400 is 3.73:1 on teal-900, too low for text: data text is white here. */
+  --color-data-ink: #ffffff;
+  --color-alert: #722f37;
+  --color-alert-ink: #fbc9cb;
+  --color-structure: #99f6e4;
+  --color-line: rgb(255 255 255 / 0.16);
+  --color-focus: #ffffff;
+}
