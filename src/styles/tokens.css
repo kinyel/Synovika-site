@@ -5,6 +5,9 @@
  * src/lib/tokens.ts. Tailwind's own palette is switched off, so only these
  * colours exist.
  *
+ * The colouring follows synov-timer's, in teal (D-045): a teal-black night,
+ * soft teal and blue glows, glass, and lit teal emphasis.
+ *
  * Colour carries meaning, the same way in every scene:
  *   teal   live, healthy, verified, the primary action
  *   blue   data, interface, links, information
@@ -74,27 +77,38 @@
   --color-white: #ffffff;
 
   /*
+   * Night: teal-950 taken most of the way to black. The site's stage, as
+   * synov-timer's navy night is its stage (D-045).
+   */
+  --color-night: #031514;
+  --color-deep: #062523;
+
+  /*
    * ── Semantic aliases ─────────────────────────────────────────────────
    * These are the dark register's values. [data-theme] blocks below
    * redefine them, so a section only says which register it is in.
    * "-ink" variants are the text-safe versions of each meaning (AA on
    * that register's surface); the plain ones are for fills, lines and light.
    */
-  --color-surface: #171717;
-  --color-surface-raised: #222222;
+  --color-surface: #031514;
+  --color-surface-raised: #062523;
   --color-ink: #ffffff;
+  /* Body and lead text on dark: soft, not pure white. */
+  --color-ink-soft: #d4d4d4;
   --color-ink-muted: #a3a3a3;
   --color-live: #14b8a6;
-  --color-live-ink: #2dd4bf;
+  /* "Lit" emphasis and eyebrows: teal-300, the colour of the signal. */
+  --color-live-ink: #5eead4;
   --color-data: #2563eb;
   --color-data-ink: #60a5fa;
   --color-alert: #722f37;
   --color-alert-ink: #f4a5aa;
   --color-structure: #c0c0c0;
-  --color-line: rgb(255 255 255 / 0.12);
-  --color-focus: #2dd4bf;
-  /* The primary button: white text on teal-700 in every register (5.47:1). */
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-focus: #5eead4;
+  /* The primary button: white text on teal-700 into blue-700 (5.47:1 and 6.70:1). */
   --color-action: #0f766e;
+  --color-action-end: #1d4ed8;
   --color-action-hover: #115e59;
   --color-on-action: #ffffff;
 
@@ -179,24 +193,44 @@
 /* ── Registers ────────────────────────────────────────────────────────
  * The dark register is the default above. Every section names its own. */
 [data-theme='dark'] {
-  --color-surface: #171717;
-  --color-surface-raised: #222222;
+  --color-surface: #031514;
+  --color-surface-raised: #062523;
   --color-ink: #ffffff;
+  --color-ink-soft: #d4d4d4;
   --color-ink-muted: #a3a3a3;
   --color-live: #14b8a6;
-  --color-live-ink: #2dd4bf;
+  --color-live-ink: #5eead4;
   --color-data: #2563eb;
   --color-data-ink: #60a5fa;
   --color-alert: #722f37;
   --color-alert-ink: #f4a5aa;
   --color-structure: #c0c0c0;
-  --color-line: rgb(255 255 255 / 0.12);
-  --color-focus: #2dd4bf;
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-focus: #5eead4;
 }
+/* Brand black: the footer, as synov-timer's footer is black. */
+[data-theme='black'] {
+  --color-surface: #171717;
+  --color-surface-raised: #222222;
+  --color-ink: #ffffff;
+  --color-ink-soft: #d4d4d4;
+  --color-ink-muted: #a3a3a3;
+  --color-live: #14b8a6;
+  --color-live-ink: #5eead4;
+  --color-data: #2563eb;
+  --color-data-ink: #60a5fa;
+  --color-alert: #722f37;
+  --color-alert-ink: #f4a5aa;
+  --color-structure: #c0c0c0;
+  --color-line: rgb(255 255 255 / 0.1);
+  --color-focus: #5eead4;
+}
+/* Paper: only inside mock-ups now, such as the example site in the websites demo (D-045). */
 [data-theme='paper'] {
   --color-surface: #ffffff;
   --color-surface-raised: #fafafa;
   --color-ink: #171717;
+  --color-ink-soft: #2e2e2e;
   --color-ink-muted: #5c5c5c;
   --color-live: #0d9488;
   --color-live-ink: #0f766e;
@@ -212,6 +246,7 @@
   --color-surface: #134e4a;
   --color-surface-raised: #115e59;
   --color-ink: #ffffff;
+  --color-ink-soft: #ffffff;
   --color-ink-muted: #ccfbf1;
   --color-live: #5eead4;
   --color-live-ink: #5eead4;
@@ -223,4 +258,9 @@
   --color-structure: #99f6e4;
   --color-line: rgb(255 255 255 / 0.16);
   --color-focus: #ffffff;
+  /* Teal-700 vanishes on the teal flood: the primary button turns white here (9.48:1). */
+  --color-action: #ffffff;
+  --color-action-end: #ccfbf1;
+  --color-action-hover: #ccfbf1;
+  --color-on-action: #134e4a;
 }

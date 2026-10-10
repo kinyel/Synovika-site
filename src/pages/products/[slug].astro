@@ -39,7 +39,7 @@ const { Content } = await render(p);
   ]}
 >
   <div slot="hero" class="hero-cta"><StatusCta product={p} /></div>
-  <section class="section" data-theme="paper">
+  <section class="section" data-theme="dark">
     <div class="wrap grid-site body">
       <div class="prose intro"><Content /></div>
       <div class="col">
@@ -52,7 +52,7 @@ const { Content } = await render(p);
             <h2 class="t-label t-muted">What it does</h2>
             <ul class="feature-grid">
               {features.map((f) => (
-                <li>
+                <li class="glass">
                   <h3 class="t-h3">
                     {f.title} <ToConfirm when={!f.confirmed} />
                   </h3>
@@ -118,6 +118,7 @@ const { Content } = await render(p);
     height: 0.55rem;
     border-radius: 50%;
     background: var(--color-live);
+    box-shadow: 0 0 10px var(--color-teal-400);
   }
   .feature-grid {
     display: grid;
@@ -138,8 +139,7 @@ const { Content } = await render(p);
     display: grid;
     gap: 0.5rem;
     align-content: start;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--color-line);
+    padding: 1.5rem;
   }
   .faq-wrap h2 {
     margin-bottom: 1rem;

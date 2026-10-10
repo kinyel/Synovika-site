@@ -29,7 +29,8 @@
     "qa:motion": "node scripts/motion-parity.mjs",
     "qa:size": "node scripts/size.mjs",
     "qa:prod-guard": "node scripts/prod-guard.mjs",
-    "qa:fps": "node scripts/pagefps.mjs"
+    "qa:fps": "node scripts/pagefps.mjs",
+    "qa:copy": "node scripts/copy-lint.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
@@ -54,6 +55,7 @@
     "@fontsource/geist-mono": "5.3.0",
     "@fontsource/urbanist": "5.3.0",
     "@types/three": "0.186.0",
+    "chrome-launcher": "1.2.2",
     "html-validate": "11.16.2",
     "lighthouse": "13.5.0",
     "linkinator": "8.1.0",
@@ -67,6 +69,7 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true,
-    "workerd@1.20261006.1": true
+    "workerd@1.20261006.1": true,
+    "fsevents": false
   }
 }

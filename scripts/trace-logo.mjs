@@ -9,9 +9,11 @@
  *    spheres as true circles (scripts/lib/logo-geometry.mjs).
  * 3. Traces each face of the S, the fold steps, the wordmark and the tagline
  *    with potrace (turdSize 40, optTolerance 0.4) at 4x, so curves are smooth.
- * 4. Writes brand/mark.svg, brand/wordmark.svg, brand/tagline.svg, every
- *    lockup (brand/logo-*.svg), brand/mark-geometry.json, and
- *    src/lib/brand-paths.json for the site's inline logo and the 3D mark.
+ * 4. Writes the traced shapes to brand/trace/ and src/lib/brand-paths.json.
+ *
+ * These traces are NOT the logo (D-044): the site always shows Hero's own
+ * file, brand/synovika-logo.png (scripts/logo-assets.mjs). The traced paths
+ * exist only to give the 3D object in the hero its shapes.
  *
  * Colours come from src/styles/tokens.css.
  */
@@ -335,22 +337,22 @@ const palettes = {
 };
 
 const files = {
-  'brand/mark.svg': svg(markBox, markBody(palettes.flat, 'm'), 'Synovika'),
-  'brand/wordmark.svg': svg(union(wordBox, [iDot.cx - iDot.r, iDot.cy - iDot.r, iDot.r * 2, iDot.r * 2]), wordBody(C.silver, C.teal), 'Synovika'),
-  'brand/tagline.svg': svg(tagBox, tagBody(C.silver), 'Built around reality'),
+  'brand/trace/mark.svg': svg(markBox, markBody(palettes.flat, 'm'), 'Synovika'),
+  'brand/trace/wordmark.svg': svg(union(wordBox, [iDot.cx - iDot.r, iDot.cy - iDot.r, iDot.r * 2, iDot.r * 2]), wordBody(C.silver, C.teal), 'Synovika'),
+  'brand/trace/tagline.svg': svg(tagBox, tagBody(C.silver), 'Built around reality'),
 };
 for (const tagline of [false, true]) {
   const box = tagline ? lockTagBox : lockBox;
   const suffix = tagline ? '-tagline' : '';
   const title = tagline ? 'Synovika: Built around reality' : 'Synovika';
-  files[`brand/logo-dark${suffix}.svg`] = svg(
+  files[`brand/trace/logo-dark${suffix}.svg`] = svg(
     box,
     `<defs>${chromeDef('chrome-mark', markBox)}${chromeDef('chrome-word', wordBox)}</defs>${markBody(palettes.dark, 'd')}${wordBody('url(#chrome-word)', C.teal)}${tagline ? tagBody(C.silver) : ''}`,
     title,
   );
-  files[`brand/logo-paper${suffix}.svg`] = svg(box, `${markBody(palettes.paper, 'p')}${wordBody(C.ink, C.teal)}${tagline ? tagBody(C.inkFold) : ''}`, title);
-  files[`brand/logo-mono-white${suffix}.svg`] = svg(box, `${markBody(palettes.white, 'w', true)}${wordBody(C.white, C.white)}${tagline ? tagBody(C.white) : ''}`, title);
-  files[`brand/logo-mono-black${suffix}.svg`] = svg(box, `${markBody(palettes.black, 'b', true)}${wordBody(C.black, C.black)}${tagline ? tagBody(C.black) : ''}`, title);
+  files[`brand/trace/logo-paper${suffix}.svg`] = svg(box, `${markBody(palettes.paper, 'p')}${wordBody(C.ink, C.teal)}${tagline ? tagBody(C.inkFold) : ''}`, title);
+  files[`brand/trace/logo-mono-white${suffix}.svg`] = svg(box, `${markBody(palettes.white, 'w', true)}${wordBody(C.white, C.white)}${tagline ? tagBody(C.white) : ''}`, title);
+  files[`brand/trace/logo-mono-black${suffix}.svg`] = svg(box, `${markBody(palettes.black, 'b', true)}${wordBody(C.black, C.black)}${tagline ? tagBody(C.black) : ''}`, title);
 }
 
 const keep = (svgText) =>
@@ -360,7 +362,7 @@ const keep = (svgText) =>
     plugins: [{ name: 'preset-default', params: { overrides: { cleanupIds: false, removeUnknownsAndDefaults: false, convertShapeToPath: false, mergePaths: false } } }],
   }).data;
 
-await mkdir('brand', { recursive: true });
+await mkdir('brand/trace', { recursive: true });
 for (const [file, text] of Object.entries(files)) await writeFile(file, keep(text) + '\n');
 
 const geometry = {
@@ -371,7 +373,7 @@ const geometry = {
   iDot,
   boxes: { mark: markBox, wordmark: wordBox, tagline: tagBox, lockup: lockBox, lockupTagline: lockTagBox },
 };
-await writeFile('brand/mark-geometry.json', JSON.stringify(geometry, null, 2) + '\n');
+await writeFile('brand/trace/mark-geometry.json', JSON.stringify(geometry, null, 2) + '\n');
 await writeFile(
   'src/lib/brand-paths.json',
   JSON.stringify({ ...geometry, halfPlane, paths: Object.fromEntries(Object.entries(P).map(([k, v]) => [k, v])) }) + '\n',

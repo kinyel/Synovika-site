@@ -1,16 +1,22 @@
-@import 'tailwindcss';
+/* Scan src/ only: words in scripts and docs must not turn into utilities. */
+@import 'tailwindcss' source('../');
 @import './tokens.css';
 
-/* Animatable scroll progress for the chrome highlight. */
+/* Animatable scroll progress for the chrome highlight and the 3D scenes. */
 @property --p {
   syntax: '<number>';
   inherits: true;
   initial-value: 0.35;
 }
+@property --lift {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
 
 @layer base {
   html {
-    background: var(--color-neutral-900);
+    background: var(--color-night);
     color: var(--color-ink);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -20,6 +26,8 @@
     /* Focus and anchors never land under the fixed header. */
     scroll-padding-top: calc(var(--header-height) + 1.5rem);
     -webkit-text-size-adjust: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-teal-300) 55%, transparent) transparent;
   }
   body {
     font-size: var(--text-body);
@@ -28,11 +36,14 @@
     overflow-x: clip;
     font-synthesis: none;
   }
+  html[data-menu-open] body {
+    overflow: hidden;
+  }
   ::selection {
     background: var(--color-teal-300);
-    color: var(--color-neutral-900);
+    color: var(--color-night);
   }
-  /* 2 px ring, 2 px offset: teal-400 on dark, blue-600 on paper, white on teal. */
+  /* 2 px ring, 2 px offset: teal-300 on dark, blue-600 on paper, white on teal. */
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
@@ -43,12 +54,19 @@
   }
   img,
   svg,
-  canvas {
+  canvas,
+  picture {
     display: block;
     max-width: 100%;
   }
   [hidden] {
     display: none !important;
+  }
+  abbr[title] {
+    text-decoration: underline dotted;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    cursor: help;
   }
 }
 
@@ -61,7 +79,13 @@
   [data-theme='paper'] {
     font-weight: 400;
   }
+  .section {
+    position: relative;
+    isolation: isolate;
+    padding-block: clamp(5rem, 10vw, 8.5rem);
+  }
   .wrap {
+    position: relative;
     width: 100%;
     max-width: calc(var(--grid-max) + 2 * var(--grid-margin));
     margin-inline: auto;
@@ -75,6 +99,58 @@
   .hairline {
     border: 0;
     border-top: 1px solid var(--color-line);
+  }
+
+  /*
+   * ── Atmosphere (synov-timer's colouring, in teal: D-045) ───────────
+   * A section's light: a deep base, a large teal glow, a blue one opposite,
+   * and a faint drafting grid that fades out. Tune per section with
+   * --glow-x/--glow-y (teal) and --glow2-x/--glow2-y (blue).
+   */
+  .atmos {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    --glow-x: 82%;
+    --glow-y: 12%;
+    --glow2-x: 4%;
+    --glow2-y: 92%;
+    background:
+      radial-gradient(46% 54% at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--color-teal-600) 30%, transparent), transparent 72%),
+      radial-gradient(50% 60% at var(--glow2-x) var(--glow2-y), color-mix(in srgb, var(--color-blue-700) 18%, transparent), transparent 74%),
+      /* Night at both edges, so stacked sections never show a seam. */
+      linear-gradient(180deg, var(--color-night) 0%, color-mix(in srgb, var(--color-teal-950) 60%, var(--color-night)) 50%, var(--color-night) 100%);
+  }
+  .atmos::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--color-white) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-white) 4%, transparent) 1px, transparent 1px);
+    background-size: 72px 72px;
+    background-position: center;
+    mask-image: radial-gradient(60% 70% at var(--grid-x, 66%) var(--grid-y, 42%), #000 22%, transparent 78%);
+  }
+  /* A soft pool of light under a 3D object. */
+  .floor-glow {
+    position: absolute;
+    width: var(--w, 46vw);
+    height: var(--h, 22vh);
+    left: var(--x, 64%);
+    top: var(--y, 88%);
+    translate: -50% -50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-teal-500) 24%, transparent), transparent);
+    pointer-events: none;
+  }
+  /* Teal flood (principles): its own glows on teal-900. */
+  [data-theme='teal'] .atmos {
+    background:
+      radial-gradient(50% 60% at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--color-teal-400) 22%, transparent), transparent 72%),
+      radial-gradient(50% 60% at var(--glow2-x) var(--glow2-y), color-mix(in srgb, var(--color-teal-950) 60%, transparent), transparent 74%),
+      var(--color-teal-900);
   }
 
   /* ── Type ─────────────────────────────────────────────────────────── */
@@ -104,8 +180,8 @@
   .t-lead {
     font-size: var(--text-lead);
     line-height: var(--text-lead--line-height);
-    color: var(--color-ink-muted);
-    max-width: 34em;
+    color: var(--color-ink-soft);
+    max-width: 36em;
     text-wrap: pretty;
   }
   .t-body {
@@ -132,6 +208,34 @@
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
   }
+  /* Eyebrow: a double rule, then the label (synov-timer's, in teal). */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--color-live-ink);
+  }
+  .eyebrow::before {
+    content: '';
+    flex: none;
+    width: 1.35rem;
+    height: 5px;
+    border-block: 1.5px solid currentColor;
+  }
+  /* Lit emphasis in headlines: teal-300 with a soft glow. */
+  .text-lit {
+    color: var(--color-live-ink);
+    text-shadow: 0 0 32px color-mix(in srgb, var(--color-teal-500) 65%, transparent);
+  }
+  [data-theme='paper'] .text-lit {
+    color: var(--color-teal-700);
+    text-shadow: none;
+  }
 
   /*
    * Chrome: white through silver to steel, clipped to the text. The
@@ -146,11 +250,9 @@
     background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
-    /* Keeps descenders inside the clip. */
     padding-bottom: 0.08em;
     margin-bottom: -0.08em;
   }
-  /* A 1 px chrome border on dark: two backgrounds, one clipped to the border box. */
   .chrome-border {
     border: 1px solid transparent;
     background:
@@ -165,7 +267,7 @@
     letter-spacing: var(--text-giant--letter-spacing);
     font-weight: 700;
     color: transparent;
-    -webkit-text-stroke: 1px color-mix(in srgb, var(--color-ink) 16%, transparent);
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--color-ink) 12%, transparent);
     white-space: nowrap;
     user-select: none;
     pointer-events: none;
@@ -179,20 +281,69 @@
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
-    background: radial-gradient(circle at 34% 30%, var(--color-teal-50) 0 6%, var(--color-teal-300) 18%, var(--color-teal-600) 46%, var(--color-teal-950) 100%);
+    background: radial-gradient(circle at 34% 30%, var(--color-white) 0 5%, var(--color-teal-200) 14%, var(--color-teal-400) 34%, var(--color-teal-700) 70%, var(--color-teal-950) 100%);
     box-shadow:
-      0 0 0 1px rgb(0 0 0 / 0.12),
-      0 0 calc(var(--size) * 1.4) color-mix(in srgb, var(--color-teal-400) 45%, transparent);
+      0 0 0 1px rgb(0 0 0 / 0.15),
+      0 0 calc(var(--size) * 1.6) color-mix(in srgb, var(--color-teal-300) 55%, transparent);
   }
   .signal[data-state='alert'] {
     background: radial-gradient(circle at 34% 30%, var(--color-wine-50) 0 6%, var(--color-wine-300) 18%, var(--color-wine-700) 50%, var(--color-wine-950) 100%);
     box-shadow:
-      0 0 0 1px rgb(0 0 0 / 0.12),
-      0 0 calc(var(--size) * 1.4) color-mix(in srgb, var(--color-wine-400) 50%, transparent);
+      0 0 0 1px rgb(0 0 0 / 0.15),
+      0 0 calc(var(--size) * 1.6) color-mix(in srgb, var(--color-wine-400) 55%, transparent);
   }
   .signal[data-state='idle'] {
     background: radial-gradient(circle at 34% 30%, var(--color-neutral-50) 0 6%, var(--color-neutral-400) 22%, var(--color-neutral-700) 60%, var(--color-neutral-900) 100%);
-    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.15);
+  }
+
+  /* Pill eyebrow with a live signal that pings a few times, then rests (WCAG 2.2.2). */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: fit-content;
+    border-radius: var(--radius-full);
+    padding: 0.45rem 0.95rem 0.48rem 0.7rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--color-live-ink);
+    background: color-mix(in srgb, var(--color-teal-600) 14%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 32%, transparent),
+      0 0 28px -8px color-mix(in srgb, var(--color-teal-500) 80%, transparent);
+  }
+  @media (max-width: 30rem) {
+    .pill {
+      letter-spacing: 0.08em;
+      font-size: 0.6875rem;
+    }
+  }
+  .pill .signal {
+    --size: 0.55rem;
+    position: relative;
+  }
+  .pill .signal::after {
+    content: '';
+    position: absolute;
+    inset: -0.3rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-teal-300);
+    opacity: 0;
+    animation: ping 2.4s var(--ease-out) 0.6s 3;
+  }
+  @keyframes ping {
+    from {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    to {
+      transform: scale(1.9);
+      opacity: 0;
+    }
   }
 
   /* ── Buttons ──────────────────────────────────────────────────────── */
@@ -203,7 +354,7 @@
     justify-content: center;
     gap: 0.65rem;
     min-height: 3rem;
-    padding: 0.8rem 1.4rem;
+    padding: 0.85rem 1.45rem;
     border-radius: var(--radius-full);
     font-size: 1rem;
     font-weight: 600;
@@ -223,46 +374,34 @@
     width: 1rem;
     height: 1rem;
   }
-  /* Primary: white on teal-700 (5.47:1) in every register, with the signal inside. */
+  /* Primary: teal-700 into blue-700, white text, glowing (synov-timer's iris into azure, in our colours). */
   .btn-primary {
     padding-left: 1.05rem;
-    background-color: var(--color-action);
     color: var(--color-on-action);
+    background: linear-gradient(100deg, var(--color-action) 10%, var(--color-action-end) 100%);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.18),
-      inset 0 0 0 1px rgb(255 255 255 / 0.06),
-      0 10px 30px -12px color-mix(in srgb, var(--color-teal-500) 70%, transparent);
+      inset 0 1px 0 rgb(255 255 255 / 0.2),
+      inset 0 0 0 1px rgb(255 255 255 / 0.08),
+      0 12px 34px -10px color-mix(in srgb, var(--color-teal-500) 60%, transparent);
   }
   .btn-primary:hover {
-    background-color: var(--color-action-hover);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.22),
-      inset 0 0 0 1px rgb(255 255 255 / 0.1),
-      0 14px 40px -12px color-mix(in srgb, var(--color-teal-400) 80%, transparent);
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      inset 0 0 0 1px rgb(255 255 255 / 0.16),
+      0 0 46px 2px color-mix(in srgb, var(--color-teal-500) 50%, transparent);
   }
   .btn-primary .signal {
     --size: 0.7rem;
   }
-  /* Secondary: a chrome hairline on dark, an ink hairline on paper, white on teal. */
+  /* Secondary: a white hairline that fills softly, over glass. */
   .btn-secondary {
     color: var(--color-ink);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 28%, transparent);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 34%, transparent);
+    backdrop-filter: blur(10px);
   }
   .btn-secondary:hover {
-    background-color: color-mix(in srgb, var(--color-ink) 7%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 60%, transparent);
-  }
-  [data-theme='dark'] .btn-secondary {
-    border: 1px solid transparent;
-    box-shadow: none;
-    background:
-      linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
-      linear-gradient(180deg, rgb(255 255 255 / 0.7), rgb(192 192 192 / 0.35) 50%, rgb(138 138 138 / 0.5)) border-box;
-  }
-  [data-theme='dark'] .btn-secondary:hover {
-    background:
-      linear-gradient(var(--color-surface-raised), var(--color-surface-raised)) padding-box,
-      linear-gradient(180deg, var(--chrome-top), var(--chrome-mid) 50%, var(--chrome-low)) border-box;
+    background-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 70%, transparent);
   }
   /* Quiet: text with an underline that draws in. WhatsApp and email links. */
   .btn-quiet {
@@ -279,7 +418,7 @@
     background-position: 100% 100%;
   }
 
-  /* ── Links in running text ───────────────────────────────────────── */
+  /* ── Links ───────────────────────────────────────────────────────── */
   .link {
     color: var(--color-data-ink);
     text-decoration: underline;
@@ -291,13 +430,75 @@
   .link:hover {
     text-decoration-color: currentColor;
   }
+  .link-arrow {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--color-live-ink);
+    transition:
+      gap var(--dur-3) var(--ease-out),
+      color var(--dur-2) var(--ease-out);
+  }
+  .link-arrow:hover {
+    gap: 0.8rem;
+    color: var(--color-ink);
+  }
+  .link-arrow svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  /* ── Glass (synov-timer's cards, in teal) ─────────────────────────── */
+  .glass {
+    position: relative;
+    border-radius: var(--radius-lg);
+    background:
+      linear-gradient(160deg, color-mix(in srgb, var(--color-white) 5.5%, transparent), color-mix(in srgb, var(--color-white) 1.5%, transparent) 60%),
+      color-mix(in srgb, var(--color-teal-950) 55%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 9%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-white) 10%, transparent),
+      0 30px 60px -40px rgb(0 0 0 / 0.8);
+  }
+  .glass-hover {
+    transition:
+      transform var(--dur-4) var(--ease-out),
+      box-shadow var(--dur-4) var(--ease-out);
+  }
+  .glass-hover:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 38%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-white) 14%, transparent),
+      0 40px 70px -40px color-mix(in srgb, var(--color-teal-500) 55%, transparent);
+  }
+  /* A glass tile for an icon. */
+  .icon-tile {
+    display: grid;
+    flex: none;
+    width: 2.9rem;
+    height: 2.9rem;
+    place-items: center;
+    border-radius: var(--radius-md);
+    color: var(--color-live-ink);
+    background: color-mix(in srgb, var(--color-teal-600) 18%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 30%, transparent),
+      0 0 24px -8px color-mix(in srgb, var(--color-teal-500) 70%, transparent);
+  }
+  .icon-tile svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
 
   /* ── Status chips (product status) ────────────────────────────────── */
   .chip {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.35rem 0.7rem 0.35rem 0.55rem;
+    padding: 0.35rem 0.75rem 0.35rem 0.55rem;
     border-radius: var(--radius-full);
     font-family: var(--font-mono);
     font-size: var(--text-label);
@@ -307,10 +508,56 @@
     line-height: 1;
     white-space: nowrap;
     color: var(--color-ink);
+    background: color-mix(in srgb, var(--color-white) 4%, transparent);
     box-shadow: inset 0 0 0 1px var(--color-line);
   }
   .chip .signal {
     --size: 0.5rem;
+  }
+
+  /* Meaning badges: teal is live, blue is data, wine is an alert. */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: var(--radius-full);
+    padding: 0.28rem 0.62rem 0.3rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .badge::before {
+    content: '';
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 10px currentColor;
+  }
+  .badge-live {
+    color: var(--color-teal-300);
+    background: color-mix(in srgb, var(--color-teal-500) 8%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-400) 40%, transparent),
+      0 0 22px -6px color-mix(in srgb, var(--color-teal-500) 70%, transparent);
+  }
+  .badge-data {
+    color: var(--color-blue-400);
+    background: color-mix(in srgb, var(--color-blue-500) 8%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-blue-500) 45%, transparent),
+      0 0 22px -6px color-mix(in srgb, var(--color-blue-500) 70%, transparent);
+  }
+  .badge-alert {
+    color: var(--color-wine-300);
+    background: color-mix(in srgb, var(--color-wine-500) 12%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-wine-400) 45%, transparent),
+      0 0 22px -6px color-mix(in srgb, var(--color-wine-500) 70%, transparent);
   }
 
   /* ── Form fields ──────────────────────────────────────────────────── */
@@ -335,10 +582,10 @@
     min-height: 3rem;
     padding: 0.75rem 0.95rem;
     border-radius: var(--radius-md);
-    background: var(--color-surface-raised);
+    background: color-mix(in srgb, var(--color-white) 4%, var(--color-surface));
     color: var(--color-ink);
     font: inherit;
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 22%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 20%, transparent);
     transition: box-shadow var(--dur-2) var(--ease-out);
   }
   .input:hover {
@@ -346,7 +593,9 @@
   }
   .input:focus-visible {
     outline-offset: 0;
-    box-shadow: inset 0 0 0 1px var(--color-focus);
+    box-shadow:
+      inset 0 0 0 1px var(--color-focus),
+      0 0 24px -8px color-mix(in srgb, var(--color-teal-500) 70%, transparent);
   }
   .input[aria-invalid='true'] {
     box-shadow: inset 0 0 0 1px var(--color-alert-ink);
@@ -354,6 +603,10 @@
   textarea.input {
     min-height: 9rem;
     resize: vertical;
+  }
+  select.input option {
+    background: var(--color-surface);
+    color: var(--color-ink);
   }
   .check {
     display: flex;
@@ -366,7 +619,7 @@
     width: 1.25rem;
     height: 1.25rem;
     margin-top: 0.1rem;
-    accent-color: var(--color-action);
+    accent-color: var(--color-teal-500);
   }
 
   /* ── Draft-only markers (never in a production build) ─────────────── */
@@ -395,7 +648,7 @@
   }
 
   /* ── Texture ──────────────────────────────────────────────────────── */
-  /* A static 2.5% noise layer over dark sections, so gradients don't band. */
+  /* A static 2.5% noise layer over dark sections, so the glows don't band. */
   .noise {
     position: relative;
     isolation: isolate;
@@ -410,9 +663,210 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   /* The hero's soft vignette. */
-  .vignette {
-    background-image: radial-gradient(120% 90% at 62% 42%, transparent 40%, rgb(0 0 0 / 0.55) 100%);
+  .vignette::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(120% 90% at 62% 42%, transparent 45%, rgb(0 0 0 / 0.5) 100%);
   }
+}
+
+/*
+ * ── CSS 3D scenes (synov-timer's primitives, in teal: D-046) ──────────
+ * Small axonometric models of glass, driven by src/scripts/scenes.ts:
+ * --p is scroll progress (0 to 1), --tx/--ty the pointer tilt. Without
+ * JavaScript or with reduced motion, --p stays 1: the finished model.
+ */
+.s3d {
+  --p: 1;
+  --tx: 0deg;
+  --ty: 0deg;
+  --k: 1;
+  position: relative;
+  perspective: 1500px;
+  perspective-origin: 50% 35%;
+}
+.s3d-world {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform: scale(var(--k)) rotateX(calc(var(--rx, 56deg) + var(--ty))) rotateZ(calc(var(--rz, 45deg) + var(--tx)));
+}
+.s3d-world * {
+  transform-style: preserve-3d;
+}
+/* A board: the glass ground a model stands on, with a faint grid. */
+.board {
+  position: absolute;
+  left: calc(var(--w) / -2);
+  top: calc(var(--d, var(--w)) / -2);
+  width: var(--w);
+  height: var(--d, var(--w));
+  border-radius: 0.6rem;
+  background:
+    linear-gradient(to right, color-mix(in srgb, var(--color-teal-300) 9%, transparent) 1px, transparent 1px) 0 0 / var(--cell, 40px) var(--cell, 40px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-teal-300) 9%, transparent) 1px, transparent 1px) 0 0 / var(--cell, 40px) var(--cell, 40px),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-white) 6%, transparent), transparent 60%),
+    color-mix(in srgb, var(--color-teal-950) 70%, var(--color-night));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 30%, transparent),
+    0 0 60px color-mix(in srgb, var(--color-teal-600) 25%, transparent);
+}
+/* A block with a square footprint (--w) and a height (--h), standing at
+   (--x, --y), lifted by --z. With the world turned 45 degrees, the east and
+   south faces are the ones the camera sees. */
+.blk {
+  --w: 80px;
+  --h: 20px;
+  --x: 0px;
+  --y: 0px;
+  --z: 0px;
+  --dz: 0px;
+  position: absolute;
+  left: calc(var(--w) / -2);
+  top: calc(var(--w) / -2);
+  width: var(--w);
+  height: var(--w);
+  transform: translate3d(var(--x), var(--y), calc(var(--z) + var(--h) + var(--dz)));
+}
+.blk > b {
+  position: absolute;
+  display: block;
+}
+.blk-top {
+  inset: 0;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--color-white) 16%, transparent), color-mix(in srgb, var(--color-white) 4%, transparent) 55%, color-mix(in srgb, var(--color-teal-500) 18%, transparent)),
+    color-mix(in srgb, var(--color-teal-950) 75%, var(--color-night));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 42%, transparent),
+    inset 1px 1px 0 color-mix(in srgb, var(--color-white) 20%, transparent);
+}
+.blk-e {
+  left: 100%;
+  top: 0;
+  width: var(--h);
+  height: 100%;
+  transform-origin: 0 50%;
+  transform: rotateY(90deg);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-teal-900) 80%, var(--color-night)), var(--color-night));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 16%, transparent);
+}
+.blk-s {
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: var(--h);
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-teal-900) 70%, var(--color-white) 6%), color-mix(in srgb, var(--color-night) 85%, var(--color-teal-950)));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 20%, transparent);
+}
+/* Lit: the signal's light inside the glass, a teal-300 rim. */
+.blk.is-lit .blk-top {
+  background:
+    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-teal-300) 32%, transparent), transparent 75%),
+    linear-gradient(135deg, color-mix(in srgb, var(--color-white) 16%, transparent), color-mix(in srgb, var(--color-white) 4%, transparent) 55%),
+    color-mix(in srgb, var(--color-teal-900) 70%, var(--color-night));
+  box-shadow:
+    inset 0 0 0 1.5px color-mix(in srgb, var(--color-teal-300) 90%, transparent),
+    0 0 36px color-mix(in srgb, var(--color-teal-400) 40%, transparent);
+}
+.blk.is-lit .blk-e,
+.blk.is-lit .blk-s {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 45%, transparent);
+}
+/* Alert: wine, for a security event. */
+.blk.is-alert .blk-top {
+  background:
+    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-wine-400) 34%, transparent), transparent 75%),
+    color-mix(in srgb, var(--color-wine-900) 60%, var(--color-night));
+  box-shadow:
+    inset 0 0 0 1.5px var(--color-wine-300),
+    0 0 36px color-mix(in srgb, var(--color-wine-500) 45%, transparent);
+}
+/* A label printed on a block's top face. */
+.blk-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.3em;
+  padding: 0.7em;
+  font-family: var(--font-mono);
+  font-size: calc(var(--w) / 10);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: color-mix(in srgb, var(--color-white) 85%, transparent);
+}
+/* A line of light on the ground, from (--x1,--y1), --len long at angle --ang. */
+.s3d-line {
+  position: absolute;
+  left: var(--x1);
+  top: var(--y1);
+  width: var(--len);
+  height: 2px;
+  margin-top: -1px;
+  transform-origin: 0 50%;
+  transform: translateZ(var(--z, 1px)) rotateZ(var(--ang)) scaleX(var(--draw, 1));
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-teal-400) 30%, transparent), var(--color-teal-400) 60%, var(--color-teal-200));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-teal-400) 70%, transparent);
+}
+/* A glass plate: a slab with layered edges, a sheen and a teal rim. */
+.plate {
+  --size: 220px;
+  position: absolute;
+  left: calc(var(--size) / -2);
+  top: calc(var(--size) / -2);
+  width: var(--size);
+  height: var(--size);
+  font-size: calc(var(--size) / 22);
+  transform: translateZ(var(--pz, 0px));
+}
+.plate-edge,
+.plate-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.1em;
+}
+.plate-edge {
+  transform: translateZ(calc(var(--e) * -3px));
+  background: color-mix(in srgb, var(--color-white) 2%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 7%, transparent);
+}
+.plate-face {
+  background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 38%, transparent);
+  overflow: hidden;
+}
+.plate-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(140deg, color-mix(in srgb, var(--color-white) 11%, transparent), color-mix(in srgb, var(--color-white) 3%, transparent) 48%, color-mix(in srgb, var(--color-teal-500) 12%, transparent));
+}
+.plate.is-lit .plate-face {
+  box-shadow:
+    inset 0 0 0 1.5px var(--color-teal-300),
+    0 0 50px color-mix(in srgb, var(--color-teal-400) 35%, transparent);
+}
+.plate.is-lit .plate-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-teal-300) 24%, transparent), transparent 70%);
+}
+.s3d.is-off *,
+.s3d.is-off *::before,
+.s3d.is-off *::after {
+  animation-play-state: paused !important;
 }
 
 /* Forced colours: chrome text and outlined words fall back to system colours. */

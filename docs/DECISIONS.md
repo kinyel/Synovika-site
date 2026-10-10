@@ -68,9 +68,10 @@ The brief asks for it, but the skill is not installed here. Design work follows 
 - Draft build (`PUBLIC_SHOW_DRAFTS=true npm run build`): the same content as dev, every page `noindex`, `robots.txt` disallows everything, `/lab` built. Used for Cloudflare preview branches and for Hero's reviews on a phone.
 - Production build (`npm run build`): drafts, markers and unconfirmed features removed, `/lab` not built at all. `qa:prod-guard` fails if any marker reaches `dist/`.
 
-**D-008. CI runs a draft build for QA, and the production guard as a separate job that may fail until Phase 7.**
-Why: every `TODO(hero)` (domain, email, WhatsApp, BN number and so on) makes the production guard fail by design, so until Hero supplies those facts a blocking production job would keep CI red and hide real regressions. The guard job reports what is still missing on every run, and becomes blocking in Phase 7.
-Lighthouse in CI asserts the hard floor (mobile 95) because shared runners are noisy; the 97 target and every other budget are asserted locally and recorded in PROGRESS.md each phase.
+**D-008. CI runs the production guard as a blocking step (revised in Phase 1).**
+`TODO(hero)` markers, "TO CONFIRM" badges and unconfirmed content render only in dev and draft builds, so a production build is clean by construction. The guard catches leaks, and it blocks CI from the start.
+Lighthouse in CI asserts only the hard floor for mobile performance (95), because shared runners are noisy. The 97 target and every other budget are asserted locally, and the numbers are recorded in PROGRESS.md each phase.
+Rejected (first version): a non-blocking guard job, which was only needed while markers rendered in production.
 
 **D-009. Source material outside the brief.**
 `../Synovika files/` holds earlier design samples (2 October 2026), a theme colours sample, the official logo (byte-identical to `../synovika-logo.png`, now `brand/synovika-logo.png`), and in `tracking-portal/` the Fleet Tracking Platform SRS, system architecture, and a cost and income plan. The brief supersedes the design samples, so they are not used. Only the SRS outline has been read. It covers ignition events, live tracking, geofences, alerts and trip reports, and also anti-theft remote commands and immobilisation, which the site must not mention unless Hero confirms them. Using the SRS to draft Selvion's features is question 9. The CAC receipt in that folder has not been opened: the BN number is shown only once Hero gives it.
@@ -206,7 +207,7 @@ Cloudflare's Pages docs list domain-level redirects as unsupported in `_redirect
 
 ## Brand assets (Phase 1)
 
-**D-040. How the logo was vectorised (`scripts/trace-logo.mjs`).**
+**D-040. (Superseded by D-044 for anything shown as the logo.) How the logo was vectorised (`scripts/trace-logo.mjs`).**
 - **Masks.** Your rule (green and blue each more than 25 above red) splits teal from silver. Connected parts identify the four faces of the S (teal top, teal tail, silver top, silver bowl), the two spheres and the ring.
 - **The ring is two fitted ellipses, not a trace.** It is a flat band seen at an angle: wide at the ends of its major axis, thin at the top and bottom. Its outer and inner edges were sampled along the centre line and each was fitted as a true ellipse (Nelder-Mead, Huber loss). Both fits are within about 1 px. The ring is drawn whole behind the S, then its front half again in front, with a 4 px gap cut into the S where it crosses, so it reads on any background.
 - **The spheres are true circles** from their alpha-weighted area. The ring sphere is snapped onto the ring's centre line (parameter t = 0.761), so the 3D sphere can ride exactly that orbit.
@@ -215,12 +216,49 @@ Cloudflare's Pages docs list domain-level redirects as unsupported in `_redirect
 - **The tagline is set, not traced.** At about 2 px its strokes are too thin to trace (the counters filled in). It is Urbanist Light, turned into outlines with satori, with each word placed where it starts in the original. The fit is letter spacing 0.45em at 37 px, within 4.5 px of each word's width.
 - **The wordmark is traced** (custom letterforms, as the brief says), with every traced path using the even-odd fill rule so the counters stay open.
 
-**D-041. Lockup colours.**
+**D-041. (Superseded by D-044 for anything shown as the logo.) Lockup colours.**
 - **On dark:** the flat teal mark, with the chrome gradient (white, #C0C0C0, #8A8A8A) on the silver faces, the ring and the wordmark.
 - **On white:** the teal faces stay teal; the silver faces become neutral-700 with a neutral-800 fold (silver on white is 1.82:1); the wordmark is neutral-800.
 - **Mono white and mono black:** one colour, with a 1.5 px hairline between the teal and silver faces so the S keeps its structure.
 All of these are for Hero to approve on `/lab`.
 
-**D-042. A small mark for the favicon.** The full mark does not read at 16 px (the ring turns to noise). `favicon.svg` and `favicon.ico` use the S and a larger sphere, with no ring, on a neutral-900 rounded tile, so it reads on light and dark tab bars. The apple-touch icon, the app icons, the maskable icon and `logo-512.png` use the full mark on neutral-900.
+**D-042. (Superseded by D-044 for anything shown as the logo.) A small mark for the favicon.** The full mark does not read at 16 px (the ring turns to noise). `favicon.svg` and `favicon.ico` use the S and a larger sphere, with no ring, on a neutral-900 rounded tile, so it reads on light and dark tab bars. The apple-touch icon, the app icons, the maskable icon and `logo-512.png` use the full mark on neutral-900.
 
-**D-043. The header loads the logo as an `<img>` from `/brand/`, not inline SVG.** Web copies of the lockups are 13 to 20 KB (coarser precision, svgo). Inline on every page they would eat into the 60 KB home HTML budget, while as a file they are cached once for the whole site.
+**D-043. (Superseded by D-044 for anything shown as the logo.) The header loads the logo as an `<img>` from `/brand/`, not inline SVG.** Web copies of the lockups are 13 to 20 KB (coarser precision, svgo). Inline on every page they would eat into the 60 KB home HTML budget, while as a file they are cached once for the whole site.
+
+---
+
+## Hero's direction after the first lab build (11 October 2026)
+
+**D-044. The official logo, unchanged, everywhere a logo appears (Hero: "use the official logo that I gave you... do not remake it").** This supersedes D-040 to D-043 for anything shown as the logo.
+- **Header, footer, share cards, structured data, app icons and favicons** all use `brand/synovika-logo.png`, Hero's file. It is only cropped, resized and re-encoded (AVIF and WebP with transparency, PNG for icons) by `scripts/logo-assets.mjs`.
+- **Three crops of the same pixels:**
+  - the full lockup, with the tagline;
+  - the lockup without the tagline line, for small sizes like the header, where the tagline would be about 2 px tall;
+  - the S mark alone (its ring and sphere included, the wordmark's "y" removed), for icons.
+- **The traced SVGs are no longer a logo.** They move to `brand/trace/` and are used for one thing only: the shapes of the 3D object in the hero (brief section 10). The 3D object is never used as the logo.
+- **Favicons are the official mark scaled down.** At 16 px it loses detail; that is accepted rather than redrawing it.
+
+**D-045. The colouring follows synov-timer, in teal (Hero: "adopt that same coloring style but with my colors... synov-timer is mostly blue, mine is teal").** This replaces the neutral-black stage and the white-paper sections of brief section 5.
+- **The site is dark throughout:** a teal-black night (`--color-night`, #031514) with a deep teal base (teal-950).
+- **Big soft glows:** teal (teal-600 and teal-500) and blue (blue-600 and blue-700) take the places of synov-timer's iris, violet and azure.
+- **Drafting grids** are masked to fade out, and **floor glows** sit under 3D objects.
+- **Glass cards:** a faint white sheen over deep teal, with a hairline edge that lights teal on hover.
+- **The primary button** runs from teal-700 into blue-700 with a teal glow, like synov-timer's iris into azure. White text passes on both ends (5.47:1 and 6.70:1).
+- **Emphasis in headlines** is "lit" teal-300 with a soft glow, as synov-timer's iris-soft is. The hero keeps "reality." in chrome.
+- **Eyebrows** take a double rule, and the hero's is a pill with a live signal dot. The dot pings three times and stops (WCAG 2.2.2).
+- **synov-timer's gold, its "lit" accent,** becomes the signal: teal-300 with a white core, the logo's glowing sphere. Wine stays for alerts, blue for data, silver and chrome for structure.
+- **The footer** is the brand black (#171717), as synov-timer's footer is black.
+- **The white "paper" register is kept only inside mock-ups,** such as the example site in the websites demo. The teal flood stays for the principles.
+- **Rejected:** keeping the brief's black, white and teal registers. Hero asked for synov-timer's style.
+
+**D-046. The 3D language follows synov-timer's, made our own.**
+- **Ported in teal:** the CSS 3D primitives (glass plates with layered edges and a sweep of light, glass blocks, lines of light lying on the ground, isometric grid boards, pointer tilt, `--p` scroll progress).
+- **Each product scene** uses them to show a real fact, in synov-timer's manner:
+  - **Selvion:** an isometric night map on a glass board: road blocks, a teal route of light, a lit depot zone.
+  - **Estate:** an isometric gate on a glass board, with the code on glass plates.
+  - **How we work:** a climbing stair of glass cards around a beam of light.
+  - **Industries:** a ring of glass cards.
+  - **Services:** small glass models.
+- **The hero:** synov-timer has no WebGL; we keep the brief's single WebGL mark, set on a glowing grid floor with drifting dust, as synov-timer's plates are.
+- **No scene copies synov-timer's content or layout one-for-one.**

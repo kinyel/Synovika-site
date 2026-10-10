@@ -20,7 +20,7 @@ const d = entry.data;
 <Page title={d.seo.title} description={d.seo.description} heading={d.title} lead={d.lead} crumbs={crumbs} pageType={pageType} noindex={noindex}>
   {d.legalDraft && <p slot="hero" class="legal-draft">Draft: to be reviewed by a lawyer.</p>}
   <slot name="hero" slot="hero" />
-  <section class="section" data-theme="paper">
+  <section class="section" data-theme="dark">
     <div class="wrap">
       <div class="prose"><Content /></div>
       <slot />

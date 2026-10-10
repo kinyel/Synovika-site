@@ -1,47 +1,36 @@
 ---
 /**
- * The horizontal lockup, as cached files (D-043). Both registers are in the
- * page and CSS shows the one that suits the background under it.
- * The lockup is 1518 x 534 (2.843:1); never smaller than 120 px wide.
+ * Hero's own logo (D-044), never redrawn: brand/synovika-logo.png, cropped by
+ * scripts/logo-assets.mjs and served as AVIF and WebP at the sizes asked for.
+ * The compact crop leaves out the tagline line, which is unreadable at small
+ * sizes; the full crop keeps it. Never smaller than 120 px wide (brief 4.1).
  */
+import { Picture } from 'astro:assets';
+import compact from '../../assets/brand/logo-compact.png';
+import full from '../../assets/brand/logo.png';
+
 interface Props {
+  /** Height in CSS pixels. */
   height?: number;
-  /** Which lockup shows without the header's theme switching (for example in the footer). */
-  register?: 'dark' | 'paper' | 'auto';
   tagline?: boolean;
+  /** Load at once (the header) or when near the screen. */
+  eager?: boolean;
   class?: string;
 }
-const { height = 44, register = 'auto', tagline = false, class: className } = Astro.props;
-const width = Math.round(height * 2.8427);
-const suffix = tagline ? '-tagline' : '';
+const { height = 44, tagline = false, eager = false, class: className } = Astro.props;
+const src = tagline ? full : compact;
+const width = Math.round((height * src.width) / src.height);
 ---
 
-<span class:list={['logo', `logo--${register}`, className]} style={`--logo-h:${height}px`}>
-  {register !== 'paper' && <img class="logo-dark" src={`/brand/logo-dark${suffix}.svg`} alt="" width={width} height={height} decoding="async" />}
-  {register !== 'dark' && <img class="logo-paper" src={`/brand/logo-paper${suffix}.svg`} alt="" width={width} height={height} decoding="async" />}
-</span>
-
-<style>
-  .logo {
-    position: relative;
-    display: inline-block;
-    height: var(--logo-h);
-    aspect-ratio: 1518 / 534;
-  }
-  .logo img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    transition: opacity var(--dur-2) var(--ease-out);
-  }
-  .logo--auto .logo-paper {
-    opacity: 0;
-  }
-  :global(html[data-nav-theme='paper']) .logo--auto .logo-dark {
-    opacity: 0;
-  }
-  :global(html[data-nav-theme='paper']) .logo--auto .logo-paper {
-    opacity: 1;
-  }
-</style>
+<Picture
+  src={src}
+  alt=""
+  width={width}
+  height={height}
+  widths={[width, Math.round(width * 2), Math.round(width * 3)].filter((w) => w <= src.width)}
+  sizes={`${width}px`}
+  formats={['avif', 'webp']}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  class:list={['logo', className]}
+/>

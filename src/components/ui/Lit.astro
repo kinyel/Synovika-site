@@ -1,0 +1,18 @@
+---
+/**
+ * A heading's text with its emphasis: `lit` words in glowing teal-300
+ * (synov-timer's style, D-045), or one `chrome` word in the chrome material.
+ */
+interface Props {
+  text: string;
+  lit?: string;
+  chrome?: string;
+}
+const { text, lit, chrome } = Astro.props;
+const word = chrome ?? lit;
+const at = word ? text.indexOf(word) : -1;
+const before = at >= 0 ? text.slice(0, at) : text;
+const after = at >= 0 ? text.slice(at + word!.length) : '';
+---
+
+{before}{at >= 0 && <span class={chrome ? 'chrome' : 'text-lit'}>{word}</span>}{after}

@@ -13,7 +13,7 @@ export const SITE = {
     'Synovika is a Nigerian software company. We build, fix, test and maintain software for businesses, and we make products for fleets, estates and growing companies.',
   email: 'hero@synovika.com',
   /** Shown in international form because we serve clients abroad (D-033). */
-  phone: { display: '+234 706 231 9781', tel: '+2347062319781', schema: '+234-706-231-9781' },
+  phone: { display: '+234\u00a0706\u00a0231\u00a09781', tel: '+2347062319781', schema: '+234-706-231-9781' },
   whatsapp: 'https://wa.me/2347062319781',
   /** D-034: Nigeria first, worldwide too. */
   areaServed: { short: 'Nigeria and worldwide', sentence: 'We work with clients across Nigeria and worldwide.' },

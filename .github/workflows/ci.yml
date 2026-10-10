@@ -1,0 +1,67 @@
+# Every push and pull request: type checks, the copy rules, a production
+# build with the production guard, then every QA script except qa:fps
+# (brief section 19). Screenshots are uploaded as an artifact.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Types
+        run: npm run check
+      - name: Copy rules (no em dashes, no buzzwords)
+        run: npm run qa:copy
+
+      - name: Production build
+        run: npm run build
+      - name: Production guard
+        run: npm run qa:prod-guard
+      - name: Structured data
+        run: npm run qa:jsonld
+      - name: HTML
+        run: npm run qa:html
+      - name: Links
+        run: npm run qa:links
+
+      - name: Serve the production build
+        run: |
+          npx astro preview --port 4330 > /tmp/preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:4330/ > /dev/null && break; sleep 1; done
+      - name: Pages
+        run: npm run qa:pages
+      - name: Contrast
+        run: npm run qa:contrast
+      - name: Widths
+        run: npm run qa:widths
+      - name: Accessibility (axe, both motion modes)
+        run: npm run qa:a11y
+      - name: Parity without JavaScript
+        run: npm run qa:nojs
+      - name: Parity with reduced motion
+        run: npm run qa:motion
+      - name: Size budgets
+        run: npm run qa:size
+      - name: Lighthouse (hard floor on shared runners, D-008)
+        run: FLOOR=1 npm run qa:lh
+      - name: Screenshots
+        if: always()
+        run: npm run qa:tour
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: qa/shots
+          retention-days: 14

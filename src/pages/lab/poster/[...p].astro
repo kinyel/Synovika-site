@@ -1,0 +1,46 @@
+---
+/**
+ * Renders the 3D mark alone on a transparent canvas, for scripts/poster.mjs.
+ * ?w=&h= set the size in CSS pixels, ?dpr= the pixel ratio. Draft builds only.
+ */
+import type { GetStaticPaths } from 'astro';
+import { SHOW_DRAFTS } from '../../../lib/drafts';
+export const getStaticPaths = (() => (SHOW_DRAFTS ? [{ params: { p: undefined } }] : [])) satisfies GetStaticPaths;
+---
+
+<!doctype html>
+<html lang="en-NG">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Mark poster</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: transparent;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas data-poster-canvas></canvas>
+    <script>
+      import { Mark, REST_POSE } from '../../../scripts/three/mark';
+      const q = new URLSearchParams(location.search);
+      const w = Number(q.get('w') ?? 800);
+      const h = Number(q.get('h') ?? 600);
+      const canvas = document.querySelector<HTMLCanvasElement>('[data-poster-canvas]')!;
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      const look = q.get('look') ? JSON.parse(q.get('look')!) : {};
+      const pose = q.get('pose') ? JSON.parse(q.get('pose')!) : REST_POSE;
+      const mark = new Mark({ canvas, tier: 2, dpr: Number(q.get('dpr') ?? 1), look, pose });
+      mark.resize(w, h);
+      mark.frame();
+      (window as unknown as { __poster: unknown }).__poster = { ready: true, sphere: mark.sphereOnScreen() };
+    </script>
+  </body>
+</html>

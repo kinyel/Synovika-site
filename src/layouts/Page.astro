@@ -10,6 +10,8 @@ interface Props {
   title: string;
   description: string;
   heading: string;
+  /** Words of the heading to light in teal (synov-timer's emphasis, D-045). */
+  lit?: string;
   lead: string;
   eyebrow?: string;
   crumbs?: Crumb[];
@@ -18,11 +20,14 @@ interface Props {
   theme?: 'dark' | 'paper' | 'teal';
   noindex?: boolean;
 }
-const { heading, lead, eyebrow, crumbs = [], theme = 'dark', ...rest } = Astro.props;
+const { heading, lit, lead, eyebrow, crumbs = [], theme = 'dark', ...rest } = Astro.props;
+const at = lit ? heading.indexOf(lit) : -1;
+const [before, after] = at >= 0 ? [heading.slice(0, at), heading.slice(at + lit!.length)] : [heading, ''];
 ---
 
 <Base {...rest} crumbs={crumbs} navTheme={theme}>
   <section class="page-hero noise" data-theme={theme}>
+    <div class="atmos" aria-hidden="true"></div>
     <div class="wrap">
       {
         crumbs.length > 0 && (
@@ -38,8 +43,8 @@ const { heading, lead, eyebrow, crumbs = [], theme = 'dark', ...rest } = Astro.p
           </nav>
         )
       }
-      {eyebrow && <p class="t-label t-eyebrow">{eyebrow}</p>}
-      <h1 class="t-display page-title">{heading}</h1>
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1 class="t-display page-title">{before}{at >= 0 && <span class="text-lit">{lit}</span>}{after}</h1>
       <p class="t-lead page-lead">{lead}</p>
       <slot name="hero" />
     </div>
@@ -49,12 +54,23 @@ const { heading, lead, eyebrow, crumbs = [], theme = 'dark', ...rest } = Astro.p
 
 <style>
   .page-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     padding-top: calc(var(--header-height) + clamp(3rem, 8vw, 7rem));
     padding-bottom: clamp(3rem, 7vw, 6rem);
   }
+  .page-hero .atmos {
+    --glow-x: 85%;
+    --glow-y: 8%;
+    --glow2-x: 0%;
+    --glow2-y: 60%;
+    --grid-x: 75%;
+    --grid-y: 20%;
+  }
   .page-title {
     max-width: 16ch;
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
     view-transition-name: page-title;
   }
   .page-lead {
@@ -79,5 +95,12 @@ const { heading, lead, eyebrow, crumbs = [], theme = 'dark', ...rest } = Astro.p
   }
   .crumbs a:hover {
     color: var(--color-ink);
+  }
+  .crumbs [aria-current] {
+    color: var(--color-live-ink);
+  }
+  .crumbs + .eyebrow,
+  .crumbs + .page-title {
+    margin-top: 1.5rem;
   }
 </style>

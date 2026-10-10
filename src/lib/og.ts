@@ -55,8 +55,8 @@ const load = () =>
       file('node_modules/@fontsource/urbanist/files/urbanist-latin-400-normal.woff'),
       file('node_modules/@fontsource/urbanist/files/urbanist-latin-600-normal.woff'),
       file('node_modules/@fontsource/geist-mono/files/geist-mono-latin-500-normal.woff'),
-      file('public/brand/logo-dark.svg'),
-      file('public/brand/mark.svg'),
+      file('src/assets/brand/logo-compact.png'),
+      file('src/assets/brand/mark.png'),
     ]);
     return {
       fonts: [
@@ -64,8 +64,9 @@ const load = () =>
         { name: 'Urbanist', data: semibold, weight: 600, style: 'normal' },
         { name: 'Geist Mono', data: mono, weight: 500, style: 'normal' },
       ],
-      logo: `data:image/svg+xml;base64,${logo.toString('base64')}`,
-      mark: `data:image/svg+xml;base64,${mark.toString('base64')}`,
+      // Hero's own logo (D-044), as PNG.
+      logo: `data:image/png;base64,${logo.toString('base64')}`,
+      mark: `data:image/png;base64,${mark.toString('base64')}`,
     };
   })());
 

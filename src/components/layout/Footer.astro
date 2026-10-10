@@ -37,16 +37,16 @@ const groups = [
 const year = new Date().getFullYear();
 ---
 
-<footer class="ftr noise" data-theme="dark">
+<footer class="ftr noise" data-theme="black">
   <div class="wrap">
     <div class="ftr-top">
       <div class="ftr-brand">
-        <a href="/" aria-label="Synovika, home" class="ftr-logo"><Logo height={56} register="dark" /></a>
+        <a href="/" aria-label="Synovika, home" class="ftr-logo"><Logo height={60} /></a>
         <p class="ftr-area t-muted">{SITE.areaServed.sentence}</p>
         <ul class="ftr-contact">
           <li><a href={`mailto:${SITE.email}`}><Icon name="mail" /><span>{SITE.email}</span></a></li>
           <li><a href={SITE.whatsapp} rel="noopener"><Icon name="chat" /><span>WhatsApp {SITE.phone.display}</span></a></li>
-          <li><a href={`tel:${SITE.phone.tel}`}><Icon name="phone" /><span>Call {SITE.phone.display}</span></a></li>
+          <li><a href={`tel:${SITE.phone.tel}`}><Icon name="phone" label="Phone" /><span>{SITE.phone.display}</span></a></li>
         </ul>
       </div>
       <nav class="ftr-links" aria-label="Footer">
@@ -204,7 +204,7 @@ const year = new Date().getFullYear();
   /** The motion setting: stored, then the page reloads so every scene starts in the right mode (D-023). */
   const KEY = 'synovika:motion';
   const html = document.documentElement;
-  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-motion]')) {
+  for (const b of document.querySelectorAll<HTMLButtonElement>('button[data-motion]')) {
     b.setAttribute('aria-pressed', String(b.dataset.motion === html.dataset.motion));
     b.addEventListener('click', () => {
       if (b.dataset.motion === html.dataset.motion) return;

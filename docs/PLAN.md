@@ -92,6 +92,8 @@ Risk: the traced mark may need several clean-up passes before it holds up at 512
 
 ---
 
+> **Direction since the first lab build (D-044 to D-046):** Hero's own logo everywhere; synov-timer's colouring in teal (teal-black night, glows, grids, glass, lit emphasis); synov-timer's CSS 3D glass language for the scenes. The phases below already follow it.
+
 ## Phase 2. Hero and motion system
 
 Gate: Hero approves the hero on their phone.
@@ -104,7 +106,8 @@ Gate: Hero approves the hero on their phone.
 - View transitions.
 
 **Hero**
-- Static HTML first: H1, lead, buttons, the telemetry line labelled "Demo data", and the poster with explicit size.
+- Static HTML first: the pill eyebrow, H1, lead, buttons, the telemetry line labelled "Demo data", and the poster with explicit size.
+- synov-timer's stage around the mark: teal and blue glows, a drafting grid strongest around the mark, a floor glow under it and drifting dust in the light (canvas 2D, paused off screen, still with reduced motion).
 - The 3D chunk loads on intent or after 5 seconds of idle, then crossfades in. The tiers come from detect-gpu (self-hosted) plus `saveData`, `effectiveType`, `deviceMemory` and reduced motion.
 - The pointer tilt (at most 8°), and the sphere's orbit that comes to rest.
 - The short pin (50svh on desktop, 45svh on phones). Context loss falls back to the poster, and everything is disposed on `pagehide`.
@@ -136,14 +139,14 @@ A generic version of synov-timer's `hero.ts`:
 - the DOM order is an ordered list of real text.
 
 **Selvion**
-- An SVG night map built to the D-022 guard.
+- A night map built from the glass primitives (D-046) and the D-022 guard: an isometric glass board with road blocks, blue water, the depot zone as a glass plate, and the route as lines of light along the roads.
 - Five stations, each tied to a feature.
 - The "Demo data" label on screen.
 - A trip report that counts once and always finishes.
 - The CTA from Selvion's status.
 
 **Estate**
-- The phone, the message bubble, the gate, and the split-flap code.
+- An isometric gate on a glass board, the code's journey on glass plates (created, sent, checked, logged), the phone and message as glass cards, and the split-flap code.
 - A "Try a wrong code" button that is keyboard-accessible, showing the denied path in wine with a word and an icon.
 - The log row and the resident's notification.
 - A barrier only if it is confirmed.
@@ -171,14 +174,15 @@ Gate: Hero approves.
 - Six cards, each with its micro-visual. They play once on entry and again on hover or focus, then stop. Pure CSS and SVG where possible.
 
 **How we work**
-- A seven-stage pipeline styled like a CI run.
-- The line fill is scrubbed, not pinned, and the status chips change at thresholds.
+- A seven-stage pipeline in synov-timer's manner: glass cards climbing a beam of light, styled like a CI run, with queued, running and passed chips.
+- The beam fill is scrubbed, not pinned, and the status chips change at thresholds.
 
 **Principles**
 - The teal flood.
 
 **Industries**
-- A horizontal band driven by scroll only. CSS scroll-driven animation where the browser supports it, GSAP otherwise, and a wrapped list with reduced motion.
+- A ring of glass cards (synov-timer's industries ring, our own content), turned by scroll only. On phones and with reduced motion, a list.
+- A horizontal band driven by scroll only, if the ring doesn't read on phones. CSS scroll-driven animation where the browser supports it, GSAP otherwise, and a wrapped list with reduced motion.
 - Every item marked TO CONFIRM.
 
 **FAQ**

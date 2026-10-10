@@ -28,7 +28,7 @@ const { Content } = await render(s);
   ]}
   schema={[serviceNode(path, d.name, d.seo.description), ...(questions.length ? [faqPage(path, questions)] : [])]}
 >
-  <section class="section" data-theme="paper">
+  <section class="section" data-theme="dark">
     <div class="wrap grid-site body">
       <blockquote class="problem t-h3">{d.problem}</blockquote>
       <div class="col">
@@ -94,6 +94,7 @@ const { Content } = await render(s);
   .problem {
     padding-left: 1.25rem;
     border-left: 2px solid var(--color-live);
+    box-shadow: -10px 0 24px -16px var(--color-teal-400);
     font-weight: 500;
   }
   .ticks {
@@ -114,6 +115,7 @@ const { Content } = await render(s);
     height: 0.55rem;
     border-radius: 50%;
     background: var(--color-live);
+    box-shadow: 0 0 10px var(--color-teal-400);
   }
   .more {
     margin-top: 1.5rem;

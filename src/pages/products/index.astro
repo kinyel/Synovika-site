@@ -8,13 +8,13 @@ const prod = await products();
 ---
 
 <Page title={page.data.seo.title} description={page.data.seo.description} heading={page.data.title} lead={page.data.lead} crumbs={[{ name: 'Products', href: '/products/' }]} pageType="CollectionPage">
-  <section class="section" data-theme="paper">
+  <section class="section" data-theme="dark">
     <div class="wrap">
       <ul class="list">
         {
           prod.map((p) => (
             <li>
-              <a href={`/products/${p.id}/`} style={`view-transition-name: product-${p.id}`}>
+              <a class="glass glass-hover" href={`/products/${p.id}/`} style={`view-transition-name: product-${p.id}`}>
                 <StatusChip status={p.data.status} />
                 <h2 class="t-h3">{p.data.name}</h2>
                 <p class="t-muted">{p.data.summary}</p>
@@ -46,10 +46,5 @@ const prod = await products();
     justify-items: start;
     height: 100%;
     padding: 1.75rem;
-    border-radius: var(--radius-lg);
-    box-shadow: inset 0 0 0 1px var(--color-line);
-  }
-  .list a:hover {
-    box-shadow: inset 0 0 0 1px var(--color-ink);
   }
 </style>

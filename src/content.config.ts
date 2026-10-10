@@ -133,6 +133,8 @@ const home = defineCollection({
     heading: z.string(),
     /** The word in the heading set in chrome (at most one). */
     chrome: z.string().optional(),
+    /** Words of the heading lit in teal, synov-timer's emphasis (D-045). */
+    lit: z.string().optional(),
     /** One plain sentence under the heading. */
     lead: z.string(),
     body: z.string().optional(),

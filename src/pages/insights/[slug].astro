@@ -40,7 +40,7 @@ const toc = headings.filter((h) => h.depth === 2);
     By {d.author} · <time datetime={d.published.toISOString()}>{fmt(d.published)}</time>
     {d.updated && <span> · Updated <time datetime={d.updated.toISOString()}>{fmt(d.updated)}</time></span>} · {minutes} min read
   </p>
-  <section class="section" data-theme="paper">
+  <section class="section" data-theme="dark">
     <div class="wrap grid-site article">
       {
         toc.length > 0 && (

@@ -1,11 +1,13 @@
 ---
 /**
- * Home. Phase 1 lays out every section's copy in its register so the
- * header, themes and SEO can be tested; the hero, scenes and motion arrive
- * in Phases 2 to 4 (docs/PLAN.md).
+ * Home. Phase 1 lays out every section's copy in synov-timer's colouring,
+ * in teal (D-045), so the header, the registers and SEO can be tested. The
+ * hero's 3D, the product scenes and the motion arrive in Phases 2 to 4
+ * (docs/PLAN.md).
  */
 import Base from '../layouts/Base.astro';
 import Icon from '../components/ui/Icon.astro';
+import Lit from '../components/ui/Lit.astro';
 import StatusCta from '../components/ui/StatusCta.astro';
 import Faq from '../components/ui/Faq.astro';
 import ToConfirm from '../components/ui/ToConfirm.astro';
@@ -15,23 +17,24 @@ import { SITE } from '../data/site';
 
 const h = await home();
 const hero = h.hero!;
-const [before, after] = hero.heading.split(hero.chrome ?? '\u0000');
 const prod = await products();
 const svc = await services();
 const questions = await faqs();
 const sectors = await industries();
-const sections: { key: string; theme: 'dark' | 'paper' | 'teal' }[] = [
-  { key: 'statement', theme: 'dark' },
-  { key: 'selvion', theme: 'dark' },
-  { key: 'estate', theme: 'dark' },
-  { key: 'websites', theme: 'paper' },
-  { key: 'services', theme: 'paper' },
-  { key: 'pipeline', theme: 'dark' },
-  { key: 'principles', theme: 'teal' },
-  { key: 'industries', theme: 'paper' },
-  { key: 'faq', theme: 'paper' },
+type Key = 'statement' | 'selvion' | 'estate' | 'websites' | 'services' | 'pipeline' | 'principles' | 'industries' | 'faq';
+const sections: { key: Key; theme: 'dark' | 'teal'; glow?: string }[] = [
+  { key: 'statement', theme: 'dark', glow: '--glow-x:50%;--glow-y:0%;--glow2-x:100%;--glow2-y:100%' },
+  { key: 'selvion', theme: 'dark', glow: '--glow-x:88%;--glow-y:30%' },
+  { key: 'estate', theme: 'dark', glow: '--glow-x:10%;--glow-y:20%;--glow2-x:96%;--glow2-y:90%' },
+  { key: 'websites', theme: 'dark', glow: '--glow-x:80%;--glow-y:60%' },
+  { key: 'services', theme: 'dark', glow: '--glow-x:20%;--glow-y:10%' },
+  { key: 'pipeline', theme: 'dark', glow: '--glow-x:60%;--glow-y:20%;--glow2-x:10%;--glow2-y:80%' },
+  { key: 'principles', theme: 'teal', glow: '--glow-x:80%;--glow-y:10%' },
+  { key: 'industries', theme: 'dark', glow: '--glow-x:84%;--glow-y:50%' },
+  { key: 'faq', theme: 'dark', glow: '--glow-x:6%;--glow-y:40%' },
 ];
-const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate-entrance-security', websites: 'websites-with-admin-panel' };
+const productFor: Partial<Record<Key, string>> = { selvion: 'selvion', estate: 'estate-entrance-security', websites: 'websites-with-admin-panel' };
+const [g1, g2] = hero.telemetry!.split(' · GATE ');
 ---
 
 <Base
@@ -41,34 +44,42 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
   schema={questions.length ? [faqPage('/', questions.map((q) => q.data))] : []}
 >
   <section class="hero noise vignette" data-theme="dark">
+    <div class="atmos hero-atmos" aria-hidden="true"><span class="floor-glow"></span></div>
     <div class="wrap hero-inner">
-      <p class="t-label t-eyebrow">{hero.eyebrow}</p>
-      <h1 class="t-display hero-title">{before}<span class="chrome">{hero.chrome}</span>{after}</h1>
+      <p class="pill"><span class="signal" aria-hidden="true"></span>{hero.eyebrow}</p>
+      <h1 class="t-display hero-title"><Lit text={hero.heading} chrome={hero.chrome} /></h1>
       <p class="t-lead hero-lead">{hero.lead}</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href={hero.ctas[0]!.href}><span class="signal" aria-hidden="true"></span>{hero.ctas[0]!.label}</a>
         <a class="btn btn-secondary" href={hero.ctas[1]!.href}>{hero.ctas[1]!.label}</a>
         <a class="btn btn-quiet" href={SITE.whatsapp} rel="noopener"><Icon name="chat" /><span>WhatsApp us</span></a>
       </div>
-      <p class="t-label t-muted hero-telemetry"><span class="demo">Demo data</span> {hero.telemetry}</p>
+      <p class="t-label t-muted hero-telemetry">
+        <span class="demo">Demo data</span>
+        <span>{g1} ·</span>
+        <span>GATE {g2}</span>
+      </p>
     </div>
   </section>
 
   {
-    sections.map(({ key, theme }) => {
+    sections.map(({ key, theme, glow }) => {
       const s = h[key]!;
       const p = prod.find((x) => x.id === productFor[key]);
       return (
         <section class="section noise" data-theme={theme} id={key}>
+          <div class="atmos" aria-hidden="true" style={glow} />
           <div class="wrap">
-            {s.eyebrow && <p class="t-label t-eyebrow">{s.eyebrow}</p>}
-            <h2 class="t-h2 section-title">{s.heading}</h2>
+            {s.eyebrow && <p class="eyebrow">{s.eyebrow}</p>}
+            <h2 class="t-h2 section-title">
+              <Lit text={s.heading} lit={s.lit} />
+            </h2>
             <p class="t-lead section-lead">{s.lead}</p>
             {p && (
               <div class="section-cta">
                 <StatusCta product={p} />
-                <a class="link" href={`/products/${p.id}/`}>
-                  More about {p.data.name}
+                <a class="link-arrow" href={`/products/${p.id}/`}>
+                  More about {p.data.name} <Icon name="arrow" />
                 </a>
               </div>
             )}
@@ -76,9 +87,12 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
               <ul class="cards">
                 {svc.map((x) => (
                   <li>
-                    <a class="card" href={`/services/${x.id}/`}>
+                    <a class="card glass glass-hover" href={`/services/${x.id}/`}>
                       <span class="t-h3">{x.data.name}</span>
                       <span class="t-muted">{x.data.summary}</span>
+                      <span class="card-more" aria-hidden="true">
+                        <Icon name="arrow" />
+                      </span>
                     </a>
                   </li>
                 ))}
@@ -87,10 +101,10 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
             {s.items.length > 0 && (
               <ol class="items">
                 {s.items.map((i, n) => (
-                  <li>
-                    <span class="t-label t-muted">{String(n + 1).padStart(2, '0')}</span>
+                  <li class={theme === 'dark' ? 'glass' : 'flood'}>
+                    <span class="t-label t-eyebrow">{String(n + 1).padStart(2, '0')}</span>
                     <h3 class="t-h3">{i.title}</h3>
-                    <p class="t-muted">{i.body}</p>
+                    <p class={theme === 'dark' ? 't-muted' : ''}>{i.body}</p>
                   </li>
                 ))}
               </ol>
@@ -98,7 +112,7 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
             {key === 'industries' && sectors.length > 0 && (
               <ul class="items">
                 {sectors.map((i) => (
-                  <li>
+                  <li class="glass">
                     <h3 class="t-h3">
                       {i.data.name} <ToConfirm when={!i.data.confirmed} />
                     </h3>
@@ -115,8 +129,9 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
   }
 
   <section class="section closing noise" data-theme="dark">
-    <div class="wrap">
-      <h2 class="t-h2 section-title">{h.closing!.heading}</h2>
+    <div class="atmos" aria-hidden="true" style="--glow-x:50%;--glow-y:100%;--glow2-x:50%;--glow2-y:0%"></div>
+    <div class="wrap closing-inner">
+      <h2 class="t-h2 section-title"><Lit text={h.closing!.heading} lit={h.closing!.lit} /></h2>
       <p class="t-lead section-lead">{h.closing!.lead}</p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href={h.closing!.ctas[0]!.href}><span class="signal" aria-hidden="true"></span>{h.closing!.ctas[0]!.label}</a>
@@ -129,14 +144,25 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
 
 <style>
   .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     min-height: 100svh;
     display: flex;
     align-items: center;
     padding-block: calc(var(--header-height) + 3rem) 4rem;
   }
+  .hero-atmos {
+    --glow-x: 84%;
+    --glow-y: 14%;
+    --glow2-x: 6%;
+    --glow2-y: 92%;
+    --grid-x: 66%;
+    --grid-y: 46%;
+  }
   .hero-title {
     max-width: 11ch;
-    margin-top: 1.5rem;
+    margin-top: 1.75rem;
   }
   .hero-lead {
     margin-top: 1.75rem;
@@ -151,27 +177,31 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
     margin-top: 2.5rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem 0.9rem;
     align-items: center;
+  }
+  .hero-telemetry span:not(.demo) {
+    white-space: nowrap;
   }
   .demo {
     padding: 0.2rem 0.5rem;
     border-radius: var(--radius-sm);
-    box-shadow: inset 0 0 0 1px var(--color-line);
+    color: var(--color-live-ink);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 35%, transparent);
   }
   .section {
-    padding-block: clamp(5rem, 11vw, 9rem);
+    overflow: hidden;
   }
   .section-title {
     max-width: 18ch;
-    margin-top: 1rem;
+    margin-top: 1.25rem;
   }
   .section-lead {
     margin-top: 1.25rem;
   }
   .section-cta {
     display: grid;
-    gap: 1.25rem;
+    gap: 1rem;
     justify-items: start;
     margin-top: 2.5rem;
   }
@@ -196,20 +226,41 @@ const productFor: Record<string, string> = { selvion: 'selvion', estate: 'estate
   .card {
     display: grid;
     gap: 0.75rem;
+    align-content: start;
     height: 100%;
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    box-shadow: inset 0 0 0 1px var(--color-line);
-    transition: box-shadow var(--dur-2) var(--ease-out);
+    padding: 1.75rem;
   }
-  .card:hover {
-    box-shadow: inset 0 0 0 1px var(--color-ink);
+  .card-more {
+    color: var(--color-live-ink);
+    transition: translate var(--dur-3) var(--ease-out);
+  }
+  .card-more :global(.icon) {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  .card:hover .card-more {
+    translate: 4px 0;
   }
   .items li {
     display: grid;
-    gap: 0.5rem;
+    gap: 0.6rem;
     align-content: start;
-    padding-top: 1.25rem;
+    padding: 1.6rem;
+  }
+  .items li.flood {
+    padding: 1.6rem 0 0;
     border-top: 1px solid var(--color-line);
+  }
+  .closing-inner {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+  .closing-inner .section-title,
+  .closing-inner .section-lead {
+    margin-inline: auto;
+  }
+  .closing-inner .hero-ctas {
+    justify-content: center;
   }
 </style>

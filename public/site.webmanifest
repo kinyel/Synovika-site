@@ -4,8 +4,8 @@
   "description": "Software built around reality. Software engineering and products from Nigeria.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#171717",
-  "theme_color": "#171717",
+  "background_color": "#031514",
+  "theme_color": "#031514",
   "icons": [
     {
       "src": "/icon-192.png",

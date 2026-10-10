@@ -6,7 +6,7 @@
 import { chromium } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-const BASE = process.env.URL ?? 'http://localhost:4322';
+const BASE = process.env.URL ?? 'http://localhost:4331';
 const args = process.argv.slice(2);
 const full = args.includes('--full');
 const y = Number(args.find((a) => a.startsWith('--y='))?.slice(4) ?? 0);

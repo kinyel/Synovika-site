@@ -6,18 +6,21 @@ Work in the phases of BRIEF section 20, and stop at every gate until Hero says g
 
 ## Commands
 
-The scaffold lands in Phase 1; the commands below are the plan until then.
-
 ```bash
-npm run dev                       # astro dev (drafts and /lab visible)
-npx astro dev --background        # then: astro dev status | logs | stop
-npm run build                     # production build
-PUBLIC_SHOW_DRAFTS=true npm run build   # draft build: noindex, /lab included
-npm run check                     # astro check + tsc
-npm run qa:contrast | qa:pages | qa:widths | qa:tour | qa:a11y | qa:lh | qa:jsonld
-npm run qa:links | qa:html | qa:nojs | qa:motion | qa:size | qa:prod-guard
-npm run qa:fps                    # local only
+npx astro dev --background --port 4331   # dev server (drafts and /lab); astro dev status | logs | stop
+npm run build                            # production build
+npm run build:drafts                     # draft build: noindex, /lab included
+npx astro preview --port 4330            # serve dist/ for the browser QA scripts
+npm run check                            # astro check + tsc
+node scripts/logo-assets.mjs             # Hero's logo crops, icons, manifest (never redraw the logo: D-044)
+node scripts/trace-logo.mjs              # traced shapes for the 3D object only (brand/trace/)
+node scripts/poster.mjs                  # 3D poster, needs the dev server on 4331
+npm run qa:copy | qa:prod-guard | qa:jsonld | qa:html | qa:links | qa:size        # on dist/
+npm run qa:pages | qa:contrast | qa:widths | qa:a11y | qa:nojs | qa:motion | qa:lh | qa:tour   # need the server on 4330
+npm run qa:fps                           # local only
 ```
+
+Port 4322 on this machine runs synov-timer's preview: don't use it.
 
 ## Non-negotiables (BRIEF section 3)
 
@@ -32,6 +35,8 @@ npm run qa:fps                    # local only
 9. Copy: British spelling, plain words, short sentences, no buzzwords. Every headline has one plain sentence under it. It must sound like a person wrote it (D-037).
    **No em dashes anywhere, ever:** not in copy, alt text, metadata, structured data, comments or docs. No spaced en dash used as a dash either. `npm run qa:copy` enforces this.
 10. Placeholders are written `TODO(hero): what's needed`. The production guard fails if `TODO(hero)`, `TO CONFIRM` or an unconfirmed feature reaches `dist/`.
+
+Use Hero's logo file everywhere a logo appears; never redraw it (D-044). The colouring follows synov-timer's, in teal (D-045), and the 3D language follows its CSS 3D glass primitives (D-046).
 
 Write "Selvion" exactly. On each page, the first mention says what it is ("Selvion, our fleet tracking platform"). Copy lives in `src/content/`, never in components. Ask Hero only when an answer changes what visitors are told (facts, claims, prices, names); otherwise pick a sensible default and record it in DECISIONS.md.
 
