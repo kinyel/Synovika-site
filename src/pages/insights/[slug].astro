@@ -1,18 +1,25 @@
 ---
 /**
- * An Insights article: reading time, author, dates, a table of contents
- * from the article's own headings, sources, and related articles.
+ * An Insights article: the short answer first (for readers in a hurry, and
+ * for search and AI answers), then contents, the article, sources, and what
+ * to read next.
  */
 import type { GetStaticPaths } from 'astro';
 import { render, type CollectionEntry } from 'astro:content';
 import Page from '../../layouts/Page.astro';
+import Icon from '../../components/ui/Icon.astro';
 import { insights } from '../../lib/content';
 import { blogPosting } from '../../lib/schema';
 
 type Post = CollectionEntry<'insights'>;
 export const getStaticPaths = (async () => {
   const all = await insights();
-  return all.map((p) => ({ params: { slug: p.id }, props: { p, related: all.filter((x) => x.id !== p.id).slice(0, 3) } }));
+  return all.map((p) => {
+    // Read next: articles that share a tag first, then the newest.
+    const tagged = all.filter((x) => x.id !== p.id && x.data.tags.some((t) => p.data.tags.includes(t)));
+    const rest = all.filter((x) => x.id !== p.id && !tagged.includes(x));
+    return { params: { slug: p.id }, props: { p, related: [...tagged, ...rest].slice(0, 3) } };
+  });
 }) satisfies GetStaticPaths;
 const { p, related } = Astro.props as { p: Post; related: Post[] };
 const d = p.data;
@@ -21,108 +28,243 @@ const { Content, headings } = await render(p);
 const words = (p.body ?? '').split(/\s+/).filter(Boolean).length;
 const minutes = Math.max(1, Math.round(words / 220));
 const fmt = (date: Date) => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const iso = (date: Date) => date.toISOString().slice(0, 10);
 const toc = headings.filter((h) => h.depth === 2);
+const title = d.seoTitle ?? (`${d.title} | Synovika`.length <= 70 ? `${d.title} | Synovika` : d.title);
 ---
 
 <Page
-  title={`${d.title} | Synovika`.length <= 70 ? `${d.title} | Synovika` : d.title}
+  title={title}
   description={d.description}
   heading={d.title}
   lead={d.description}
-  eyebrow="Insights"
+  eyebrow={d.tags[0] ?? 'Insights'}
+  icon="book"
+  compact
+  ogType="article"
+  published={d.published}
+  modified={d.updated ?? d.published}
   crumbs={[
     { name: 'Insights', href: '/insights/' },
     { name: d.title, href: path },
   ]}
-  schema={[blogPosting(path, d)]}
+  schema={[blogPosting(path, { ...d, words })]}
 >
-  <p slot="hero" class="meta t-muted">
-    By {d.author} · <time datetime={d.published.toISOString()}>{fmt(d.published)}</time>
-    {d.updated && <span> · Updated <time datetime={d.updated.toISOString()}>{fmt(d.updated)}</time></span>} · {minutes} min read
+  <p slot="hero" class="meta">
+    By {d.author === 'Synovika' ? 'the Synovika team' : d.author} · <time datetime={iso(d.published)}>{fmt(d.published)}</time>
+    {
+      d.updated && (
+        <span>
+          {' '}
+          · Updated <time datetime={iso(d.updated)}>{fmt(d.updated)}</time>
+        </span>
+      )
+    } · {minutes} min read
   </p>
+
   <section class="section" data-theme="dark">
-    <div class="wrap grid-site article">
-      {
-        toc.length > 0 && (
-          <nav class="toc" aria-label="Contents">
-            <h2 class="t-label t-muted">Contents</h2>
-            <ol>
-              {toc.map((h) => (
-                <li>
-                  <a href={`#${h.slug}`}>{h.text}</a>
-                </li>
+    <div class="gutter article">
+      <aside class="article-side">
+        {
+          toc.length > 0 && (
+            <nav class="toc" aria-label="Contents">
+              <p class="toc-title">Contents</p>
+              <ol>
+                {toc.map((h) => (
+                  <li>
+                    <a href={`#${h.slug}`}>{h.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+      </aside>
+      <div class="article-main">
+        {
+          d.tldr && (
+            <div class="tldr" data-speakable>
+              <p class="tldr-title">The short answer</p>
+              <p>{d.tldr}</p>
+            </div>
+          )
+        }
+        <div class="prose article-body">
+          <Content />
+        </div>
+        {
+          d.sources.length > 0 && (
+            <div class="sources">
+              <h2 class="h3">Sources</h2>
+              <ol>
+                {d.sources.map((s) => (
+                  <li>
+                    <a href={s.href} rel="noopener">
+                      {s.label}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )
+        }
+        {
+          d.tags.length > 0 && (
+            <p class="tags">
+              {d.tags.map((t) => (
+                <span class="tag">{t}</span>
               ))}
-            </ol>
-          </nav>
-        )
-      }
-      <div class="prose body"><Content /></div>
-      {
-        d.sources.length > 0 && (
-          <div class="sources">
-            <h2 class="t-label t-muted">Sources</h2>
-            <ol>
-              {d.sources.map((s) => (
-                <li>
-                  <a class="link" href={s.href} rel="noopener">
-                    {s.label}
-                  </a>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )
-      }
-      {
-        related.length > 0 && (
-          <div class="related">
-            <h2 class="t-label t-muted">Read next</h2>
-            <ul>
-              {related.map((r) => (
-                <li>
-                  <a class="link" href={`/insights/${r.id}/`}>
-                    {r.data.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      }
+            </p>
+          )
+        }
+      </div>
     </div>
   </section>
+
+  {
+    related.length > 0 && (
+      <section class="section" data-theme="dark" aria-labelledby="next-title">
+        <div class="gutter">
+          <h2 id="next-title" class="h3">Read next</h2>
+          <ul class="next-grid">
+            {related.map((r) => (
+              <li>
+                <a href={`/insights/${r.id}/`} class="card card-hover next-card">
+                  <span class="next-tag">{r.data.tags[0] ?? 'Insights'}</span>
+                  <b>{r.data.title}</b>
+                  <span class="link-arrow mt-auto pt-4">
+                    Read it <Icon name="arrow" />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 </Page>
 
 <style>
   .meta {
     margin-top: 1.5rem;
-    font-size: var(--text-small);
-  }
-  .section {
-    padding-block: clamp(4rem, 8vw, 7rem);
+    font-size: 0.95rem;
+    color: var(--color-grey-400);
   }
   .article {
-    row-gap: 3rem;
+    display: grid;
+    gap: 2.5rem;
   }
-  .article > * {
-    grid-column: 1 / -1;
-  }
-  @media (min-width: 64rem) {
-    .toc {
-      grid-column: 1 / span 3;
+  @media (min-width: 1100px) {
+    .article {
+      grid-template-columns: 15rem minmax(0, 46rem);
+      gap: 4rem;
     }
-    .body,
-    .sources,
-    .related {
-      grid-column: 4 / span 7;
+    .article-side {
+      position: sticky;
+      top: 7rem;
+      align-self: start;
     }
   }
-  .toc ol,
-  .sources ol,
-  .related ul {
+  .toc-title,
+  .tldr-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+  .tldr-title {
+    margin-bottom: 0.45rem;
+  }
+  .tldr p:last-child {
+    line-height: 1.65;
+    color: var(--color-grey-100);
+  }
+  .toc ol {
+    display: grid;
+    gap: 0.2rem;
+    margin-top: 0.75rem;
+    border-left: 1px solid color-mix(in srgb, var(--color-white) 10%, transparent);
+  }
+  .toc a {
+    display: block;
+    padding: 0.35rem 0 0.35rem 0.9rem;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    color: var(--color-grey-400);
+    transition: color 0.3s;
+  }
+  .toc a:hover {
+    color: var(--color-white);
+  }
+  .article-body {
+    margin-top: 2rem;
+  }
+  .article-body :global(blockquote) {
+    border-left: 2px solid var(--color-gold);
+    padding-left: 1.2rem;
+    color: var(--color-grey-200);
+  }
+  .sources {
+    margin-top: 3rem;
+  }
+  .sources ol {
     display: grid;
     gap: 0.5rem;
-    margin-top: 0.75rem;
-    font-size: var(--text-small);
+    margin-top: 1rem;
+    padding-left: 1.2rem;
+    list-style: decimal;
+  }
+  .sources a {
+    color: var(--color-iris-soft);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+  }
+  .tag {
+    border-radius: 999px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    color: var(--color-grey-200);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 12%, transparent);
+  }
+  .next-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+  @media (min-width: 900px) {
+    .next-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .next-grid > li {
+    display: flex;
+  }
+  .next-card {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.5rem;
+  }
+  .next-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+  .next-card b {
+    font-size: 1.12rem;
+    line-height: 1.3;
+    color: var(--color-white);
   }
 </style>

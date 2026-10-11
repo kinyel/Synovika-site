@@ -1,0 +1,18 @@
+order: 9
+eyebrow: Your data, put to work
+heading: Raw events in, useful answers out.
+lit: useful answers out.
+lead: A vehicle starting, a page edited, a trip ended. Good software turns each one into something your team can act on.
+items:
+  - title: Alerts
+    body: The events that matter come to your phone
+    icon: bell
+  - title: Reports
+    body: Each trip written up, with distance, time and stops
+    icon: chart
+  - title: Dashboards
+    body: The numbers your team checks every day, in one place
+    icon: database
+  - title: Connections
+    body: Shared with the tools you already use
+    icon: integrations

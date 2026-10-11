@@ -1,48 +1,101 @@
 ---
-import Page from '../../layouts/Page.astro';
+/** Services: the six, in their two halves (build it right, keep it running), and how to pick. */
 import { getEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/ui/Icon.astro';
 import { services } from '../../lib/content';
-const page = (await getEntry('pages', 'services'))!;
+import { itemList } from '../../lib/schema';
+
+const page = (await getEntry('pages', 'services'))!.data;
 const svc = await services();
+const groups = [
+  { id: 'build', title: 'Build it right', lead: 'For new software, or a fresh start: decide what it must do, plan how it fits together, then build it.' },
+  { id: 'run', title: 'Keep it running', lead: "For software you already have: find what's wrong, prove it works, and keep it healthy for years." },
+] as const;
 ---
 
-<Page title={page.data.seo.title} description={page.data.seo.description} heading={page.data.title} lead={page.data.lead} crumbs={[{ name: 'Services', href: '/services/' }]} pageType="CollectionPage">
-  <section class="section" data-theme="dark">
-    <div class="wrap">
-      <ul class="list">
-        {
-          svc.map((s) => (
-            <li>
-              <a class="glass glass-hover" href={`/services/${s.id}/`}>
-                <h2 class="t-h3">{s.data.name}</h2>
-                <p class="t-muted">{s.data.summary}</p>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+<Page
+  title={page.seo.title}
+  description={page.seo.description}
+  heading={page.title}
+  lead={page.lead}
+  eyebrow="What we do"
+  icon="build"
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Services', href: '/services/' }]}
+  schema={[itemList('/services/', 'list', 'Synovika services', svc.map((s) => ({ name: s.data.name, path: `/services/${s.id}/` })))]}
+>
+  {
+    groups.map((g) => (
+      <section class="section" data-theme="dark" aria-labelledby={`g-${g.id}`}>
+        <div class="gutter">
+          <h2 id={`g-${g.id}`} class="h2" data-reveal>
+            {g.title}
+          </h2>
+          <p class="lead mt-3 max-w-[40rem]" data-reveal>
+            {g.lead}
+          </p>
+          <ul class="svc-cards">
+            {svc
+              .filter((s) => s.data.group === g.id)
+              .map((s) => (
+                <li data-reveal>
+                  <a href={`/services/${s.id}/`} class="card card-hover svc-card">
+                    <span class="icon-tile">
+                      <Icon name={s.data.icon} />
+                    </span>
+                    <h3 class="h3 mt-5">{s.data.name}</h3>
+                    <p class="mt-2 text-grey-200">{s.data.summary}</p>
+                    <span class="link-arrow mt-auto pt-5">
+                      More<span class="sr-only"> on {s.data.name.toLowerCase()}</span> <Icon name="arrow" />
+                    </span>
+                  </a>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </section>
+    ))
+  }
+  <section class="section" data-theme="dark" aria-labelledby="pick-title">
+    <div class="gutter">
+      <div class="card pick" data-reveal>
+        <div>
+          <h2 id="pick-title" class="h3">Not sure which one you need?</h2>
+          <p class="mt-2 text-grey-200">Tell us the problem in your own words. We'll point you to the right place, even if it isn't us.</p>
+        </div>
+        <a href="/contact/" class="btn btn-primary">Tell us the problem <Icon name="arrow" /></a>
+      </div>
     </div>
   </section>
 </Page>
 
 <style>
-  .section {
-    padding-block: clamp(4rem, 8vw, 7rem);
-  }
-  .list {
+  .svc-cards {
     display: grid;
-    gap: var(--grid-gap);
+    gap: 1rem;
+    margin-top: 2rem;
   }
-  @media (min-width: 48rem) {
-    .list {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 768px) {
+    .svc-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
-  .list a {
-    display: grid;
-    gap: 0.6rem;
-    align-content: start;
-    height: 100%;
-    padding: 1.75rem;
+  .svc-cards > li {
+    display: flex;
+  }
+  .svc-card {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 1.6rem;
+  }
+  .pick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
   }
 </style>

@@ -1,5 +1,73 @@
 ---
+/** About: who we are, the promises we keep, and how to reach us. */
 import ContentPage from '../components/layout/ContentPage.astro';
+import Icon from '../components/ui/Icon.astro';
+import { home } from '../lib/content';
+import { SITE } from '../data/site';
+
+const why = (await home()).why!;
+const tints = ['teal', 'blue', 'amber', 'wine'];
 ---
 
-<ContentPage id="about" crumbs={[{ name: 'About', href: '/about/' }]} pageType="AboutPage" />
+<ContentPage id="about" crumbs={[{ name: 'About', href: '/about/' }]} pageType="AboutPage" icon="people">
+  <div class="about-more">
+    <h2 class="h2" id="promises">The promises <span class="text-lit">we keep</span></h2>
+    <ul class="promises">
+      {
+        why.items.map((r, i) => (
+          <li class="card promise" data-reveal>
+            <span class={`icon-tile tint-${tints[i % tints.length]}`}>
+              <Icon name={r.icon ?? 'check'} />
+            </span>
+            <h3 class="h3 mt-5">{r.title}</h3>
+            <p class="mt-2 text-grey-200">{r.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="card reach" data-reveal>
+      <div>
+        <h2 class="h3">Talk to us</h2>
+        <p class="mt-2 text-grey-200">Email <a class="prose-link" href={`mailto:${SITE.email}`}>{SITE.email}</a>, call or WhatsApp <a class="prose-link" href={`tel:${SITE.phone.tel}`}>{SITE.phone.display}</a>.</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="/contact/" class="btn btn-primary">Start a project <Icon name="arrow" /></a>
+        <a href="/how-we-work/" class="btn btn-outline">How we work</a>
+      </div>
+    </div>
+  </div>
+</ContentPage>
+
+<style>
+  .about-more {
+    margin-top: clamp(4rem, 8vw, 6rem);
+  }
+  .promises {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 768px) {
+    .promises {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .promise {
+    padding: 1.6rem;
+  }
+  .reach {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  .prose-link {
+    color: var(--color-iris-soft);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

@@ -1,77 +1,103 @@
 ---
-/** Questions as native <details>, so they work without JavaScript. Unconfirmed answers are marked in drafts. */
+/**
+ * Questions and answers as an accordion (raleston-web's): native
+ * details/summary, so it works without JavaScript. Unconfirmed answers carry
+ * a "TO CONFIRM" badge, and only ever reach dev and draft builds.
+ */
+import Icon from './Icon.astro';
 import ToConfirm from './ToConfirm.astro';
+
 interface Props {
   items: { q: string; a: string; confirmed: boolean }[];
+  /** Open the first answer (FAQ page). */
+  openFirst?: boolean;
 }
-const { items } = Astro.props;
+const { items, openFirst = false } = Astro.props;
 ---
 
-<div class="faq">
+<ul class="faq">
   {
-    items.map((f) => (
-      <details class="faq-item glass">
-        <summary>
-          <span>{f.q}</span>
-          <ToConfirm when={!f.confirmed} />
-        </summary>
-        <p class="t-body">{f.a}</p>
-      </details>
+    items.map((f, i) => (
+      <li data-reveal>
+        <details class="faq-item" open={openFirst && i === 0}>
+          <summary>
+            <span>
+              {f.q}
+              <ToConfirm when={!f.confirmed} />
+            </span>
+            <span class="faq-icon" aria-hidden="true">
+              <Icon name="plus" />
+            </span>
+          </summary>
+          <div class="faq-a prose-links">
+            <p>{f.a}</p>
+          </div>
+        </details>
+      </li>
     ))
   }
-</div>
+</ul>
 
 <style>
   .faq {
     display: grid;
-    gap: 0.6rem;
-    margin-top: 2.5rem;
-    max-width: 52rem;
+    gap: 0.75rem;
   }
   .faq-item {
-    border-radius: var(--radius-md);
-    transition: box-shadow var(--dur-3) var(--ease-out);
+    border-radius: 1.1rem;
+    background: color-mix(in srgb, var(--color-navy) 55%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 9%, transparent);
+    transition: box-shadow 0.4s var(--ease-expo);
   }
   .faq-item[open] {
     box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 30%, transparent),
-      0 20px 50px -30px color-mix(in srgb, var(--color-teal-500) 45%, transparent);
+      inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 35%, transparent),
+      0 20px 50px -30px color-mix(in srgb, var(--color-iris) 70%, transparent);
   }
   .faq-item summary {
     display: flex;
-    align-items: center;
-    gap: 1rem;
     min-height: 3.75rem;
-    padding: 1rem 1.25rem;
-    font-size: 1.0625rem;
-    font-weight: 600;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.25rem;
+    border-radius: inherit;
     cursor: pointer;
     list-style: none;
-    border-radius: inherit;
+    font-size: clamp(1.02rem, 1.3vw, 1.15rem);
+    font-weight: 600;
+    color: var(--color-white);
   }
   .faq-item summary::-webkit-details-marker {
     display: none;
   }
-  .faq-item summary::after {
-    content: '+';
+  .faq-icon {
     display: grid;
-    place-items: center;
     flex: none;
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-left: auto;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
     border-radius: 50%;
-    font-family: var(--font-mono);
-    font-weight: 400;
-    color: var(--color-live-ink);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 30%, transparent);
-    transition: rotate var(--dur-3) var(--ease-out);
+    color: var(--color-iris-soft);
+    background: color-mix(in srgb, var(--color-iris) 18%, transparent);
+    transition: transform 0.45s var(--ease-expo);
   }
-  .faq-item[open] summary::after {
-    rotate: 45deg;
+  .faq-icon :global(svg) {
+    width: 1.05rem;
+    height: 1.05rem;
   }
-  .faq-item p {
-    padding: 0 1.25rem 1.4rem;
-    color: var(--color-ink-soft);
+  .faq-item[open] .faq-icon {
+    transform: rotate(45deg);
+  }
+  .faq-a {
+    max-width: 52rem;
+    padding: 0 1.25rem 1.2rem;
+    font-size: 1.02rem;
+    line-height: 1.65;
+    color: var(--color-grey-200);
+  }
+  .faq-item :global(.to-confirm) {
+    margin-left: 0.5rem;
+    vertical-align: 0.15em;
   }
 </style>

@@ -1,4 +1,24 @@
 order: 1
 name: Logistics and transport
 note: Fleets, haulage and deliveries.
-confirmed: false
+icon: truck
+confirmed: true
+lead: When your business runs on vehicles, the questions never stop. Where is the van now? Why did the truck stop for an hour? Who drove the pool car on Sunday? We build software that answers them without a round of phone calls.
+problems:
+  - Drivers are called all day just to find out where they are.
+  - A vehicle is used after hours, and nobody finds out until the fuel bill arrives.
+  - Trip records live in notebooks, WhatsApp messages and memory.
+  - When a vehicle goes missing, every minute spent finding it costs money.
+helps:
+  - title: Selvion fleet tracking
+    body: Every vehicle on one live map, alerts on your phone when one starts or leaves a zone, a report for every trip, and remote immobilisation when a vehicle is taken.
+    href: /products/selvion/
+  - title: Software for how you dispatch
+    body: Booking, dispatch and delivery tools shaped around the way your team already works, built and tested on the phones your drivers carry.
+    href: /services/software-development/
+  - title: Fixing what you already have
+    body: If you already run a tracking or dispatch system that misbehaves, we'll find the real cause and fix it.
+    href: /services/fixing-and-debugging/
+seo:
+  title: Software for logistics and transport companies in Nigeria | Synovika
+  description: Fleet tracking, dispatch tools and custom software for Nigerian logistics, haulage and delivery businesses, from Synovika. Built around how your fleet really runs.

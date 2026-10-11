@@ -1,0 +1,271 @@
+---
+/**
+ * 04 · Why Synovika (the reference image's "Why Synovika" band, in
+ * raleston-web's manner). Kinetic words drift behind and skew with scroll
+ * speed (src/scripts/scroll.ts). In front, a cube of 27 glass blocks
+ * assembles itself as the section arrives, corners last, and a thread of
+ * amber light rises out of it. Below, the four promises as cards, then the
+ * plain facts: true numbers only, never made-up ones.
+ */
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import { home } from '../../lib/content';
+
+const h = await home();
+const why = h.why!;
+const facts = h.facts!;
+// 3 × 3 × 3 blocks. --d is how far each sits from the centre: corners assemble last.
+const cubes = [-1, 0, 1].flatMap((gz) => [-1, 0, 1].flatMap((gy) => [-1, 0, 1].map((gx) => ({ gx, gy, gz, d: Math.abs(gx) + Math.abs(gy) + Math.abs(gz) }))));
+const tints = ['teal', 'blue', 'amber', 'wine'];
+---
+
+<section id="why" class="section why" data-theme="dark" aria-labelledby="why-title">
+  <div class="why-kinetic" aria-hidden="true">
+    <p class="kin kin-a" data-kinetic-a>BUILT AROUND REALITY · BUILT AROUND REALITY ·</p>
+    <p class="kin kin-b" data-kinetic-b>REAL PROBLEMS · PRACTICAL SOFTWARE · REAL PROBLEMS ·</p>
+  </div>
+
+  <div class="gutter relative why-grid">
+    <div class="why-head">
+      <p class="eyebrow">{why.eyebrow}</p>
+      <h2 id="why-title" class="h2 mt-4" data-reveal><Lit text={why.heading} lit={why.lit} /></h2>
+      <p class="lead mt-5 max-w-[32rem]" data-reveal>{why.lead}</p>
+      <a href="/about/" class="link-arrow mt-6" data-reveal>About Synovika <Icon name="arrow" /></a>
+    </div>
+
+    <div class="s3d why-scene" data-s3d aria-hidden="true">
+      <div class="s3d-world">
+        <span class="why-pool"></span>
+        {
+          cubes.map((c) => (
+            <div class="blk why-cube" style={`--gx:${c.gx};--gy:${c.gy};--gz:${c.gz};--d:${c.d}`}>
+              <b class="blk-top" />
+              <b class="blk-e" />
+              <b class="blk-s" />
+            </div>
+          ))
+        }
+        <span class="why-beam"></span>
+      </div>
+    </div>
+  </div>
+
+  <ul class="gutter relative why-cards">
+    {
+      why.items.map((r, i) => (
+        <li class="card card-hover why-card" data-reveal>
+          <span class={`icon-tile tint-${tints[i % tints.length]}`}>
+            <Icon name={r.icon ?? 'check'} />
+          </span>
+          <h3 class="h3 mt-5">{r.title}</h3>
+          <p class="mt-2 text-grey-200">{r.body}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="gutter relative">
+    <div class="facts" data-reveal>
+      <h3 class="sr-only">{facts.heading}</h3>
+      <dl class="facts-list">
+        {
+          facts.items.map((f) => (
+            <div class="fact">
+              <dt>
+                <a href={f.href}>{f.body}</a>
+              </dt>
+              <dd>{f.title}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    overflow: hidden;
+    background:
+      radial-gradient(45% 45% at 75% 30%, color-mix(in srgb, var(--color-iris) 12%, transparent), transparent 70%),
+      radial-gradient(30% 30% at 10% 90%, color-mix(in srgb, var(--color-gold) 4%, transparent), transparent 70%),
+      var(--color-night);
+  }
+  .why-kinetic {
+    position: absolute;
+    inset: 0 0 auto;
+    display: flex;
+    height: min(100%, 44rem);
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+  .kin {
+    font-size: clamp(4rem, 12vw, 11rem);
+    font-weight: 600;
+    line-height: 0.9;
+    white-space: nowrap;
+    will-change: transform;
+  }
+  .kin-a {
+    color: color-mix(in srgb, var(--color-white) 4%, transparent);
+  }
+  .kin-b {
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--color-iris-soft) 22%, transparent);
+  }
+  .why-grid {
+    display: grid;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .why-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 3rem;
+    }
+  }
+
+  /* ── The cube ── */
+  .why-scene {
+    --k: 0.62;
+    height: 360px;
+  }
+  @media (min-width: 640px) {
+    .why-scene {
+      --k: 0.85;
+      height: 460px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .why-scene {
+      --k: 1;
+      height: 520px;
+    }
+  }
+  .why-scene .s3d-world {
+    top: 58%;
+  }
+  .why-pool {
+    position: absolute;
+    left: -300px;
+    top: -300px;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 17%, transparent), color-mix(in srgb, var(--color-gold) 4%, transparent) 60%, transparent);
+    transform: translateZ(-112px);
+  }
+  /* Each block flies in from an exploded position; the farther from the centre, the later. */
+  .why-cube {
+    --w: 70px;
+    --h: 70px;
+    --q: clamp(0, calc(var(--p) * 1.45 - var(--d) * 0.15), 1);
+    --e: calc((1 - var(--q)) * (1 - var(--q)) * 70px);
+    --x: calc(var(--gx) * (72px + var(--e)));
+    --y: calc(var(--gy) * (72px + var(--e)));
+    --z: calc(var(--gz) * 72px - 35px + var(--gz) * var(--e));
+  }
+  .why-cube .blk-top {
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--color-white) 20%, transparent), color-mix(in srgb, var(--color-white) 5%, transparent) 60%),
+      color-mix(in srgb, var(--color-iris) 26%, var(--color-navy));
+  }
+  .why-cube .blk-e {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--color-iris) 18%, var(--color-indigo)), var(--color-night));
+  }
+  .why-cube .blk-s {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-iris) 30%, var(--color-navy)), color-mix(in srgb, var(--color-indigo) 80%, var(--color-night)));
+  }
+  /* The centre column carries the amber thread once the cube is whole. */
+  .why-beam {
+    position: absolute;
+    left: -1.5px;
+    top: 0;
+    width: 3px;
+    height: 230px;
+    transform-origin: 50% 0;
+    transform: translateZ(108px) rotateX(90deg) scaleY(clamp(0, calc(var(--p) * 3 - 2), 1));
+    background: linear-gradient(180deg, var(--color-gold), var(--color-gold-glow) 30%, transparent);
+    box-shadow: 0 0 14px 2px color-mix(in srgb, var(--color-gold) 70%, transparent);
+  }
+
+  /* ── The four promises ── */
+  .why-cards {
+    display: grid;
+    gap: 1rem;
+    margin-top: clamp(1rem, 3vw, 2.5rem);
+  }
+  @media (min-width: 640px) {
+    .why-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .why-cards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .why-card {
+    padding: 1.6rem 1.5rem 1.7rem;
+  }
+
+  /* ── The plain facts (the image's stats band, with true numbers) ── */
+  .facts {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    border-radius: 1.4rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    background:
+      radial-gradient(60% 120% at 0% 0%, color-mix(in srgb, var(--color-iris) 10%, transparent), transparent 70%),
+      radial-gradient(40% 120% at 100% 100%, color-mix(in srgb, var(--color-gold) 5%, transparent), transparent 70%),
+      color-mix(in srgb, var(--color-white) 2.5%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 18%, transparent);
+  }
+  .facts-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 1rem;
+  }
+  @media (min-width: 900px) {
+    .facts-list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .fact + .fact {
+      border-left: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+      padding-left: 1.5rem;
+    }
+  }
+  .fact {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 0.4rem;
+  }
+  .fact dd {
+    font-size: clamp(2rem, 3.4vw, 2.9rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: lining-nums;
+    color: var(--color-white);
+  }
+  .fact:nth-child(4) dd {
+    background: linear-gradient(90deg, var(--color-iris-soft), var(--color-gold-glow));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .fact dt a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    font-size: 0.95rem;
+    color: var(--color-grey-200);
+    transition: color 0.3s;
+  }
+  .fact dt a:hover {
+    color: var(--color-white);
+  }
+</style>

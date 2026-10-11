@@ -1,0 +1,413 @@
+---
+/**
+ * 03 · Services: a helix of glass cards around one thin spine of light
+ * (D-057, after primetrack.rw's spiral, in Synovika's teal). Six cards, 60°
+ * apart and a step higher each, so one full turn shows them all. As the page
+ * scrolls, the helix turns and climbs (src/scripts/scroll.ts) and the card
+ * at the front sharpens and lights while the others dim and blur with their
+ * distance round the turn. Beside it, a rolling counter, a progress rail and
+ * the list of services. Pure CSS 3D, so the text stays crisp. Without
+ * JavaScript or with reduced motion, it is a grid of cards.
+ */
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import { home, services as allServices } from '../../lib/content';
+
+const head = (await home()).services!;
+const services = await allServices();
+const N = services.length;
+const pad = (i: number) => String(i + 1).padStart(2, '0');
+const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
+---
+
+<section id="services" class="spiral" data-theme="dark" style={`--n:${N}`} data-stair-section aria-labelledby="services-title">
+  <div class="spiral-viewport">
+    <div class="gutter spiral-layout">
+      <div class="spiral-menu">
+        <p class="eyebrow">{head.eyebrow}</p>
+        <h2 id="services-title" class="spiral-title"><Lit text={head.heading} lit={head.lit} /></h2>
+        <p class="spiral-lead">{head.lead}</p>
+        <p class="spiral-counter" aria-hidden="true">
+          <span class="spiral-counter-slot"><span class="spiral-counter-roll" data-stair-count>{services.map((_, i) => <span>{pad(i)}</span>)}</span></span>
+          <span class="spiral-counter-total">/ {String(N).padStart(2, '0')}</span>
+          <span class="spiral-counter-rail"><i data-stair-rail></i></span>
+        </p>
+        <p class="spiral-menu-title">What do you need?</p>
+        <ol class="spiral-list">
+          {
+            services.map((s, i) => (
+              <li>
+                <button type="button" class="spiral-link" data-stair-link={i}>
+                  <span class="spiral-link-n">{pad(i)}</span>
+                  <span class="spiral-link-name">{s.data.name}</span>
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+        <a href="/services/" class="link-arrow spiral-all">All services <Icon name="arrow" /></a>
+      </div>
+
+      <div class="spiral-stage">
+        <div class="spiral-spine" aria-hidden="true">
+          <span class="spiral-spine-line"></span>
+          <span class="spiral-glow"></span>
+        </div>
+        <div class="spiral-ring" data-stair-ring>
+          {
+            services.map((s, i) => (
+              <article class="spiral-item" style={`--i:${i}`} data-stair-card={i} aria-labelledby={`service-${s.id}`}>
+                <div class="spiral-card">
+                  <p class="spiral-card-top">
+                    <span class="spiral-card-icon" aria-hidden="true">
+                      <Icon name={s.data.icon} />
+                    </span>
+                    <span class="spiral-card-group">{GROUP[s.data.group]}</span>
+                  </p>
+                  <h3 id={`service-${s.id}`} class="spiral-card-label">
+                    {s.data.name}
+                  </h3>
+                  <p class="spiral-card-desc">{s.data.summary}</p>
+                  <a href={`/services/${s.id}/`} class="spiral-card-more">
+                    More<span class="sr-only"> on {s.data.name.toLowerCase()}</span> <Icon name="arrow" />
+                  </a>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* One turn of the helix: six cards, 60° apart, a step higher each. */
+  .spiral {
+    --R: 250px;
+    --rise: 150px;
+    --card-w: 280px;
+    --card-h: 250px;
+    position: relative;
+    height: calc(var(--n, 6) * 52svh + 20svh);
+    background:
+      radial-gradient(52% 42% at 64% 50%, color-mix(in srgb, var(--color-iris) 13%, transparent), transparent 70%),
+      var(--color-night);
+  }
+  @media (max-width: 1023px) {
+    .spiral {
+      --R: 130px;
+      --rise: 112px;
+      --card-w: 244px;
+      --card-h: 228px;
+    }
+  }
+  .spiral-viewport {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    color: var(--color-white);
+  }
+  .spiral-layout {
+    display: grid;
+    height: 100%;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .spiral-layout {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      column-gap: 2rem;
+    }
+  }
+  @media (max-width: 1023px) {
+    .spiral-layout {
+      grid-template-rows: auto minmax(0, 1fr);
+      align-items: start;
+      padding-top: calc(max(0.85rem, env(safe-area-inset-top)) + 5.25rem);
+    }
+  }
+
+  /* ── The menu ── */
+  .spiral-title {
+    margin-top: 0.9rem;
+    font-size: clamp(1.9rem, 3.4vw, 3rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+  .spiral-lead {
+    margin-top: 1rem;
+    max-width: 26rem;
+    line-height: 1.6;
+    color: var(--color-grey-200);
+  }
+  .spiral-counter {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    font-variant-numeric: tabular-nums;
+  }
+  /* The number rolls like an odometer. */
+  .spiral-counter-slot {
+    display: block;
+    height: 1.25em;
+    overflow: hidden;
+    color: var(--color-iris-soft);
+  }
+  .spiral-counter-roll {
+    display: grid;
+    line-height: 1.25em;
+    transition: transform 0.6s var(--ease-expo);
+  }
+  .spiral-counter-total {
+    color: var(--color-grey-400);
+  }
+  .spiral-counter-rail {
+    position: relative;
+    flex: 1;
+    max-width: 12rem;
+    height: 1px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-white) 12%, transparent);
+  }
+  .spiral-counter-rail > i {
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, var(--color-iris-soft), var(--color-gold));
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-iris) 80%, transparent);
+  }
+  .spiral-menu-title {
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-grey-400);
+  }
+  .spiral-list {
+    display: grid;
+    margin-top: 0.6rem;
+  }
+  .spiral-link {
+    display: flex;
+    min-height: 44px;
+    width: 100%;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding-block: 0.3rem;
+    text-align: left;
+    cursor: pointer;
+  }
+  .spiral-link-n {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-grey-400);
+    transition: color 0.5s;
+  }
+  .spiral-link-name {
+    font-size: 1.12rem;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--color-grey-400) 85%, transparent);
+    transition: color 0.5s;
+  }
+  .spiral-link:hover .spiral-link-name {
+    color: var(--color-grey-200);
+  }
+  .spiral-link[aria-current='true'] .spiral-link-n {
+    color: var(--color-iris-soft);
+  }
+  .spiral-link[aria-current='true'] .spiral-link-name {
+    color: var(--color-white);
+  }
+  .spiral-all {
+    margin-top: 1.25rem;
+  }
+  @media (max-width: 1023px) {
+    .spiral-lead,
+    .spiral-menu-title,
+    .spiral-list,
+    .spiral-all {
+      display: none;
+    }
+  }
+
+  /* ── The helix ── */
+  .spiral-stage {
+    position: relative;
+    height: 100%;
+    perspective: 1320px;
+    perspective-origin: 50% 40%;
+  }
+  .spiral-spine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+  }
+  .spiral-spine-line {
+    position: absolute;
+    left: -0.5px;
+    top: 4%;
+    bottom: 4%;
+    width: 1px;
+    background: linear-gradient(transparent, color-mix(in srgb, var(--color-iris-soft) 50%, transparent) 22%, color-mix(in srgb, var(--color-iris-soft) 50%, transparent) 78%, transparent);
+  }
+  .spiral-glow {
+    position: absolute;
+    left: -210px;
+    top: 50%;
+    width: 420px;
+    height: 420px;
+    margin-top: -210px;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-teal-400) 18%, transparent), transparent 64%);
+    filter: blur(10px);
+  }
+  .spiral-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  /* A card, turned to its place on the helix and pushed out to the radius. */
+  .spiral-item {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--card-w);
+    transform: rotateY(calc(var(--i) * 60deg)) translate3d(calc(var(--card-w) / -2), calc(var(--card-h) / -2 - var(--i) * var(--rise)), var(--R));
+    backface-visibility: hidden;
+  }
+  .spiral-card {
+    /* --g: how lit the card is, 0 (round the back) to 1 (at the front). scroll.ts sets it. */
+    --g: 1;
+    display: flex;
+    min-height: var(--card-h);
+    flex-direction: column;
+    gap: 0.55rem;
+    border-radius: 18px;
+    padding: 24px;
+    background: linear-gradient(158deg, #0b1816 0%, #07110f 56%, #040908 100%);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) calc(9% + var(--g) * 75%), transparent),
+      0 1px 2px rgb(0 0 0 / 0.4),
+      0 26px 60px -26px rgb(0 0 0 / 0.85),
+      0 18px 60px -30px color-mix(in srgb, var(--color-teal-400) calc(var(--g) * 60%), transparent);
+  }
+  .spiral-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .spiral-card-icon {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 999px;
+    color: var(--color-iris-soft);
+    background: color-mix(in srgb, var(--color-iris) calc(5% + var(--g) * 14%), transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) calc(10% + var(--g) * 30%), transparent);
+  }
+  .spiral-card-icon :global(svg) {
+    width: 20px;
+    height: 20px;
+  }
+  .spiral-card-group {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-grey-400);
+  }
+  .spiral-card-label {
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-white);
+  }
+  .spiral-card-desc {
+    font-size: 0.94rem;
+    line-height: 1.5;
+    color: var(--color-grey-200);
+  }
+  .spiral-card-more {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: auto;
+    width: fit-content;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-iris-soft);
+  }
+  .spiral-card-more :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 0.4s var(--ease-expo);
+  }
+  .spiral-card-more:hover :global(svg) {
+    transform: translateX(4px);
+  }
+  @media (max-width: 1023px) {
+    .spiral-card {
+      padding: 20px;
+    }
+    .spiral-card-desc {
+      font-size: 0.9rem;
+    }
+  }
+
+  /* ── Without JavaScript, or with reduced motion: the menu, then a grid of cards ── */
+  :global(html:is(.reduced-motion, :not(.js))) .spiral {
+    height: auto;
+    padding-block: clamp(5rem, 10vw, 8rem);
+  }
+  :global(html:is(.reduced-motion, :not(.js))) .spiral-viewport {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+  :global(html:is(.reduced-motion, :not(.js))) .spiral-layout {
+    display: block;
+    padding-top: 0;
+  }
+  :global(html:is(.reduced-motion, :not(.js))) :is(.spiral-counter, .spiral-menu-title, .spiral-list, .spiral-spine) {
+    display: none;
+  }
+  :global(html:is(.reduced-motion, :not(.js))) .spiral-stage {
+    height: auto;
+    perspective: none;
+  }
+  :global(html:is(.reduced-motion, :not(.js))) .spiral-ring {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+    transform: none !important;
+  }
+  :global(html:is(.reduced-motion, :not(.js))) .spiral-item {
+    position: static;
+    width: auto;
+    transform: none;
+    backface-visibility: visible;
+  }
+  :global(html:is(.reduced-motion, :not(.js))) .spiral-card {
+    height: 100%;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+</style>

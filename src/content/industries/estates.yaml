@@ -1,4 +1,25 @@
 order: 2
 name: Residential estates and facility management
+short: Estates and facilities
 note: Gates, visitors and the people who run them.
-confirmed: false
+icon: estate
+confirmed: true
+lead: An estate gate is where security, convenience and patience meet. Residents want their visitors let in quickly, guards want to know who is expected, and managers want a record they can trust. We build for all three.
+problems:
+  - Guards phone residents for every visitor, and residents miss the call.
+  - Paper visitor books are hard to read and easy to lose.
+  - Nobody can say for certain who came in, when, and for which house.
+  - Facility managers juggle spreadsheets for dues, complaints and staff.
+helps:
+  - title: Estate Entrance Security System
+    body: Code-based visitor access for residential estates, so the gate knows who is expected. It's in development, and we're designing it with estates now.
+    href: /products/estate-entrance-security/
+  - title: Tools for facility managers
+    body: "Simple software for the jobs that pile up: dues, maintenance requests, staff rotas and notices to residents."
+    href: /services/software-development/
+  - title: Requirements first
+    body: Every estate runs a little differently. We write down how yours works before anyone builds anything.
+    href: /services/requirements-engineering/
+seo:
+  title: Software for residential estates and facility managers | Synovika
+  description: Visitor access, gate security and facility management software for residential estates in Nigeria, from Synovika. Designed around how your gate really works.

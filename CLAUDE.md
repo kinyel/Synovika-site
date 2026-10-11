@@ -2,21 +2,20 @@
 
 Read `docs/BRIEF.md` and `docs/DECISIONS.md` first. Then `docs/PLAN.md` and `docs/PROGRESS.md` for where things stand.
 
-Work in the phases of BRIEF section 20, and stop at every gate until Hero says go. Keep DECISIONS.md, PROGRESS.md and this file current. Pin exact versions, and run `npm view <pkg> version` before any install. synov-timer, the reference build, is `../raleston-web`.
+Hero dropped the phases on 11 October 2026: the site is built on raleston-web's engine (`../raleston-web`, also called synov-timer), laid out like Hero's reference image (D-047). Keep DECISIONS.md, PROGRESS.md and this file current. Pin exact versions, and run `npm view <pkg> version` before any install.
 
 ## Commands
 
 ```bash
-npx astro dev --background --port 4331   # dev server (drafts and /lab); astro dev status | logs | stop
+npx astro dev --background --port 4331   # dev server (shows drafts); astro dev status | logs | stop
 npm run build                            # production build
-npm run build:drafts                     # draft build: noindex, /lab included
-npx astro preview --port 4330            # serve dist/ for the browser QA scripts
+npm run build:drafts                     # draft build: noindex, drafts shown
+npx astro preview --port 4330            # serve dist/ for the browser QA scripts (npx astro preview stop first)
 npm run check                            # astro check + tsc
 node scripts/logo-assets.mjs             # Hero's logo crops, icons, manifest (never redraw the logo: D-044)
-node scripts/trace-logo.mjs              # traced shapes for the 3D object only (brand/trace/)
-node scripts/poster.mjs                  # 3D poster, needs the dev server on 4331
+npm run indexnow                         # after a production deploy: ping IndexNow (D-052)
 npm run qa:copy | qa:prod-guard | qa:jsonld | qa:html | qa:links | qa:size        # on dist/
-npm run qa:pages | qa:contrast | qa:widths | qa:a11y | qa:nojs | qa:motion | qa:lh | qa:tour   # need the server on 4330
+npm run qa:pages | qa:contrast | qa:widths | qa:a11y | qa:nojs | qa:motion | qa:lh   # need the server on 4330
 npm run qa:fps                           # local only
 ```
 
@@ -36,7 +35,9 @@ Port 4322 on this machine runs synov-timer's preview: don't use it.
    **No em dashes anywhere, ever:** not in copy, alt text, metadata, structured data, comments or docs. No spaced en dash used as a dash either. `npm run qa:copy` enforces this.
 10. Placeholders are written `TODO(hero): what's needed`. The production guard fails if `TODO(hero)`, `TO CONFIRM` or an unconfirmed feature reaches `dist/`.
 
-Use Hero's logo file everywhere a logo appears; never redraw it (D-044). The colouring follows synov-timer's, in teal (D-045), and the 3D language follows its CSS 3D glass primitives (D-046).
+Use Hero's logo file everywhere a logo appears; never redraw it (D-044). The colouring follows synov-timer's, in teal (D-045); raleston's colour token names are kept and mapped to teal, blue and amber (D-047), on a near-black night (D-055).
+
+**How the motion fits together:** `src/scripts/main.ts` runs one GSAP ticker for Lenis and every scene. It loads one frame after the first paint (D-058), so first-screen motion is CSS. The hero's night city is `city.ts` (D-056); the services helix (D-057), the band and the kinetic words are `scroll.ts`; the seven plates are `journey.ts`; the small 3D models are `scenes.ts`. Scenes below the first screen start only when they come near (`whenNear` in `src/lib/layout.ts`). Every scene has a static version for no JavaScript and for reduced motion (`html:is(.reduced-motion, :not(.js))`), and the parity scripts check both carry the same text.
 
 Write "Selvion" exactly. On each page, the first mention says what it is ("Selvion, our fleet tracking platform"). Copy lives in `src/content/`, never in components. Ask Hero only when an answer changes what visitors are told (facts, claims, prices, names); otherwise pick a sensible default and record it in DECISIONS.md.
 
@@ -52,11 +53,9 @@ Write "Selvion" exactly. On each page, the first mention says what it is ("Selvi
 | TBT, mobile | 150 ms |
 | INP, real users, p75 | 150 ms |
 | Initial JavaScript on home (gzip) | 65 KB |
-| Lazy 3D chunk (gzip) | 200 KB |
 | Fonts | 80 KB, at most two preloaded files |
 | Home HTML with inlined CSS (gzip) | 60 KB |
-| DOM nodes on home | 1,500 |
-| Hero poster on phones (AVIF) | 60 KB |
+| DOM nodes on home | 2,500 (D-050; the brief said 1,500) |
 | Frame time p95 while scrolling | 20 ms desktop; 34 ms at 4x CPU throttle, 390 px |
 | Horizontal overflow | none from 320 to 1920 px |
 

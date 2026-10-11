@@ -1,12 +1,15 @@
 ---
+/** Not found: a short apology and the ways back. */
 import ContentPage from '../components/layout/ContentPage.astro';
+import Icon from '../components/ui/Icon.astro';
 ---
 
-<ContentPage id="not-found" noindex>
+<ContentPage id="not-found" icon="search" noindex cta={false}>
   <ul class="next">
-    <li><a class="btn btn-primary" href="/"><span class="signal" aria-hidden="true"></span>Home</a></li>
-    <li><a class="btn btn-secondary" href="/products/">Products</a></li>
-    <li><a class="btn btn-secondary" href="/contact/">Contact</a></li>
+    <li><a class="btn btn-primary" href="/">Home <Icon name="arrow" /></a></li>
+    <li><a class="btn btn-outline" href="/products/">Products</a></li>
+    <li><a class="btn btn-outline" href="/services/">Services</a></li>
+    <li><a class="btn btn-quiet" href="/contact/">Contact us</a></li>
   </ul>
 </ContentPage>
 

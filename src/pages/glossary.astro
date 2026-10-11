@@ -1,0 +1,126 @@
+---
+/** The glossary: plain-language definitions, each with its own anchor and a DefinedTerm in the page's data. */
+import { getCollection, getEntry } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import Icon from '../components/ui/Icon.astro';
+import { glossary } from '../lib/schema';
+
+const page = (await getEntry('pages', 'glossary'))!.data;
+const terms = (await getCollection('glossary')).sort((a, b) => a.data.term.localeCompare(b.data.term, 'en-GB'));
+const letters = [...new Set(terms.map((t) => t.data.term[0]!.toUpperCase()))];
+---
+
+<Page
+  title={page.seo.title}
+  description={page.seo.description}
+  heading={page.title}
+  lead={page.lead}
+  eyebrow="Plain language"
+  icon="book"
+  crumbs={[{ name: 'Glossary', href: '/glossary/' }]}
+  schema={[glossary('/glossary/', terms.map((t) => ({ id: t.id, term: t.data.term, definition: t.data.definition })))]}
+>
+  <section class="section" data-theme="dark" aria-label="Terms">
+    <div class="gutter">
+      <nav class="letters" aria-label="Jump to a letter">
+        {letters.map((l) => <a href={`#letter-${l.toLowerCase()}`}>{l}</a>)}
+      </nav>
+      <div class="terms">
+        {
+          letters.map((l) => (
+            <section class="letter-group" id={`letter-${l.toLowerCase()}`} aria-labelledby={`letter-${l.toLowerCase()}-title`}>
+              <h2 class="letter" id={`letter-${l.toLowerCase()}-title`}>
+                {l}
+              </h2>
+              <dl class="term-list">
+                {terms
+                  .filter((t) => t.data.term[0]!.toUpperCase() === l)
+                  .map((t) => (
+                    <div class="term" id={t.id}>
+                      <dt>{t.data.term}</dt>
+                      <dd>
+                        <p>{t.data.definition}</p>
+                        {t.data.see && (
+                          <a href={t.data.see} class="link-arrow mt-3">
+                            Read more<span class="sr-only"> about {t.data.term}</span> <Icon name="arrow" />
+                          </a>
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+              </dl>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .letters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .letters a {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border-radius: 0.7rem;
+    font-family: var(--font-mono);
+    color: var(--color-grey-200);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 10%, transparent);
+    transition:
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  .letters a:hover {
+    color: var(--color-white);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 50%, transparent);
+  }
+  .terms {
+    display: grid;
+    gap: 2.5rem;
+    max-width: 52rem;
+    margin-top: 3rem;
+  }
+  .letter-group {
+    display: grid;
+    gap: 1rem;
+    scroll-margin-top: 6rem;
+  }
+  .term-list {
+    display: grid;
+    gap: 1rem;
+  }
+  .letter {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-iris-soft);
+  }
+  .term {
+    scroll-margin-top: 6rem;
+    border-radius: 1.1rem;
+    padding: 1.25rem 1.4rem;
+    background: color-mix(in srgb, var(--color-navy) 55%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 9%, transparent);
+  }
+  .term:target {
+    box-shadow:
+      inset 0 0 0 1px var(--color-iris-soft),
+      0 20px 50px -30px color-mix(in srgb, var(--color-iris) 70%, transparent);
+  }
+  .term dt {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-white);
+  }
+  .term dd {
+    margin-top: 0.45rem;
+    line-height: 1.65;
+    color: var(--color-grey-200);
+  }
+</style>

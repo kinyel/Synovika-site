@@ -1,0 +1,49 @@
+order: 7
+eyebrow: How we work
+heading: Seven stages, and you always know which one we're in.
+lit: which one we're in.
+lead: Every project moves through the same steps, and each one ends with something you can see.
+body: Follow a project from the first call to the years after launch.
+items:
+  - title: Discover
+    heading: We learn how you really work.
+    body: We ask questions, watch a normal day, and listen to the people who'll use the software every day.
+    caption: A short write-up of what we heard
+    need: An hour or two of your time, and access to the people who do the work every day.
+    icon: search
+  - title: Requirements
+    heading: We write down what it must do.
+    body: Every feature, every rule and every awkward case, in plain language, agreed with you before anyone builds.
+    caption: A clear list of requirements
+    need: Your answers to our questions, and a careful read of the list before you agree it.
+    icon: spec
+  - title: Architecture
+    heading: We plan how the parts fit.
+    body: Which pieces we'll build, how they talk to each other, and the reason behind each choice.
+    caption: A plan of the parts, with reasons
+    need: Details of any systems we need to connect to, and who looks after them.
+    icon: architecture
+  - title: Build
+    heading: We build it in small pieces.
+    body: You see working software early and often, so there's never one big reveal at the end.
+    caption: Working pieces you can try
+    need: A few minutes every week or two to try what we have built and tell us what you think.
+    icon: build
+  - title: Test
+    heading: We test it where it'll be used.
+    body: On real Android phones and slow networks, not just on our own laptops.
+    caption: The test results
+    need: A couple of people to try it as real users before launch.
+    icon: test
+  - title: Launch
+    heading: We go live carefully.
+    body: Step by step, with a plan for rolling back if anything misbehaves.
+    caption: A launch plan with a way back
+    need: A go-ahead for the launch date, and someone on hand that day.
+    icon: arrowUpRight
+  - title: Maintain
+    heading: We stay and look after it.
+    body: Updates, monitoring and fixes, with a short note each month on what we did.
+    caption: A short note every month
+    need: A way to reach you when something needs a decision.
+    icon: heartbeat

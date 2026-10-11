@@ -21,6 +21,11 @@ for (const w of WIDTHS) {
           if (b.right <= innerWidth + 1 || el.closest('[aria-hidden="true"], [data-overflow-ok], details:not([open]) > :not(summary)')) return false;
           // Anything inside a fixed layer (the header, the phone sheet) scrolls with the viewport, not the page.
           for (let n = el; n; n = n.parentElement) if (getComputedStyle(n).position === 'fixed') return false;
+          // Clipped on purpose: inside a box that hides its overflow and itself fits (3D stages, drifting bands).
+          for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+            const o = getComputedStyle(n).overflowX;
+            if ((o === 'hidden' || o === 'clip') && n.getBoundingClientRect().right <= innerWidth + 1) return false;
+          }
           return true;
         })
         .slice(0, 4)

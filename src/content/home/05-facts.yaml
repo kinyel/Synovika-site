@@ -1,0 +1,17 @@
+order: 5
+eyebrow: Synovika in numbers
+heading: The plain facts.
+lead: No made-up figures. Just what is true today.
+items:
+  - title: "6"
+    body: services, from requirements to support
+    href: /services/
+  - title: "3"
+    body: products in development
+    href: /products/
+  - title: "7"
+    body: stages in every project
+    href: /how-we-work/
+  - title: "NG + world"
+    body: clients across Nigeria and abroad
+    href: /contact/

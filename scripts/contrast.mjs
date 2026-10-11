@@ -13,9 +13,11 @@ import { BASE, pages, LAUNCH, VIEWPORTS } from './lib/site.mjs';
 const browser = await chromium.launch(LAUNCH);
 const failures = [];
 let checked = 0;
-for (const path of pages({ lab: true })) {
+for (const path of pages()) {
   const page = await browser.newPage(VIEWPORTS.desktop);
   await page.goto(BASE + path, { waitUntil: 'networkidle' });
+  // The home headline plays its entrance on first paint: measure once it has finished.
+  if (path === '/') await page.waitForTimeout(2600);
   const result = await page.evaluate(() => {
     const parse = (c) => {
       const m = c.match(/rgba?\(([^)]+)\)/);

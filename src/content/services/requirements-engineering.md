@@ -1,6 +1,8 @@
 ---
 name: Requirements engineering
 blurb: Write down what you need, first
+icon: spec
+group: build
 summary: Before anyone writes code, we help you write down exactly what you need, so you pay for the right thing once.
 problem: "We paid for software that does what we asked, but not what we needed."
 whatWeDo:
@@ -14,6 +16,18 @@ deliverables:
   - A list of priorities agreed with you
   - Open questions, written down so they don't get lost
 visual: spec
+diagram:
+  kind: layers
+  layers:
+    - label: Why
+      sub: What the business needs, in your words
+    - label: Who
+      sub: Each kind of user, and what they do
+    - label: What
+      sub: Every feature, and the rules behind it
+    - label: How well
+      sub: Speed, security, phones and networks
+  caption: A good requirements list moves from why to who to what to how well, so nothing important is missed.
 faqs:
   - q: Can we use the requirements with another developer?
     a: Yes. They're yours, written so any competent team can build from them.

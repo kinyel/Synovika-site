@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import satori from 'satori';
 import sharp from 'sharp';
 import { getEntry } from 'astro:content';
-import { insights, products, services } from './content';
+import { industries, insights, products, services } from './content';
 
 export interface OgPage {
   /** Page path without slashes at either end; "home" for /. */
@@ -27,15 +27,19 @@ export async function ogPages(): Promise<OgPage[]> {
       ['about', 'About'],
       ['insights', 'Insights'],
       ['contact', 'Contact'],
+      ['industries', 'Industries'],
+      ['pricing', 'Pricing'],
+      ['faq', 'Questions and answers'],
+      ['glossary', 'Glossary'],
       ['privacy', 'Legal'],
       ['cookies', 'Legal'],
       ['terms', 'Legal'],
     ].map(async ([id, eyebrow]) => ({ slug: id!, eyebrow: eyebrow!, title: (await page(id!)).title })),
   );
   return [
-    { slug: 'home', eyebrow: 'Software engineering · Products · Nigeria', title: 'Software built around reality.' },
+    { slug: 'home', eyebrow: 'Software products that solve real problems', title: 'Built around reality. Engineered for impact.' },
     ...simple,
-    { slug: 'contact/thanks', eyebrow: 'Contact', title: (await page('thanks')).title },
+    ...(await industries()).map((i) => ({ slug: `industries/${i.id}`, eyebrow: 'Industries', title: `Software for ${i.data.name.toLowerCase()}` })),
     ...(await services()).map((s) => ({ slug: `services/${s.id}`, eyebrow: 'Service', title: s.data.name })),
     ...(await products()).map((p) => ({ slug: `products/${p.id}`, eyebrow: `Product · ${p.data.descriptor}`, title: p.data.name })),
     ...(await insights()).map((p) => ({ slug: `insights/${p.id}`, eyebrow: 'Insights', title: p.data.title })),

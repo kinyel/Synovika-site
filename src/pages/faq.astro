@@ -1,0 +1,135 @@
+---
+/**
+ * Every question we answer on the site, in one place: working with us, then
+ * each product and each service. Only confirmed answers reach production;
+ * the FAQPage data lists exactly what the page shows.
+ */
+import { getEntry } from 'astro:content';
+import Page from '../layouts/Page.astro';
+import Faq from '../components/ui/Faq.astro';
+import Icon from '../components/ui/Icon.astro';
+import { faqs, products, services } from '../lib/content';
+import { shown } from '../lib/drafts';
+import { faqPage } from '../lib/schema';
+
+const page = (await getEntry('pages', 'faq'))!.data;
+const general = (await faqs()).map((f) => f.data);
+const groups = [
+  { id: 'working-with-us', title: 'Working with us', href: '/how-we-work/', items: general },
+  ...(await products()).map((p) => ({ id: p.id, title: p.data.name, href: `/products/${p.id}/`, items: p.data.faqs.filter(shown) })),
+  ...(await services()).map((s) => ({ id: s.id, title: s.data.name, href: `/services/${s.id}/`, items: s.data.faqs.filter(shown) })),
+].filter((g) => g.items.length > 0);
+const all = groups.flatMap((g) => g.items);
+---
+
+<Page
+  title={page.seo.title}
+  description={page.seo.description}
+  heading={page.title}
+  lead={page.lead}
+  eyebrow="FAQ"
+  icon="chat"
+  crumbs={[{ name: 'FAQ', href: '/faq/' }]}
+  schema={all.length ? [faqPage('/faq/', all)] : []}
+>
+  <section class="section" data-theme="dark" aria-label="Questions">
+    <div class="gutter faq-layout">
+      <nav class="faq-nav" aria-label="Topics">
+        <p class="faq-nav-title">Topics</p>
+        <ul>
+          {
+            groups.map((g) => (
+              <li>
+                <a href={`#${g.id}`}>{g.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <div class="faq-groups">
+        {
+          groups.map((g) => (
+            <section class="faq-group" id={g.id} aria-labelledby={`${g.id}-title`}>
+              <div class="faq-group-head">
+                <h2 id={`${g.id}-title`} class="h3">
+                  {g.title}
+                </h2>
+                <a href={g.href} class="link-arrow">
+                  Read more<span class="sr-only"> about {g.title.toLowerCase()}</span> <Icon name="arrow" />
+                </a>
+              </div>
+              <Faq items={g.items} />
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .faq-layout {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1100px) {
+    .faq-layout {
+      grid-template-columns: 15rem minmax(0, 52rem);
+      gap: 4rem;
+    }
+    .faq-nav {
+      position: sticky;
+      top: 7rem;
+      align-self: start;
+    }
+  }
+  .faq-nav-title {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+  .faq-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 0.75rem;
+  }
+  @media (min-width: 1100px) {
+    .faq-nav ul {
+      display: grid;
+      border-left: 1px solid color-mix(in srgb, var(--color-white) 10%, transparent);
+    }
+  }
+  .faq-nav a {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    font-size: 0.95rem;
+    color: var(--color-grey-400);
+  }
+  @media (min-width: 1100px) {
+    .faq-nav a {
+      padding-left: 0.9rem;
+    }
+  }
+  .faq-nav a:hover {
+    color: var(--color-white);
+  }
+  .faq-groups {
+    display: grid;
+    gap: clamp(3rem, 6vw, 4.5rem);
+  }
+  .faq-group {
+    scroll-margin-top: 6rem;
+  }
+  .faq-group-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+</style>

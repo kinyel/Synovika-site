@@ -1,4 +1,25 @@
 order: 3
 name: Retail and small businesses
+short: Retail and SMEs
 note: Shops and SMEs that need software that keeps up.
-confirmed: false
+icon: store
+confirmed: true
+lead: Small businesses move fast, and their software often doesn't. A price changes, a new branch opens, a product sells out, and the website still says last month's news. We build tools that keep up with you, and that you can run yourselves.
+problems:
+  - Changing one line on the website means waiting days for a developer.
+  - Stock, orders and payments are tracked in three different places.
+  - Off-the-shelf software almost fits, but not quite, and the gaps cost time every day.
+  - Customers mostly visit on phones over patchy data, and the site is slow for them.
+helps:
+  - title: Websites with an Admin Panel
+    body: A business website your team edits from a simple admin panel. Change the text and add pages without calling anyone.
+    href: /products/websites-with-admin-panel/
+  - title: Software that fits
+    body: Order, stock and customer tools built around how you actually sell, not around a template.
+    href: /services/software-development/
+  - title: Tested on real phones
+    body: We test on the Android phones and slow networks your customers use, so the site works where it matters.
+    href: /services/testing-and-qa/
+seo:
+  title: Software and websites for small businesses in Nigeria | Synovika
+  description: Websites you can edit yourself, plus custom tools for orders, stock and customers, built for Nigerian shops and SMEs by Synovika. Tested on real phones.

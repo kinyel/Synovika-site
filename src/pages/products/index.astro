@@ -1,50 +1,105 @@
 ---
+/** Products: each one with a look at its screen (demo data), what it is, and its waitlist. */
 import { getEntry } from 'astro:content';
 import Page from '../../layouts/Page.astro';
+import Icon from '../../components/ui/Icon.astro';
 import StatusChip from '../../components/ui/StatusChip.astro';
-import { products } from '../../lib/content';
-const page = (await getEntry('pages', 'products'))!;
+import ProductScreen from '../../components/laptop/ProductScreen.astro';
+import { ctaOf, featuresOf, products } from '../../lib/content';
+import { itemList } from '../../lib/schema';
+
+const page = (await getEntry('pages', 'products'))!.data;
 const prod = await products();
 ---
 
-<Page title={page.data.seo.title} description={page.data.seo.description} heading={page.data.title} lead={page.data.lead} crumbs={[{ name: 'Products', href: '/products/' }]} pageType="CollectionPage">
-  <section class="section" data-theme="dark">
-    <div class="wrap">
-      <ul class="list">
-        {
-          prod.map((p) => (
-            <li>
-              <a class="glass glass-hover" href={`/products/${p.id}/`} style={`view-transition-name: product-${p.id}`}>
-                <StatusChip status={p.data.status} />
-                <h2 class="t-h3">{p.data.name}</h2>
-                <p class="t-muted">{p.data.summary}</p>
-              </a>
+<Page
+  title={page.seo.title}
+  description={page.seo.description}
+  heading={page.title}
+  lit="Products"
+  lead={page.lead}
+  eyebrow="What we make"
+  icon="sparkle"
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Products', href: '/products/' }]}
+  schema={[itemList('/products/', 'list', 'Synovika products', prod.map((p) => ({ name: p.data.name, path: `/products/${p.id}/` })))]}
+>
+  <section class="section" data-theme="dark" aria-label="Our products">
+    <ul class="gutter plist">
+      {
+        prod.map((p, i) => {
+          const cta = ctaOf(p);
+          const features = featuresOf(p).filter((f) => f.confirmed).slice(0, 4);
+          return (
+            <li class:list={['prow', i % 2 && 'is-flipped']}>
+              <div class="prow-copy" data-reveal>
+                <p class="flex flex-wrap items-center gap-3">
+                  <span class={`icon-tile is-sm tint-${p.data.accent}`}>
+                    <Icon name={p.data.icon} />
+                  </span>
+                  <StatusChip status={p.data.status} />
+                </p>
+                <h2 class="h2 mt-5">
+                  <a href={`/products/${p.id}/`} class="prow-link">
+                    {p.data.name}
+                  </a>
+                </h2>
+                <p class="prow-what">{p.data.descriptor}</p>
+                <p class="lead mt-4">{p.data.summary}</p>
+                {features.length > 0 && (
+                  <ul class="ticks mt-5">
+                    {features.map((f) => (
+                      <li>{f.title}</li>
+                    ))}
+                  </ul>
+                )}
+                <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <a href={cta.href} class="btn btn-primary">
+                    {cta.label}
+                    <span class="sr-only">: {p.data.name}</span> <Icon name="arrow" />
+                  </a>
+                  <a href={`/products/${p.id}/`} class="link-arrow">
+                    More about {p.data.name} <Icon name="arrow" />
+                  </a>
+                </div>
+              </div>
+              <ProductScreen id={p.id} caption={`${p.data.name}, with demo data.`} />
             </li>
-          ))
-        }
-      </ul>
-    </div>
+          );
+        })
+      }
+    </ul>
   </section>
 </Page>
 
 <style>
-  .section {
-    padding-block: clamp(4rem, 8vw, 7rem);
-  }
-  .list {
+  .plist {
     display: grid;
-    gap: var(--grid-gap);
+    gap: clamp(4rem, 9vw, 7rem);
   }
-  @media (min-width: 64rem) {
-    .list {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+  .prow {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .prow {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 4rem;
+    }
+    .prow.is-flipped .prow-copy {
+      order: 2;
     }
   }
-  .list a {
-    display: grid;
-    gap: 0.9rem;
-    justify-items: start;
-    height: 100%;
-    padding: 1.75rem;
+  .prow-link:hover {
+    color: var(--color-iris-soft);
+  }
+  .prow-what {
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
   }
 </style>

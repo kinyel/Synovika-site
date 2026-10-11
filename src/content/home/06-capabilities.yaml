@@ -1,0 +1,26 @@
+order: 6
+eyebrow: What we build
+heading: The software your business runs on.
+lit: your business runs on.
+lead: Different shapes, one way of working. Everything stands on how your business really runs.
+items:
+  - title: Web apps and portals
+    body: For your customers, your staff, or both
+    icon: browser
+    href: /services/software-development/
+  - title: Admin panels
+    body: Change your own content without a developer
+    icon: code
+    href: /products/websites-with-admin-panel/
+  - title: APIs and integrations
+    body: Your systems, joined up and talking
+    icon: integrations
+    href: /services/system-architecture/
+  - title: Dashboards and reports
+    body: The numbers your team checks every day
+    icon: chart
+    href: /services/software-development/
+  - title: Tracking and alerts
+    body: Know the moment something happens
+    icon: bell
+    href: /products/selvion/

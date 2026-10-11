@@ -1,25 +1,265 @@
 ---
-/** Contact. The form and its Pages Function arrive in Phase 5; for now, email and WhatsApp. */
-import ContentPage from '../../components/layout/ContentPage.astro';
+/**
+ * Contact. The form writes the message for you and sends it from your own
+ * email app or WhatsApp, so it works today with nothing stored on a server
+ * (D-048). Links elsewhere pre-fill it: ?waitlist=<product>, ?service=<id>,
+ * ?industry=<id>, ?topic=call.
+ */
+import { getEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
 import Icon from '../../components/ui/Icon.astro';
 import { SITE } from '../../data/site';
+import { products, services } from '../../lib/content';
+
+const page = (await getEntry('pages', 'contact'))!.data;
+const prod = await products();
+const svc = await services();
+const topics = [
+  { value: 'project', label: 'Start a new project' },
+  { value: 'waitlist', label: 'Join a product waitlist' },
+  { value: 'fix', label: 'Fix or look after software I already have' },
+  { value: 'call', label: 'Book a call' },
+  { value: 'other', label: 'Something else' },
+];
 ---
 
-<ContentPage id="contact" crumbs={[{ name: 'Contact', href: '/contact/' }]} pageType="ContactPage">
-  <div class="ways">
-    <a class="btn btn-primary" href={`mailto:${SITE.email}`}><Icon name="mail" />{SITE.email}</a>
-    <a class="btn btn-secondary" href={SITE.whatsapp} rel="noopener"><Icon name="chat" />WhatsApp {SITE.phone.display}</a>
-  </div>
-  <p class="t-muted area">{SITE.areaServed.sentence}</p>
-</ContentPage>
+<Page
+  title={page.seo.title}
+  description={page.seo.description}
+  heading={page.title}
+  lead={page.lead}
+  eyebrow="Contact"
+  icon="chat"
+  pageType="ContactPage"
+  cta={false}
+  crumbs={[{ name: 'Contact', href: '/contact/' }]}
+>
+  <section class="section" data-theme="dark" aria-labelledby="form-title">
+    <div class="gutter contact-grid">
+      <div class="card form-card">
+        <h2 id="form-title" class="h3">Send us a message</h2>
+        <p class="mt-2 text-grey-400">Fields marked optional can be left blank.</p>
+        <form class="cform" action={`mailto:${SITE.email}`} method="post" enctype="text/plain" data-contact novalidate>
+          <div class="field">
+            <label class="field-label" for="c-name">Your name</label>
+            <input class="input" id="c-name" name="name" type="text" autocomplete="name" required />
+            <p class="field-error" id="c-name-err" hidden>Please tell us your name.</p>
+          </div>
+          <div class="field">
+            <label class="field-label" for="c-company">Company or organisation <span class="opt">(optional)</span></label>
+            <input class="input" id="c-company" name="company" type="text" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="c-topic">What do you need?</label>
+            <select class="input" id="c-topic" name="topic" data-topic>
+              {topics.map((t) => <option value={t.value}>{t.label}</option>)}
+            </select>
+          </div>
+          <div class="field" data-product-field data-parity-ignore>
+            <label class="field-label" for="c-product">Which product? <span class="opt">(optional)</span></label>
+            <select class="input" id="c-product" name="product">
+              <option value="">Not sure yet</option>
+              {prod.map((p) => <option value={p.id}>{p.data.name}</option>)}
+            </select>
+          </div>
+          <div class="field" data-service-field data-parity-ignore>
+            <label class="field-label" for="c-service">Which service? <span class="opt">(optional)</span></label>
+            <select class="input" id="c-service" name="service">
+              <option value="">Not sure yet</option>
+              {svc.map((s) => <option value={s.id}>{s.data.name}</option>)}
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="c-message">Tell us a little about it</label>
+            <textarea class="input" id="c-message" name="message" rows="6" required aria-describedby="c-message-hint"></textarea>
+            <p class="field-hint" id="c-message-hint">How your business works today, what's going wrong, and what you'd like to change. Plain words are perfect.</p>
+            <p class="field-error" id="c-message-err" hidden>Please add a few words about what you need.</p>
+          </div>
+          <input type="hidden" name="industry" data-industry />
+          <div class="send">
+            <button type="submit" class="btn btn-primary" data-send="email"><Icon name="mail" /> Send by email</button>
+            <button type="submit" class="btn btn-outline" data-send="whatsapp" hidden data-js-only data-parity-ignore><Icon name="chat" /> Send on WhatsApp</button>
+          </div>
+          <p class="privacy-note">
+            Your message opens in your own email app or WhatsApp, ready to send, so nothing is stored on this website. We use your details only to reply. See our <a href="/privacy/">privacy notice</a>.
+          </p>
+          <p class="sr-only" role="status" data-status></p>
+        </form>
+      </div>
+
+      <aside class="ways">
+        <h2 class="h3">Or reach us directly</h2>
+        <ul class="ways-list">
+          <li>
+            <a href={`mailto:${SITE.email}`} class="card card-hover way">
+              <span class="icon-tile is-sm"><Icon name="mail" /></span>
+              <span><b>Email</b><span>{SITE.email}</span></span>
+            </a>
+          </li>
+          <li>
+            <a href={SITE.whatsapp} class="card card-hover way" rel="noopener">
+              <span class="icon-tile is-sm tint-teal"><Icon name="chat" /></span>
+              <span><b>WhatsApp</b><span>{SITE.phone.display}</span></span>
+            </a>
+          </li>
+          <li>
+            <a href={`tel:${SITE.phone.tel}`} class="card card-hover way">
+              <span class="icon-tile is-sm tint-amber"><Icon name="phone" /></span>
+              <span><b>Call</b><span>{SITE.phone.display}</span></span>
+            </a>
+          </li>
+        </ul>
+        <p class="mt-6 text-grey-400">{SITE.areaServed.sentence}</p>
+      </aside>
+    </div>
+  </section>
+</Page>
+
+<script>
+  import { SITE } from '../../data/site';
+
+  const form = document.querySelector<HTMLFormElement>('[data-contact]');
+  if (form) {
+    const $ = <T extends HTMLElement>(sel: string) => form.querySelector<T>(sel)!;
+    const topic = $<HTMLSelectElement>('[data-topic]');
+    const product = $<HTMLSelectElement>('#c-product');
+    const service = $<HTMLSelectElement>('#c-service');
+    const productField = $('[data-product-field]');
+    const serviceField = $('[data-service-field]');
+    const status = $('[data-status]');
+    const industry = $<HTMLInputElement>('[data-industry]');
+    for (const el of form.querySelectorAll<HTMLElement>('[data-js-only]')) el.hidden = false;
+
+    // Links from other pages arrive with what they're about.
+    const q = new URLSearchParams(location.search);
+    const pick = (sel: HTMLSelectElement, value: string | null) => {
+      if (value && [...sel.options].some((o) => o.value === value)) sel.value = value;
+    };
+    if (q.get('waitlist')) {
+      topic.value = 'waitlist';
+      pick(product, q.get('waitlist'));
+    } else if (q.get('topic') === 'call') topic.value = 'call';
+    if (q.get('service')) {
+      if (!q.get('waitlist')) topic.value = 'project';
+      pick(service, q.get('service'));
+    }
+    if (q.get('industry')) industry.value = q.get('industry') ?? '';
+
+    // Only the question that fits the topic is shown.
+    const sync = () => {
+      productField.hidden = topic.value !== 'waitlist';
+      serviceField.hidden = !['project', 'fix'].includes(topic.value);
+    };
+    topic.addEventListener('change', sync);
+    sync();
+
+    const required = [...form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[required]')];
+    const check = () => {
+      let first: HTMLElement | null = null;
+      for (const el of required) {
+        const ok = el.value.trim().length > 0;
+        el.setAttribute('aria-invalid', String(!ok));
+        const err = document.getElementById(`${el.id}-err`);
+        if (err) err.hidden = ok;
+        if (ok) el.removeAttribute('aria-describedby');
+        else el.setAttribute('aria-describedby', [`${el.id}-err`, el.id === 'c-message' ? 'c-message-hint' : ''].join(' ').trim());
+        if (!ok && !first) first = el;
+      }
+      return first;
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const invalid = check();
+      if (invalid) {
+        invalid.focus();
+        status.textContent = 'Please fill in the highlighted fields.';
+        return;
+      }
+      const data = new FormData(form);
+      const get = (k: string) => String(data.get(k) ?? '').trim();
+      const label = (sel: HTMLSelectElement) => sel.selectedOptions[0]?.textContent ?? '';
+      const lines: string[] = [`Name: ${get('name')}`];
+      if (get('company')) lines.push(`Company: ${get('company')}`);
+      lines.push(`About: ${label(topic)}`);
+      if (topic.value === 'waitlist' && product.value) lines.push(`Product: ${label(product)}`);
+      if (['project', 'fix'].includes(topic.value) && service.value) lines.push(`Service: ${label(service)}`);
+      if (get('industry')) lines.push(`Industry: ${get('industry')}`);
+      lines.push('', get('message'));
+      const body = lines.join('\n');
+      const subject = topic.value === 'waitlist' && product.value ? `Waitlist: ${label(product)}` : `${label(topic)}, from ${get('name')}`;
+      const via = (e.submitter as HTMLElement | null)?.dataset.send ?? 'email';
+      const url = via === 'whatsapp' ? `${SITE.whatsapp}?text=${encodeURIComponent(`${subject}\n\n${body}`)}` : `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      status.textContent = via === 'whatsapp' ? 'Opening WhatsApp with your message.' : 'Opening your email app with your message.';
+      if (via === 'whatsapp') window.open(url, '_blank', 'noopener');
+      else location.href = url;
+    });
+  }
+</script>
 
 <style>
-  .ways {
+  .contact-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .contact-grid {
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+      gap: 3.5rem;
+      align-items: start;
+    }
+  }
+  .form-card {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+  }
+  .cform {
+    display: grid;
+    gap: 1.4rem;
+    margin-top: 1.75rem;
+  }
+  .field[hidden] {
+    display: none;
+  }
+  .opt {
+    font-weight: 400;
+    color: var(--color-grey-400);
+  }
+  .send {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
   }
-  .area {
-    margin-top: 1.5rem;
+  .send [hidden] {
+    display: none;
+  }
+  .privacy-note {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-grey-400);
+  }
+  .privacy-note a {
+    color: var(--color-iris-soft);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .ways-list {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  .way {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.2rem;
+  }
+  .way b {
+    display: block;
+    color: var(--color-white);
+  }
+  .way span > span {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--color-grey-200);
   }
 </style>

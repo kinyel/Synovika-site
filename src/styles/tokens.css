@@ -77,11 +77,40 @@
   --color-white: #ffffff;
 
   /*
-   * Night: teal-950 taken most of the way to black. The site's stage, as
-   * synov-timer's navy night is its stage (D-045).
+   * Night: teal-950 taken almost all the way to black (Hero: "make the site
+   * darker"). The site's stage, as synov-timer's navy night is its stage (D-045, D-055).
    */
-  --color-night: #031514;
-  --color-deep: #062523;
+  --color-night: #010706;
+  --color-deep: #041513;
+
+  /*
+   * raleston-web's colour names, mapped to Synovika's palette (D-047), so its
+   * components port unchanged with only the colours swapped:
+   *   navy, indigo     deep teal grounds
+   *   iris, iris-soft  teal glow and lit teal text (its blue)
+   *   azure, violet    blue, for data
+   *   gold             warm amber light, the reference image's accent (its gold)
+   *   grey-*           the neutral ramp
+   */
+  --color-navy: #041513;
+  --color-indigo: #08221f;
+  --color-iris: #0d9488;
+  --color-iris-soft: #5eead4;
+  --color-azure: #3b82f6;
+  --color-azure-ink: #1d4ed8;
+  --color-violet: #2563eb;
+  --color-violet-soft: #60a5fa;
+  --color-violet-ink: #1d4ed8;
+  --color-gold: #f59e0b;
+  --color-gold-glow: #fcd34d;
+  --color-gold-ink: #b45309;
+  --color-grey-50: #fafafa;
+  --color-grey-100: #f4f4f4;
+  --color-grey-200: #d4d4d4;
+  --color-grey-400: #a3a3a3;
+  --color-grey-600: #5c5c5c;
+  --color-grey-800: #2e2e2e;
+  --color-black: #020404;
 
   /*
    * ── Semantic aliases ─────────────────────────────────────────────────
@@ -90,8 +119,8 @@
    * "-ink" variants are the text-safe versions of each meaning (AA on
    * that register's surface); the plain ones are for fills, lines and light.
    */
-  --color-surface: #031514;
-  --color-surface-raised: #062523;
+  --color-surface: #010706;
+  --color-surface-raised: #041513;
   --color-ink: #ffffff;
   /* Body and lead text on dark: soft, not pure white. */
   --color-ink-soft: #d4d4d4;
@@ -156,6 +185,7 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   /* A gentle spring (one soft overshoot) for magnetic buttons. */
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: linear(0, 0.157 4.6%, 0.551 13.2%, 0.86 21.5%, 1.004 28.7%, 1.06 35.3%, 1.064 41.5%, 1.03 53.4%, 0.996 70.4%, 1);
 }
 
@@ -193,8 +223,8 @@
 /* ── Registers ────────────────────────────────────────────────────────
  * The dark register is the default above. Every section names its own. */
 [data-theme='dark'] {
-  --color-surface: #031514;
-  --color-surface-raised: #062523;
+  --color-surface: #010706;
+  --color-surface-raised: #041513;
   --color-ink: #ffffff;
   --color-ink-soft: #d4d4d4;
   --color-ink-muted: #a3a3a3;

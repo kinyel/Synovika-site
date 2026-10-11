@@ -1,6 +1,8 @@
 ---
 name: Software development
 blurb: New systems, built from scratch
+icon: build
+group: build
 summary: We build new systems from scratch, from customer portals and internal tools to the APIs that join them up.
 problem: "We've outgrown spreadsheets and WhatsApp groups, and nothing we can buy fits the way we actually work."
 whatWeDo:
@@ -14,6 +16,15 @@ deliverables:
   - Written documentation and a handover session
   - A list of what we'd do next, in order
 visual: stack
+diagram:
+  kind: flow
+  steps:
+    - How you work today
+    - What it must do
+    - Small working pieces
+    - Tested on real phones
+    - Live, and handed over
+  caption: We build in small pieces you can see working, from the first conversation to the handover.
 relatedProducts: [selvion, websites-with-admin-panel]
 faqs:
   - q: Who owns the code?

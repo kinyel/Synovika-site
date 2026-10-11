@@ -1,0 +1,340 @@
+---
+/**
+ * 09 · Your data, put to work (raleston-web's layered model). A blue layer,
+ * "alerts and reports", settles over a field of raw events and reaches down
+ * to them one at a time: blue while it works, amber once each event has
+ * become something useful. Above it all, a dashed outline: you, on your
+ * phone. Beside it, the four kinds of answer, one line each.
+ */
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import { blk } from '../../lib/iso';
+import { home } from '../../lib/content';
+
+const head = (await home()).data!;
+// A 4 × 4 field of events. The layer works on these, in this order.
+const grid = [-123, -41, 41, 123];
+const records = grid.flatMap((y) => grid.map((x) => ({ x, y })));
+const work = [5, 14, 2, 11, 7, 12];
+---
+
+<section id="data" class="section dx" data-theme="dark" aria-labelledby="data-title">
+  <div class="dx-glow" aria-hidden="true"></div>
+  <div class="gutter relative dx-grid">
+    <div class="dx-head">
+      <p class="dx-eyebrow"><span class="dx-rule" aria-hidden="true"></span>{head.eyebrow}</p>
+      <h2 id="data-title" class="h2 mt-4" data-reveal><Lit text={head.heading} lit={head.lit} /></h2>
+      <p class="lead mt-4 max-w-[30rem]" data-reveal>{head.lead}</p>
+    </div>
+
+    <div class="s3d dx-scene" data-s3d aria-hidden="true">
+      <div class="s3d-world">
+        <span class="dx-pool"></span>
+        <div class="blk dx-base" style={blk(0, 0, 360, 12)}>
+          <b class="blk-top"><span class="dx-base-label">Raw events</span></b>
+          <b class="blk-e"></b>
+          <b class="blk-s"></b>
+        </div>
+        {
+          records.map((r, i) => {
+            const n = work.indexOf(i);
+            return (
+              <div class={`blk dx-rec ${n >= 0 ? 'is-work' : ''}`} style={blk(r.x, r.y, 66, 8, 12, n >= 0 ? `--n:${n}` : '')}>
+                <b class="blk-top">
+                  <i />
+                </b>
+                <b class="blk-e" />
+                <b class="blk-s" />
+              </div>
+            );
+          })
+        }
+        {work.map((i, n) => <span class="dx-beam" style={`--x:${records[i]!.x}px;--y:${records[i]!.y}px;--n:${n}`} />)}
+        <div class="blk dx-layer" style={blk(0, 0, 300, 5, 150)}>
+          <b class="blk-top"><span class="dx-layer-label">Alerts · Reports</span></b>
+          <b class="blk-e"></b>
+          <b class="blk-s"></b>
+        </div>
+        <div class="dx-tower">
+          <span>You, on your phone</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dx-copy">
+      <ul class="dx-list">
+        {
+          head.items.map((p) => (
+            <li data-reveal>
+              <span class="icon-tile tint-blue is-sm">
+                <Icon name={p.icon ?? 'chart'} />
+              </span>
+              <span class="dx-text">
+                <b>{p.title}</b>
+                <span>{p.body}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="dx-note" data-reveal>
+        <Icon name="lock" /> Who can see what is agreed with you before anything goes live.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dx {
+    overflow: hidden;
+    background: var(--color-night);
+  }
+  .dx-glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(45% 45% at 75% 40%, color-mix(in srgb, var(--color-violet) 13%, transparent), transparent 70%),
+      radial-gradient(40% 40% at 10% 70%, color-mix(in srgb, var(--color-iris) 10%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  .dx-grid {
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .dx-grid {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      grid-template-areas: 'head scene' 'copy scene';
+      grid-template-rows: auto 1fr;
+      column-gap: 3rem;
+    }
+    .dx-head {
+      grid-area: head;
+      align-self: end;
+    }
+    .dx-scene {
+      grid-area: scene;
+    }
+    .dx-copy {
+      grid-area: copy;
+      align-self: start;
+    }
+  }
+  .dx-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-violet-soft);
+  }
+  .dx-rule {
+    width: 1.6rem;
+    height: 1px;
+    background: currentColor;
+  }
+  .dx :global(.text-lit) {
+    color: var(--color-violet-soft);
+    text-shadow: 0 0 30px color-mix(in srgb, var(--color-violet) 70%, transparent);
+  }
+
+  /* ── The model ── */
+  .dx-scene {
+    --k: 0.6;
+    --rx: 60deg;
+    height: 380px;
+  }
+  @media (min-width: 640px) {
+    .dx-scene {
+      --k: 0.82;
+      height: 480px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .dx-scene {
+      --k: 1;
+      height: 580px;
+    }
+  }
+  .dx-scene .s3d-world {
+    top: 60%;
+  }
+  .dx-pool {
+    position: absolute;
+    left: -330px;
+    top: -330px;
+    width: 660px;
+    height: 660px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-violet) 16%, transparent), color-mix(in srgb, var(--color-iris) 6%, transparent) 55%, transparent);
+    transform: translateZ(-2px);
+  }
+  .dx-base .blk-top {
+    background:
+      radial-gradient(60% 60% at 50% 50%, color-mix(in srgb, var(--color-iris) 11%, transparent), transparent 75%),
+      color-mix(in srgb, var(--color-navy) 70%, var(--color-night));
+  }
+  .dx-base-label,
+  .dx-layer-label {
+    position: absolute;
+    right: 12px;
+    bottom: 9px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-iris-soft) 70%, transparent);
+  }
+  .dx-layer-label {
+    color: var(--color-violet-soft);
+  }
+  /* Events rise into place. */
+  .dx-rec {
+    --q: clamp(0, calc(var(--p) * 1.6), 1);
+    --dz: calc(var(--h) * (var(--q) - 1));
+  }
+  .dx-rec .blk-top i {
+    position: absolute;
+    left: 18%;
+    right: 30%;
+    top: 30%;
+    height: 3px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--color-white) 18%, transparent);
+    box-shadow: 0 9px 0 color-mix(in srgb, var(--color-white) 10%, transparent);
+  }
+  /* The event being worked on: blue while the layer acts, amber once done. */
+  .dx-rec.is-work .blk-top::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    animation: dx-work 9s linear infinite;
+    animation-delay: calc(var(--n) * 1.5s);
+    opacity: 0;
+  }
+  @keyframes dx-work {
+    0% {
+      opacity: 0;
+      box-shadow: inset 0 0 0 1.5px var(--color-violet), inset 0 0 18px color-mix(in srgb, var(--color-violet) 50%, transparent);
+    }
+    3%,
+    11% {
+      opacity: 1;
+      box-shadow: inset 0 0 0 1.5px var(--color-violet), inset 0 0 18px color-mix(in srgb, var(--color-violet) 50%, transparent), 0 0 24px color-mix(in srgb, var(--color-violet) 60%, transparent);
+    }
+    14%,
+    30% {
+      opacity: 1;
+      box-shadow: inset 0 0 0 1.5px var(--color-gold), inset 0 0 14px color-mix(in srgb, var(--color-gold) 30%, transparent);
+    }
+    40%,
+    100% {
+      opacity: 0;
+      box-shadow: inset 0 0 0 1.5px var(--color-gold);
+    }
+  }
+  /* A beam from the layer down to the event it is working on. */
+  .dx-beam {
+    position: absolute;
+    left: calc(var(--x) - 1px);
+    top: var(--y);
+    width: 2px;
+    height: 136px;
+    transform-origin: 50% 0;
+    transform: translateZ(150px) rotateX(-90deg);
+    background: linear-gradient(180deg, var(--color-violet-soft), color-mix(in srgb, var(--color-violet) 60%, transparent));
+    box-shadow: 0 0 12px 2px color-mix(in srgb, var(--color-violet) 70%, transparent);
+    opacity: 0;
+    animation: dx-beam 9s linear infinite;
+    animation-delay: calc(var(--n) * 1.5s);
+  }
+  @keyframes dx-beam {
+    0%,
+    13%,
+    100% {
+      opacity: 0;
+    }
+    2%,
+    10% {
+      opacity: 1;
+    }
+  }
+  /* The layer settles over the events as the section arrives. */
+  .dx-layer {
+    --dz: calc((1 - var(--p)) * 160px);
+  }
+  .dx-layer .blk-top {
+    background:
+      radial-gradient(65% 65% at 50% 50%, color-mix(in srgb, var(--color-violet) 13%, transparent), transparent 75%),
+      linear-gradient(135deg, color-mix(in srgb, var(--color-white) 12%, transparent), transparent 60%),
+      color-mix(in srgb, var(--color-violet) 10%, color-mix(in srgb, var(--color-night) 70%, transparent));
+    box-shadow:
+      inset 0 0 0 1.5px color-mix(in srgb, var(--color-violet-soft) 80%, transparent),
+      0 0 50px color-mix(in srgb, var(--color-violet) 35%, transparent);
+  }
+  .dx-layer .blk-e,
+  .dx-layer .blk-s {
+    background: color-mix(in srgb, var(--color-violet) 40%, var(--color-night));
+  }
+  /* You: an outline above everything, watching. */
+  .dx-tower {
+    position: absolute;
+    left: -170px;
+    top: -170px;
+    width: 340px;
+    height: 340px;
+    border: 1px dashed color-mix(in srgb, var(--color-iris-soft) 45%, transparent);
+    transform: translateZ(calc(240px + (1 - var(--p)) * 200px));
+  }
+  .dx-tower span {
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-iris-soft) 80%, transparent);
+  }
+
+  /* ── The list ── */
+  .dx-list {
+    display: grid;
+    border-top: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+  }
+  .dx-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+  }
+  .dx-text {
+    display: grid;
+    min-width: 0;
+  }
+  .dx-text b {
+    font-size: 1.15rem;
+    color: var(--color-white);
+  }
+  .dx-text > span {
+    font-size: 0.98rem;
+    color: var(--color-grey-400);
+  }
+  .dx-note {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+    font-size: 0.98rem;
+    color: var(--color-grey-200);
+  }
+  .dx-note :global(svg) {
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--color-violet-soft);
+  }
+</style>

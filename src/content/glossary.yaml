@@ -1,0 +1,84 @@
+- id: access-control
+  term: Access control
+  definition: Deciding, and recording, who may enter a place or use a system, and when.
+  see: /products/estate-entrance-security/
+- id: admin-panel
+  term: Admin panel
+  definition: The private part of a website or app where your team changes content, manages users and sees what's going on, without touching any code.
+  see: /products/websites-with-admin-panel/
+- id: api
+  term: API
+  definition: An application programming interface. It's a defined way for one piece of software to ask another for information, or to ask it to do something. APIs are how your website, your payment provider and your other tools talk to each other.
+  see: /services/system-architecture/
+- id: cms
+  term: Content management system (CMS)
+  definition: Software that lets people who aren't developers create and edit the pages of a website. An admin panel is often the front of one.
+  see: /products/websites-with-admin-panel/
+- id: debugging
+  term: Debugging
+  definition: Finding the real cause of a fault in software, then fixing it, rather than covering up the symptom.
+  see: /services/fixing-and-debugging/
+- id: fleet-tracking
+  term: Fleet tracking
+  definition: Using a tracker in each vehicle to see where your vehicles are, how they're being used and where they've been.
+  see: /products/selvion/
+- id: geofence
+  term: Geofence
+  definition: An invisible boundary drawn on a map, for example around a depot, a site or a route. Tracking software can tell you when a vehicle enters or leaves it.
+  see: /insights/geofences-explained/
+- id: gps-tracker
+  term: GPS tracker
+  definition: A small device fitted in a vehicle that works out where it is from satellite signals and sends that position over the mobile network.
+  see: /products/selvion/
+- id: ignition-alert
+  term: Ignition alert
+  definition: A message sent when a vehicle's engine is switched on or off, so you know when it starts moving, including outside the times you expect.
+  see: /products/selvion/
+- id: maintenance
+  term: Software maintenance
+  definition: Keeping live software healthy after launch, with updates, security patches, monitoring and fixes.
+  see: /services/maintenance-and-support/
+- id: ndpa
+  term: NDPA
+  definition: The Nigeria Data Protection Act 2023, the law on how organisations in Nigeria collect, use and protect people's personal data.
+  see: /insights/ndpa-basics-small-business-websites/
+- id: qa
+  term: Quality assurance (QA)
+  definition: The work of checking that software does what it should, on the devices and networks people really use, before and after every release.
+  see: /services/testing-and-qa/
+- id: regression
+  term: Regression
+  definition: Something that used to work and has stopped working after a change. Good testing catches regressions before your customers do.
+  see: /services/testing-and-qa/
+- id: remote-immobilisation
+  term: Remote immobilisation
+  definition: Stopping a vehicle from being started or driven, by a command sent from tracking software. It needs a tracker with a relay fitted, and it's meant for when a vehicle is stolen or used without permission.
+  see: /products/selvion/
+- id: requirements
+  term: Requirements
+  definition: A written, agreed list of what a piece of software must do, and how well it must do it, made before anyone starts building.
+  see: /services/requirements-engineering/
+- id: system-architecture
+  term: System architecture
+  definition: The plan of a software system's parts, how they connect, and why each one was chosen.
+  see: /services/system-architecture/
+- id: technical-debt
+  term: Technical debt
+  definition: Shortcuts in code that save time today and cost time later, usually as bugs and changes that take far longer than they should.
+  see: /services/fixing-and-debugging/
+- id: trip-report
+  term: Trip report
+  definition: A summary of one journey, with where it started and ended, the distance, the time it took, the stops and the top speed.
+  see: /products/selvion/
+- id: uptime-monitoring
+  term: Uptime monitoring
+  definition: Automatic checks that a website or system is up and answering, with an alert when it isn't.
+  see: /services/maintenance-and-support/
+- id: visitor-code
+  term: One-time visitor code
+  definition: A short code a resident shares with a visitor, which the gate accepts once, or until a time the resident sets.
+  see: /insights/estate-visitor-codes-vs-logbooks/
+- id: waitlist
+  term: Waitlist
+  definition: A list of people who want to hear first when a product is ready to use.
+  see: /products/

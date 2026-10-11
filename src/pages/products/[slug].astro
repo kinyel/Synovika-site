@@ -1,21 +1,35 @@
 ---
+/**
+ * A product page: what it is, a look at its screen (demo data), what it
+ * does, how it works step by step, who it's for, questions, and the waitlist.
+ * Unconfirmed features show only in dev and draft builds, marked TO CONFIRM.
+ */
 import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
 import Page from '../../layouts/Page.astro';
 import Faq from '../../components/ui/Faq.astro';
+import Icon from '../../components/ui/Icon.astro';
 import StatusCta from '../../components/ui/StatusCta.astro';
 import ToConfirm from '../../components/ui/ToConfirm.astro';
-import { featuresOf, products, type Product } from '../../lib/content';
+import ProductScreen from '../../components/laptop/ProductScreen.astro';
+import { ctaOf, featuresOf, products, stationsOf, unconfirmed, type Product } from '../../lib/content';
 import { shown } from '../../lib/drafts';
+import { STATUS } from '../../data/status';
 import { faqPage, softwareApplication } from '../../lib/schema';
 
-export const getStaticPaths = (async () => (await products()).map((p) => ({ params: { slug: p.id }, props: { p } }))) satisfies GetStaticPaths;
-const { p } = Astro.props as { p: Product };
+export const getStaticPaths = (async () => {
+  const all = await products();
+  return all.map((p) => ({ params: { slug: p.id }, props: { p, others: all.filter((o) => o.id !== p.id) } }));
+}) satisfies GetStaticPaths;
+const { p, others } = Astro.props as { p: Product; others: Product[] };
 const d = p.data;
 const path = `/products/${p.id}/`;
 const features = featuresOf(p);
+const stations = stationsOf(p);
 const questions = d.faqs.filter(shown);
+const cta = ctaOf(p);
 const { Content } = await render(p);
+const what = d.descriptor.charAt(0).toUpperCase() + d.descriptor.slice(1);
 ---
 
 <Page
@@ -23,11 +37,13 @@ const { Content } = await render(p);
   description={d.seo.description}
   heading={d.headline}
   lead={d.summary}
-  eyebrow="Product"
+  eyebrow={`Product · ${STATUS[d.status].chip}`}
+  icon={d.icon}
   crumbs={[
     { name: 'Products', href: '/products/' },
     { name: d.name, href: path },
   ]}
+  cta={{ title: `Be one of the first to use ${d.name}.`, lit: d.name, lead: cta.note, primary: { label: cta.label, href: cta.href } }}
   schema={[
     softwareApplication(
       path,
@@ -38,110 +54,268 @@ const { Content } = await render(p);
     ...(questions.length ? [faqPage(path, questions)] : []),
   ]}
 >
-  <div slot="hero" class="hero-cta"><StatusCta product={p} /></div>
-  <section class="section" data-theme="dark">
-    <div class="wrap grid-site body">
-      <div class="prose intro"><Content /></div>
-      <div class="col">
-        <h2 class="t-label t-muted">Who it's for</h2>
-        <ul class="ticks">{d.audience.map((a) => <li>{a}</li>)}</ul>
+  <StatusCta slot="hero" product={p} chip={false} />
+
+  <section class="section" data-theme="dark" aria-labelledby="look-title">
+    <div class="gutter look">
+      <div class="look-copy">
+        <p class="eyebrow">{what}</p>
+        <h2 id="look-title" class="h2 mt-4">A first look at <span class="text-lit">{d.name}</span></h2>
+        <div class="prose mt-5" data-speakable>
+          <Content />
+        </div>
+        <p class="look-note">
+          <span class="chip" data-status={d.status}>{STATUS[d.status].chip}</span>
+          The screen shows demo data. The names and places are made up.
+        </p>
       </div>
-      {
-        features.length > 0 && (
-          <div class="features">
-            <h2 class="t-label t-muted">What it does</h2>
-            <ul class="feature-grid">
-              {features.map((f) => (
-                <li class="glass">
-                  <h3 class="t-h3">
-                    {f.title} <ToConfirm when={!f.confirmed} />
-                  </h3>
-                  <p class="t-muted">{f.body}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )
-      }
-      {
-        questions.length > 0 && (
-          <div class="faq-wrap">
-            <h2 class="t-label t-muted">Questions</h2>
-            <Faq items={questions} />
-          </div>
-        )
-      }
-      <div class="end"><StatusCta product={p} chip={false} /></div>
+      <ProductScreen id={p.id} caption={`${d.name}, with demo data.`} />
     </div>
   </section>
+
+  {
+    features.length > 0 && (
+      <section class="section feat" data-theme="dark" aria-labelledby="features-title">
+        <div class="gutter">
+          <p class="eyebrow">What it does</p>
+          <h2 id="features-title" class="h2 mt-4" data-reveal>
+            Everything {d.name} <span class="text-lit">does for you</span>
+          </h2>
+          <ul class="feat-grid">
+            {features.map((f) => (
+              <li class="card card-hover feat-card" data-reveal>
+                <span class={`icon-tile is-sm tint-${d.accent}`}>
+                  <Icon name="check" />
+                </span>
+                <h3 class="h3 mt-4">
+                  {f.title} <ToConfirm when={!f.confirmed} />
+                </h3>
+                <p class="mt-2 text-grey-200">{f.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    stations.length > 0 && (
+      <section class="section how" data-theme="dark" aria-labelledby="how-title">
+        <div class="gutter">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-title" class="h2 mt-4" data-reveal>
+            How it works, <span class="text-lit">step by step</span>
+          </h2>
+          <ol class="how-list">
+            {stations.map((s, i) => (
+              <li class="how-step" data-reveal>
+                <span class="how-num">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3 class="h3">
+                    {s.heading} <ToConfirm when={unconfirmed(p, s.feature)} />
+                  </h3>
+                  <p class="mt-2 text-grey-200">{s.body}</p>
+                  {s.readout && (
+                    <p class="how-readout">
+                      <span class="badge badge-data">Demo data</span> {s.readout}
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section who" data-theme="dark" aria-labelledby="who-title">
+    <div class="gutter who-grid">
+      <div>
+        <p class="eyebrow">Who it's for</p>
+        <h2 id="who-title" class="h2 mt-4" data-reveal>Made for <span class="text-lit">people like you</span></h2>
+      </div>
+      <ul class="ticks who-list" data-reveal>
+        {d.audience.map((a) => <li>{a}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  {
+    questions.length > 0 && (
+      <section class="section" data-theme="dark" aria-labelledby="pfaq-title">
+        <div class="gutter faq-wrap">
+          <div>
+            <p class="eyebrow">Questions</p>
+            <h2 id="pfaq-title" class="h2 mt-4" data-reveal>
+              About <span class="text-lit">{d.name}</span>
+            </h2>
+          </div>
+          <Faq items={questions} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    others.length > 0 && (
+      <section class="section more" data-theme="dark" aria-labelledby="more-title">
+        <div class="gutter">
+          <h2 id="more-title" class="h3">Our other products</h2>
+          <ul class="more-grid">
+            {others.map((o) => (
+              <li>
+                <a href={`/products/${o.id}/`} class="card card-hover more-card">
+                  <span class={`icon-tile is-sm tint-${o.data.accent}`}>
+                    <Icon name={o.data.icon} />
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <b>{o.data.name}</b>
+                    <span>{o.data.summary}</span>
+                  </span>
+                  <Icon name="arrow" class="more-arrow" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
 </Page>
 
 <style>
-  .hero-cta {
+  .look {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .look {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 4rem;
+    }
+  }
+  .look-note {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 0.8rem;
+    margin-top: 1.5rem;
+    font-size: 0.92rem;
+    color: var(--color-grey-400);
+  }
+  .feat {
+    background: radial-gradient(40% 50% at 100% 0%, color-mix(in srgb, var(--color-iris) 12%, transparent), transparent 70%);
+  }
+  .feat-grid {
+    display: grid;
+    gap: 1rem;
     margin-top: 2.25rem;
   }
-  .section {
-    padding-block: clamp(4rem, 8vw, 7rem);
-  }
-  .body {
-    row-gap: 3.5rem;
-  }
-  .body > * {
-    grid-column: 1 / -1;
-  }
-  @media (min-width: 64rem) {
-    .intro {
-      grid-column: 1 / span 8;
-    }
-    .col {
-      grid-column: 1 / span 6;
-    }
-  }
-  .intro {
-    font-size: var(--text-lead);
-  }
-  .ticks {
-    display: grid;
-    gap: 0.75rem;
-    margin-top: 1rem;
-  }
-  .ticks li {
-    position: relative;
-    padding-left: 1.5rem;
-  }
-  .ticks li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.6em;
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 50%;
-    background: var(--color-live);
-    box-shadow: 0 0 10px var(--color-teal-400);
-  }
-  .feature-grid {
-    display: grid;
-    gap: var(--grid-gap);
-    margin-top: 1rem;
-  }
-  @media (min-width: 48rem) {
-    .feature-grid {
+  @media (min-width: 640px) {
+    .feat-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-  @media (min-width: 64rem) {
-    .feature-grid {
+  @media (min-width: 1100px) {
+    .feat-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
-  .feature-grid li {
-    display: grid;
-    gap: 0.5rem;
-    align-content: start;
+  .feat-card {
     padding: 1.5rem;
   }
-  .faq-wrap h2 {
-    margin-bottom: 1rem;
+  .how-list {
+    display: grid;
+    gap: 0.25rem;
+    max-width: 52rem;
+    margin-top: 2.25rem;
+    counter-reset: step;
+  }
+  .how-step {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-white) 8%, transparent);
+  }
+  .how-num {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.12em;
+    line-height: 2;
+    color: var(--color-iris-soft);
+  }
+  .how-readout {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--color-grey-200);
+  }
+  .who-grid {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (min-width: 1024px) {
+    .who-grid {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+  .who-list {
+    font-size: 1.08rem;
+    color: var(--color-grey-200);
+  }
+  .faq-wrap {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .faq-wrap {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+  .more-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+  @media (min-width: 900px) {
+    .more-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .more-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+  .more-card b {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--color-white);
+  }
+  .more-card span > span {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.95rem;
+    color: var(--color-grey-400);
+  }
+  .more-card :global(.more-arrow) {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex: none;
+    color: var(--color-iris-soft);
   }
 </style>

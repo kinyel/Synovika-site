@@ -59,10 +59,11 @@ try {
   const browser = await chromium.launch();
   const page = await browser.newPage();
   await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 15000 });
-  row('DOM nodes, home', await page.evaluate(() => document.getElementsByTagName('*').length), 1500, 'nodes');
+  // 2,500, not the brief's 1,500: Hero asked for every raleston-web 3D scene on the home page (D-050).
+  row('DOM nodes, home', await page.evaluate(() => document.getElementsByTagName('*').length), 2500, 'nodes');
   await browser.close();
 } catch {
-  rows.push({ name: 'DOM nodes, home', value: NaN, budget: 1500, unit: 'nodes', ok: true, note: 'skipped: no server on ' + BASE });
+  rows.push({ name: 'DOM nodes, home', value: NaN, budget: 2500, unit: 'nodes', ok: true, note: 'skipped: no server on ' + BASE });
 }
 
 for (const r of rows) console.log(`${r.ok ? 'ok  ' : 'FAIL'} ${r.name.padEnd(36)} ${Number.isNaN(r.value) ? '   n/a' : r.value.toFixed(r.unit === 'KB' ? 1 : 0).padStart(6)} / ${String(r.budget).padStart(4)} ${r.unit}  ${r.note}`);

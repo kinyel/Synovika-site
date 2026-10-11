@@ -1,106 +1,43 @@
 ---
 /**
- * Inner pages: Base plus a page hero (breadcrumbs, H1 and its plain lead).
- * The body of the page goes in the default slot.
+ * Inner pages: Base plus a page hero (breadcrumbs, H1, its plain lead and a
+ * small 3D plate stack). The body of the page goes in the default slot, the
+ * hero's extras (buttons, dates) in the "hero" slot.
  */
 import Base, { type Crumb } from './Base.astro';
+import PageHero from '../components/ui/PageHero.astro';
+import type { IconName } from '../components/ui/icons';
 import type { Thing } from 'schema-dts';
 
 interface Props {
   title: string;
   description: string;
   heading: string;
-  /** Words of the heading to light in teal (synov-timer's emphasis, D-045). */
+  /** Words of the heading lit in teal. */
   lit?: string;
   lead: string;
   eyebrow?: string;
   crumbs?: Crumb[];
   schema?: Exclude<Thing, string>[];
   pageType?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
-  theme?: 'dark' | 'paper' | 'teal';
+  /** The icon on the hero's plate stack; false for none. */
+  icon?: IconName | false;
   noindex?: boolean;
+  cta?: boolean | { title?: string; lit?: string; lead?: string; primary?: { label: string; href: string } };
+  ogType?: 'website' | 'article';
+  published?: Date;
+  modified?: Date;
+  /** A smaller title, for long ones (articles). */
+  compact?: boolean;
 }
-const { heading, lit, lead, eyebrow, crumbs = [], theme = 'dark', ...rest } = Astro.props;
-const at = lit ? heading.indexOf(lit) : -1;
-const [before, after] = at >= 0 ? [heading.slice(0, at), heading.slice(at + lit!.length)] : [heading, ''];
+const { heading, lit, lead, eyebrow, crumbs = [], icon, compact, ...rest } = Astro.props;
 ---
 
-<Base {...rest} crumbs={crumbs} navTheme={theme}>
-  <section class="page-hero noise" data-theme={theme}>
-    <div class="atmos" aria-hidden="true"></div>
-    <div class="wrap">
-      {
-        crumbs.length > 0 && (
-          <nav aria-label="Breadcrumb" class="crumbs">
-            <ol>
-              <li>
-                <a href="/">Home</a>
-              </li>
-              {crumbs.map((c, i) => (
-                <li>{i === crumbs.length - 1 ? <span aria-current="page">{c.name}</span> : <a href={c.href}>{c.name}</a>}</li>
-              ))}
-            </ol>
-          </nav>
-        )
-      }
-      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-      <h1 class="t-display page-title">{before}{at >= 0 && <span class="text-lit">{lit}</span>}{after}</h1>
-      <p class="t-lead page-lead">{lead}</p>
-      <slot name="hero" />
-    </div>
-  </section>
-  <slot />
+<Base {...rest} crumbs={crumbs}>
+  <PageHero crumbs={crumbs} eyebrow={eyebrow} title={heading} lit={lit} lead={lead} icon={icon} compact={compact}>
+    <slot name="hero" />
+  </PageHero>
+  <div class="is-page">
+    <slot />
+  </div>
 </Base>
-
-<style>
-  .page-hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    padding-top: calc(var(--header-height) + clamp(3rem, 8vw, 7rem));
-    padding-bottom: clamp(3rem, 7vw, 6rem);
-  }
-  .page-hero .atmos {
-    --glow-x: 85%;
-    --glow-y: 8%;
-    --glow2-x: 0%;
-    --glow2-y: 60%;
-    --grid-x: 75%;
-    --grid-y: 20%;
-  }
-  .page-title {
-    max-width: 16ch;
-    margin-top: 1.5rem;
-    view-transition-name: page-title;
-  }
-  .page-lead {
-    margin-top: 1.5rem;
-  }
-  .crumbs ol {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    font-size: var(--text-small);
-    color: var(--color-ink-muted);
-  }
-  .crumbs li + li::before {
-    content: '/';
-    margin-right: 0.5rem;
-    opacity: 0.6;
-  }
-  .crumbs a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 24px;
-  }
-  .crumbs a:hover {
-    color: var(--color-ink);
-  }
-  .crumbs [aria-current] {
-    color: var(--color-live-ink);
-  }
-  .crumbs + .eyebrow,
-  .crumbs + .page-title {
-    margin-top: 1.5rem;
-  }
-</style>

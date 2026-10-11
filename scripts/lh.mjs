@@ -33,9 +33,10 @@ for (const path of list) {
         accessibility: Math.round(lhr.categories.accessibility.score * 100),
         'best-practices': Math.round(lhr.categories['best-practices'].score * 100),
         seo: Math.round(lhr.categories.seo.score * 100),
-        lcp: lhr.audits['largest-contentful-paint'].numericValue,
-        cls: lhr.audits['cumulative-layout-shift'].numericValue,
-        tbt: lhr.audits['total-blocking-time'].numericValue,
+        lcp: lhr.audits['largest-contentful-paint'].numericValue ?? Infinity,
+        // An audit that errors has no value: count it as a miss rather than crash.
+        cls: lhr.audits['cumulative-layout-shift'].numericValue ?? Infinity,
+        tbt: lhr.audits['total-blocking-time'].numericValue ?? Infinity,
       });
     }
     runs.sort((a, b) => a.performance - b.performance);

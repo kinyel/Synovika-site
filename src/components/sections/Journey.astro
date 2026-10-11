@@ -1,0 +1,1663 @@
+---
+/**
+ * 07 · How we work (raleston-web's exploded drawing, given a new job).
+ *
+ * Seven smoked-glass plates, one per stage of a project, floating under a
+ * single amber light. As the visitor scrolls, the stack turns from diamonds
+ * to squares, and the project falls through the plates as a spark of light:
+ * each plate it reaches lights up and the words on its surface read clearly,
+ * while a note, tied to the plate by a leader line, says what happens there
+ * and what you get. After the last stage the stack turns back to diamonds and
+ * the plates close up into one lit platform.
+ *
+ * Everything readable is HTML. Without JavaScript, or with reduced motion,
+ * the plates sit still, fully lit, and the stages are a plain list.
+ * Behaviour lives in src/scripts/journey.ts.
+ */
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import { home } from '../../lib/content';
+
+const head = (await home()).journey!;
+const STEPS = head.items;
+const N = STEPS.length;
+const pad = (i: number) => String(i + 1).padStart(2, '0');
+const total = String(N).padStart(2, '0');
+// Check marks on the Test plate (x, y in % of its surface), pulled in to the centre when it lights.
+const checks = [
+  [14, 18],
+  [30, 8],
+  [72, 12],
+  [88, 30],
+  [90, 60],
+  [72, 88],
+  [36, 90],
+  [10, 72],
+  [8, 44],
+];
+const ui = (name: string) => name.toLowerCase();
+---
+
+<section id="how-we-work" class="journey" data-theme="dark" aria-labelledby="journey-title" data-journey style={`--n:${N};--mid:${(N - 1) / 2};--len-cards:${N * 36}svh`}>
+  <span id="journey-steps" class="journey-mark" aria-hidden="true"></span>
+  <div class="stage" data-stage>
+    <div class="stage-bg" aria-hidden="true">
+      <span class="bg-light"></span>
+      <span class="bg-grid"></span>
+      <span class="bg-floor"></span>
+      <canvas class="bg-dust" data-dust></canvas>
+    </div>
+
+    <!-- Screen one -->
+    <div class="intro gutter" data-intro>
+      <p class="eyebrow">{head.eyebrow}</p>
+      <h2 id="journey-title" class="j-title"><Lit text={head.heading} lit={head.lit} /></h2>
+      <p class="j-lead">{head.lead}</p>
+      <div class="j-ctas">
+        <a href="/how-we-work/" class="btn btn-outline">How we work, in full <Icon name="arrow" /></a>
+      </div>
+      <a href="#journey-steps" class="cue" data-journey-cue>
+        <span class="cue-line" aria-hidden="true"><span></span></span>
+        {head.body}
+      </a>
+    </div>
+
+    <!-- The project: seven glass plates and the thread of light through them -->
+    <div class="platform" aria-hidden="true" data-platform>
+      <div class="stack" data-stack>
+        {
+          STEPS.map((s, i) => (
+            <div class={`plate plate-${i + 1}`} style={`--i:${i}`} data-plate={i}>
+              <span class="plate-edge" style="--e:4" />
+              <span class="plate-edge" style="--e:3" />
+              <span class="plate-edge" style="--e:2" />
+              <span class="plate-edge" style="--e:1" />
+              <div class="plate-top">
+                <span class="plate-sheen" />
+                <span class="plate-clip">
+                  <span class="plate-sweep" />
+                </span>
+                <span class="plate-num lvl">{pad(i)}</span>
+                <span class="plate-name lvl">{s.title}</span>
+                <span class="plate-port">
+                  <span />
+                </span>
+
+                {ui(s.title) === 'discover' && (
+                  <div class="ui ui-chat">
+                    <p class="bubble bubble-you lvl">Our drivers call in all day.</p>
+                    <p class="bubble bubble-us lvl">
+                      <span class="us-mark" />
+                      Show us a normal day.
+                    </p>
+                  </div>
+                )}
+                {ui(s.title) === 'requirements' && (
+                  <div class="ui ui-kb">
+                    <span class="kb lvl">
+                      <span class="kb-title">Must do</span>
+                      <span class="kb-line" style="--w:92%" />
+                      <span class="kb-line" style="--w:78%" />
+                      <span class="kb-line" style="--w:64%" />
+                    </span>
+                    <span class="seal">
+                      <svg viewBox="0 0 16 16">
+                        <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                    </span>
+                  </div>
+                )}
+                {ui(s.title) === 'architecture' && (
+                  <div class="ui ui-graph">
+                    <svg viewBox="0 0 100 100" class="graph-lines">
+                      <path d="M50 50 L18 18" />
+                      <path d="M50 50 L84 30" />
+                      <path d="M50 50 L78 72" />
+                    </svg>
+                    <span class="node lvl" style="--x:18;--y:18" data-label="App" />
+                    <span class="node lvl" style="--x:84;--y:30" data-label="API" />
+                    <span class="node lvl" style="--x:78;--y:72" data-label="Data" />
+                  </div>
+                )}
+                {ui(s.title) === 'build' && (
+                  <div class="ui ui-lanes">
+                    <span class="lane" style="--l:0">
+                      <b class="lvl lane-t">Planned</b>
+                    </span>
+                    <span class="lane lane-target" style="--l:1">
+                      <b class="lvl lane-t">Built</b>
+                    </span>
+                    <span class="lane" style="--l:2">
+                      <b class="lvl lane-t">Next</b>
+                    </span>
+                    <span class="ticket">
+                      <span class="lvl ticket-in">
+                        <span class="ticket-tag" />
+                        Login page
+                      </span>
+                    </span>
+                  </div>
+                )}
+                {ui(s.title) === 'test' && (
+                  <div class="ui ui-alerts">
+                    {checks.map(([x, y]) => (
+                      <span class="alert" style={`--x:${x};--y:${y}`} />
+                    ))}
+                    <span class="alert-card lvl">Checks passed</span>
+                  </div>
+                )}
+                {ui(s.title) === 'launch' && (
+                  <div class="ui ui-go">
+                    <span class="go">
+                      <span class="go-track">
+                        <span class="go-fill" />
+                      </span>
+                      <span class="go-row lvl">
+                        <span>Release</span>
+                        <span class="go-live">Live</span>
+                      </span>
+                    </span>
+                  </div>
+                )}
+                {ui(s.title) === 'maintain' && (
+                  <div class="ui ui-beat">
+                    <svg viewBox="0 0 100 34" class="beat" preserveAspectRatio="none">
+                      <path d="M0 20 H30 L36 6 L44 30 L50 14 L54 20 H100" />
+                    </svg>
+                    <span class="note-chip lvl">Monthly note</span>
+                  </div>
+                )}
+
+                <i class="anchor" style="left:50%;top:50%" data-anchor="c" />
+                <i class="anchor" style="left:0;top:0" data-anchor="l" />
+                <i class="anchor" style="left:100%;top:100%" data-anchor="r" />
+                <i class="anchor" style="left:0;top:100%" data-anchor="f" />
+              </div>
+              <span class="plate-outline" data-outline />
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Screen-space overlay, centred on the platform -->
+      <svg class="beam" data-beam>
+        <defs>
+          <radialGradient id="spark-halo">
+            <stop offset="0" stop-color="var(--color-gold-glow)" stop-opacity="0.9"></stop>
+            <stop offset="0.3" stop-color="var(--color-gold)" stop-opacity="0.38"></stop>
+            <stop offset="1" stop-color="var(--color-gold)" stop-opacity="0"></stop>
+          </radialGradient>
+          <linearGradient id="beam-lit" gradientUnits="userSpaceOnUse" x1="0" y1="-400" x2="0" y2="400" data-beam-grad>
+            <stop offset="0" stop-color="var(--color-gold)" stop-opacity="0.3"></stop>
+            <stop offset="0.85" stop-color="var(--color-gold)" stop-opacity="1"></stop>
+            <stop offset="1" stop-color="var(--color-gold-glow)" stop-opacity="1"></stop>
+          </linearGradient>
+          <filter id="beam-blur" x="-400%" y="-10%" width="900%" height="120%">
+            <feGaussianBlur stdDeviation="4"></feGaussianBlur>
+          </filter>
+        </defs>
+        <path class="beam-base" data-beam-base></path>
+        <path class="beam-glow" filter="url(#beam-blur)" stroke="url(#beam-lit)" data-beam-lit></path>
+        <path class="beam-lit" stroke="url(#beam-lit)" data-beam-lit></path>
+        {
+          STEPS.map((_, i) => (
+            <g class="flare" data-flare={i}>
+              <circle r="26" />
+            </g>
+          ))
+        }
+        <path class="leader" data-leader></path>
+        <circle class="leader-end" r="3.5" data-leader-end></circle>
+        <g class="spark" data-spark>
+          <g data-spark-inner>
+            <circle r="46" fill="url(#spark-halo)"></circle>
+            <circle class="spark-ring" r="9"></circle>
+            <circle class="spark-core" r="4.2"></circle>
+          </g>
+        </g>
+      </svg>
+
+      <!-- Level marks beside the plates, like datum lines on a section drawing -->
+      {
+        STEPS.map((s, i) => (
+          <div class="datum" data-datum={i}>
+            <span class="datum-line" />
+            <svg viewBox="0 0 14 12" class="datum-mark">
+              <path d="M1 1h12L7 10z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
+            </svg>
+            <span class="datum-level">{pad(i)}</span>
+            <span class="datum-name">{s.title}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- The notes: what happens at each stage, and what you get -->
+    <div class="notes" data-notes>
+      <header class="notes-head">
+        <p class="eyebrow">A project, stage by stage</p>
+        <p class="notes-title">From the first call to <span class="text-lit">the years after launch</span></p>
+        <div class="notes-progress" aria-hidden="true" data-progress-steps>
+          {STEPS.map(() => <span><i /></span>)}
+        </div>
+      </header>
+      <div class="notes-body">
+        <ol class="notes-list">
+          {
+            STEPS.map((s, i) => (
+              <li class="note" data-note={i}>
+                <p class="note-level" data-note-level>
+                  <svg viewBox="0 0 14 12" class="note-mark" aria-hidden="true">
+                    <path d="M1 1h12L7 10z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" />
+                  </svg>
+                  <span class="note-num">
+                    Stage {pad(i)}
+                    <span class="note-of">/ {total}</span>
+                  </span>
+                  <span class="note-name">{s.title}</span>
+                </p>
+                <h3 class="note-title">{s.heading}</h3>
+                <p class="note-body">{s.body}</p>
+                {s.caption && (
+                  <p class="note-how">
+                    <span>You get</span> {s.caption}
+                  </p>
+                )}
+              </li>
+            ))
+          }
+        </ol>
+        <div class="note note-end" data-note-end>
+          <p class="eyebrow">Seven stages, one team</p>
+          <p class="note-end-title">And you always know <span class="text-lit">where we are.</span></p>
+          <p class="note-body">Each stage ends with something you can see, so you're never left wondering what you're paying for.</p>
+          <a href="/contact/" class="btn btn-primary note-cta">Start a project <Icon name="arrow" /></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── The stage ──────────────────────────────────────────────────────── */
+  .journey {
+    /* How much scrolling each stage of the journey takes (journey.ts reads these for its stage
+       boundaries). The start (diamonds turning to squares) and the close (back to diamonds,
+       closing up) keep an easy pace; the seven cards in between go quickly, so it never feels stuck. */
+    --len-intro: 70svh;
+    /* Set on the element from the number of stages (journey.ts reads it, so it must be a plain length). */
+    --len-cards: 252svh;
+    --len-close: 80svh;
+    --len: calc(var(--len-intro) + var(--len-cards) + var(--len-close));
+    /* Card changes (glow, edges, words) ease in and out evenly, so one card hands over to the next without a snap. */
+    --ease-calm: cubic-bezier(0.45, 0, 0.25, 1);
+    --plate: 250px;
+    --gap: 66px;
+    --tilt: 57deg;
+    --spin: -42deg;
+    position: relative;
+    background: var(--color-night);
+    color: var(--color-white);
+  }
+  .journey-mark {
+    position: absolute;
+    top: var(--len-intro);
+    left: 0;
+  }
+  .stage {
+    position: relative;
+  }
+  .stage-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  /*
+   * Dark night base, a teal light from the top right, blue from the
+   * bottom left, and one small warm halo where the project starts.
+   */
+  .bg-light {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(16% 24% at 64% 9%, color-mix(in srgb, var(--color-gold) 5%, transparent), transparent 75%),
+      radial-gradient(46% 54% at 84% 14%, color-mix(in srgb, var(--color-iris) 22%, transparent), transparent 72%),
+      radial-gradient(50% 60% at 6% 92%, color-mix(in srgb, var(--color-violet) 16%, transparent), transparent 74%),
+      radial-gradient(38% 44% at 64% 60%, color-mix(in srgb, var(--color-azure) 5%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--color-night) 0%, color-mix(in srgb, var(--color-indigo) 60%, var(--color-night)) 100%);
+  }
+  /* A faint drafting grid, strongest around the platform. */
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--color-white) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-white) 4%, transparent) 1px, transparent 1px);
+    background-size: 72px 72px;
+    background-position: center;
+    mask-image: radial-gradient(60% 70% at 60% 48%, #000 25%, transparent 80%);
+  }
+  .bg-floor {
+    position: absolute;
+    left: 64%;
+    top: 88%;
+    width: 46vw;
+    height: 22vh;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 13%, transparent), transparent);
+  }
+  .bg-dust {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── Screen one ─────────────────────────────────────────────────────── */
+  .intro {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    max-width: 46rem;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: clamp(5rem, 10vw, 8rem) 2rem;
+  }
+  .j-title {
+    margin-top: 1.1rem;
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    font-weight: 600;
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+  }
+  .j-lead {
+    margin-top: 1.75rem;
+    max-width: 36rem;
+    font-size: clamp(1.08rem, 1.3vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--color-grey-200);
+  }
+  .j-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.25rem;
+  }
+  .cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    width: fit-content;
+    margin-top: 2.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-grey-200);
+    transition: color 0.4s var(--ease-expo);
+  }
+  .cue:hover {
+    color: var(--color-white);
+  }
+  .cue-line {
+    position: relative;
+    width: 3.25rem;
+    height: 1px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-white) 18%, transparent);
+  }
+  .cue-line > span {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--color-iris-soft), transparent);
+    animation: cue 2.4s var(--ease-expo) 3;
+  }
+  @keyframes cue {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  /* ── The platform (exploded axonometric) ───────────────────────────── */
+  .platform {
+    position: relative;
+    height: calc(var(--plate) * 0.8 + var(--gap) * (var(--n) - 1) * 0.84 + 4rem);
+    perspective: 1800px;
+  }
+  .stack {
+    --spread: 1;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-style: preserve-3d;
+    /* Diamonds. journey.ts turns the stack to squares (and back) with an inline transform. */
+    transform: rotateX(var(--tilt)) rotateZ(var(--spin));
+  }
+  /* No opacity, filter or overflow on plates: any of those would flatten the 3D. */
+  .plate {
+    --fade: 1;
+    --drop: 0px;
+    position: absolute;
+    left: calc(var(--plate) / -2);
+    top: calc(var(--plate) / -2);
+    width: var(--plate);
+    height: var(--plate);
+    font-size: calc(var(--plate) / 23);
+    transform-style: preserve-3d;
+    transform: translateZ(calc((var(--mid) - var(--i)) * var(--gap) * var(--spread) + var(--drop)));
+  }
+  .plate-edge,
+  .plate-top {
+    position: absolute;
+    inset: 0;
+    border-radius: 1.15em;
+    opacity: var(--fade);
+  }
+  /* A plate's faint outline: what stays of it while another plate is in focus (set by journey.ts). */
+  .plate-outline {
+    position: absolute;
+    inset: 0;
+    border-radius: 1.15em;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 18%, transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* Thickness: four faint layers under the top face read as a slab of glass. */
+  .plate-edge {
+    transform: translateZ(calc(var(--e) * -3px));
+    background: color-mix(in srgb, var(--color-white) 2%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 7%, transparent);
+    transition:
+      box-shadow 0.8s var(--ease-calm),
+      background-color 0.8s var(--ease-calm);
+  }
+  .plate-top {
+    background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 45%, transparent);
+    transition:
+      box-shadow 0.9s var(--ease-calm),
+      background-color 0.9s var(--ease-calm);
+  }
+  /* The glass sheen, separate so it can fade when the plate is only an outline. */
+  .plate-top::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: linear-gradient(140deg, color-mix(in srgb, var(--color-white) 11%, transparent), color-mix(in srgb, var(--color-white) 3%, transparent) 48%, color-mix(in srgb, var(--color-iris) 10%, transparent));
+    transition: opacity 0.9s var(--ease-calm);
+  }
+  .plate-sheen {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-gold) 13%, transparent), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.9s var(--ease-calm);
+  }
+  /* Only the sweep is clipped to the glass, so turned labels may overhang the edge. */
+  .plate-clip {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+  /* A band of light that sweeps across the glass as the plate lights up. */
+  .plate-sweep {
+    position: absolute;
+    inset: -20%;
+    background: linear-gradient(105deg, transparent 38%, color-mix(in srgb, var(--color-white) 16%, transparent) 50%, transparent 62%);
+    transform: translateX(-70%);
+    opacity: 0;
+  }
+  .plate-num {
+    position: absolute;
+    left: 7%;
+    bottom: 5%;
+    font-size: 3.4em;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: lining-nums;
+    color: color-mix(in srgb, var(--color-white) 9%, transparent);
+    transition:
+      color 0.9s var(--ease-calm),
+      opacity 0.8s var(--ease-calm);
+  }
+  .plate-name {
+    position: absolute;
+    left: 7.5%;
+    bottom: 26%;
+    font-size: 0.85em;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-white) 30%, transparent);
+    transition:
+      color 0.9s var(--ease-calm),
+      opacity 0.8s var(--ease-calm);
+  }
+  .plate-port {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 2.6em;
+    height: 2.6em;
+    margin: -1.3em 0 0 -1.3em;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 22%, transparent);
+    transition:
+      box-shadow 0.8s var(--ease-calm),
+      opacity 0.8s var(--ease-calm);
+  }
+  .plate-port > span {
+    position: absolute;
+    inset: -0.2em;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-gold);
+    opacity: 0;
+  }
+  .anchor {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+
+  /* Passed: the light has been through this stage. */
+  .plate.is-passed .plate-num {
+    color: color-mix(in srgb, var(--color-iris-soft) 32%, transparent);
+  }
+  .plate.is-passed .plate-name {
+    color: color-mix(in srgb, var(--color-white) 55%, transparent);
+  }
+  .plate.is-passed .plate-port {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 55%, transparent);
+  }
+  /* Active: the project is here. Amber rim, light inside the glass. */
+  .plate.is-active .plate-edge {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 40%, transparent);
+  }
+  .plate.is-active .plate-sheen {
+    opacity: 1;
+  }
+  .plate.is-active .plate-num {
+    color: color-mix(in srgb, var(--color-white) 80%, transparent);
+  }
+  .plate.is-active .plate-sweep {
+    animation: sweep 1.6s var(--ease-expo) 0.15s;
+  }
+  @keyframes sweep {
+    0% {
+      transform: translateX(-70%);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(70%);
+      opacity: 0.6;
+    }
+  }
+  .plate.is-active .plate-name {
+    color: var(--color-white);
+  }
+  .plate.is-active .plate-port {
+    box-shadow:
+      inset 0 0 0 1.5px var(--color-gold),
+      0 0 1.2em color-mix(in srgb, var(--color-gold) 70%, transparent);
+  }
+  .plate.is-active .plate-port > span {
+    animation: port-ripple 2.2s var(--ease-expo) infinite;
+  }
+  @keyframes port-ripple {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.9;
+    }
+    100% {
+      transform: scale(3.4);
+      opacity: 0;
+    }
+  }
+
+  /* ── What each plate shows (decorative; the notes carry the words) ─── */
+  .ui {
+    position: absolute;
+    inset: 9%;
+    transition: opacity 0.8s var(--ease-calm);
+  }
+  /* 01 Discover: what the client says, and what we ask. */
+  .bubble {
+    position: absolute;
+    max-width: 62%;
+    border-radius: 0.9em;
+    padding: 0.55em 0.8em;
+    font-size: 0.92em;
+    line-height: 1.3;
+    transition:
+      transform 0.9s var(--ease-expo),
+      opacity 0.9s var(--ease-expo);
+  }
+  .bubble-you {
+    right: 0;
+    top: 2%;
+    border-bottom-right-radius: 0.25em;
+    color: var(--color-white);
+    background: color-mix(in srgb, var(--color-white) 12%, transparent);
+  }
+  .bubble-us {
+    left: 0;
+    bottom: 30%;
+    display: flex;
+    gap: 0.5em;
+    align-items: flex-start;
+    border-bottom-left-radius: 0.25em;
+    color: var(--color-white);
+    background: color-mix(in srgb, var(--color-iris) 26%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 55%, transparent);
+  }
+  .us-mark {
+    flex: none;
+    width: 0.8em;
+    height: 0.8em;
+    margin-top: 0.22em;
+    border-radius: 50%;
+    background: var(--color-iris-soft);
+    box-shadow: 0 0 0.8em var(--color-iris);
+  }
+  /* 04 Build: three lanes; a finished piece drops into Built. */
+  .lane {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(30% + var(--l) * 14%);
+    height: 11%;
+    display: flex;
+    align-items: center;
+    border-radius: 0.5em;
+    padding-left: 0.7em;
+    font-size: 0.82em;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--color-white) 55%, transparent);
+    background: color-mix(in srgb, var(--color-white) 5%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 8%, transparent);
+    transition:
+      color 0.6s var(--ease-expo),
+      box-shadow 0.6s var(--ease-expo);
+  }
+  /* The ticket: an outer box that drops, and the chip itself, which turns level. */
+  .ticket {
+    position: absolute;
+    right: 5%;
+    top: 4%;
+    font-size: 0.85em;
+    font-weight: 700;
+    transition: transform 1.1s var(--ease-expo) 0.2s;
+  }
+  .ticket-in {
+    border-radius: 0.5em;
+    padding: 0.4em 0.7em;
+    color: var(--color-night);
+    background: var(--color-white);
+  }
+  .ticket-tag {
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: var(--color-iris);
+  }
+  /* 03 Architecture: the parts, and how they connect. */
+  .graph-lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .graph-lines path {
+    fill: none;
+    stroke: var(--color-azure);
+    stroke-width: 0.8;
+    stroke-dasharray: 60;
+    transition: stroke-dashoffset 1s var(--ease-expo);
+  }
+  .node {
+    position: absolute;
+    left: calc(var(--x) * 1%);
+    top: calc(var(--y) * 1%);
+    translate: -50% -50%;
+    border-radius: 0.5em;
+    padding: 0.45em 0.7em;
+    font-size: 0.82em;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--color-white);
+    background: color-mix(in srgb, var(--color-azure) 18%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-azure) 60%, transparent);
+    transition: box-shadow 0.6s var(--ease-expo);
+  }
+  /* Drawn labels, not page text: they are part of the picture. */
+  .node::before {
+    content: attr(data-label);
+  }
+  /* 05 Test: scattered checks are pulled into one result. */
+  .alert {
+    position: absolute;
+    left: calc(var(--x) * 1%);
+    top: calc(var(--y) * 1%);
+    width: 0.7em;
+    height: 0.7em;
+    margin: -0.35em 0 0 -0.35em;
+    border-radius: 50%;
+    background: var(--color-white);
+    box-shadow: 0 0 0.8em var(--color-azure);
+    transition:
+      transform 1.1s var(--ease-expo),
+      opacity 0.9s var(--ease-expo) 0.5s;
+  }
+  .alert-card {
+    position: absolute;
+    left: 50%;
+    bottom: 4%;
+    translate: -50% 0;
+    border-radius: 0.55em;
+    padding: 0.5em 0.8em;
+    font-size: 0.85em;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--color-white);
+    background: color-mix(in srgb, var(--color-violet) 20%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-azure) 55%, transparent),
+      0 0 1.4em color-mix(in srgb, var(--color-violet) 35%, transparent);
+    transition:
+      transform 0.9s var(--ease-expo) 0.7s,
+      opacity 0.9s var(--ease-expo) 0.7s;
+  }
+  /* 02 Requirements: the list writes itself; the seal appears. */
+  .kb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58%;
+    display: grid;
+    gap: 0.55em;
+    border-radius: 0.7em;
+    padding: 0.8em 0.9em 1em;
+    background: color-mix(in srgb, var(--color-white) 8%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 14%, transparent);
+  }
+  .kb-title {
+    font-size: 0.82em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-white);
+  }
+  .kb-line {
+    display: block;
+    width: var(--w);
+    height: 0.42em;
+    border-radius: 1em;
+    background: color-mix(in srgb, var(--color-white) 30%, transparent);
+    transform-origin: left;
+    transition: transform 0.9s var(--ease-expo);
+  }
+  .seal {
+    position: absolute;
+    right: 2%;
+    bottom: 22%;
+    display: grid;
+    width: 3.4em;
+    height: 3.4em;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--color-night);
+    background: radial-gradient(circle at 35% 30%, var(--color-gold-glow), var(--color-gold) 60%);
+    box-shadow: 0 0 2em color-mix(in srgb, var(--color-gold) 60%, transparent);
+    transition:
+      transform 0.9s var(--ease-expo) 0.6s,
+      opacity 0.6s var(--ease-expo) 0.6s;
+  }
+  .seal svg {
+    width: 55%;
+  }
+
+  /* 06 Launch: the release bar fills, and the site goes live. */
+  .go {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 30%;
+    display: grid;
+    gap: 0.8em;
+  }
+  .go-track {
+    position: relative;
+    height: 0.9em;
+    overflow: hidden;
+    border-radius: 1em;
+    background: color-mix(in srgb, var(--color-white) 8%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 10%, transparent);
+  }
+  .go-fill {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transform-origin: left;
+    background: linear-gradient(90deg, var(--color-iris), var(--color-iris-soft));
+    box-shadow: 0 0 1em color-mix(in srgb, var(--color-iris) 70%, transparent);
+    transition: transform 1.4s var(--ease-expo) 0.2s;
+  }
+  .go-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--color-white) 70%, transparent);
+  }
+  .go-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    border-radius: 1em;
+    padding: 0.3em 0.7em;
+    color: var(--color-night);
+    background: var(--color-iris-soft);
+    transition:
+      transform 0.9s var(--ease-expo) 1.1s,
+      opacity 0.6s var(--ease-expo) 1.1s;
+  }
+  .go-live::before {
+    content: '';
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: var(--color-night);
+  }
+  /* 07 Maintain: a steady heartbeat, and the month's note. */
+  .beat {
+    position: absolute;
+    left: 0;
+    top: 22%;
+    width: 100%;
+    height: 34%;
+    overflow: visible;
+  }
+  .beat path {
+    fill: none;
+    stroke: var(--color-iris-soft);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 160;
+    filter: drop-shadow(0 0 3px color-mix(in srgb, var(--color-iris) 80%, transparent));
+    transition: stroke-dashoffset 1.6s var(--ease-expo);
+  }
+  .note-chip {
+    position: absolute;
+    left: 0;
+    bottom: 22%;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    border-radius: 0.6em;
+    padding: 0.5em 0.8em;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: var(--color-white);
+    background: color-mix(in srgb, var(--color-gold) 16%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 55%, transparent);
+  }
+  .note-chip::before {
+    content: '';
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    background: var(--color-gold);
+    box-shadow: 0 0 0.6em var(--color-gold);
+  }
+
+  /* ── Overlay: thread, spark, flares, leader ─────────────────────────── */
+  .beam {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: none;
+    width: 1px;
+    height: 1px;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .beam-base {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-white) 16%, transparent);
+    stroke-width: 1.2;
+    stroke-dasharray: 2 5;
+  }
+  .beam-lit {
+    fill: none;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+  }
+  .beam-glow {
+    fill: none;
+    stroke-width: 9;
+    stroke-linecap: round;
+    opacity: 0.6;
+  }
+  /* Phones: no thread and no leader line, just the spark travelling through the plates. */
+  @media (max-width: 1023px) {
+    .beam-base,
+    .beam-lit,
+    .beam-glow,
+    .leader,
+    .leader-end {
+      display: none;
+    }
+  }
+  .flare circle {
+    fill: none;
+    stroke: var(--color-gold-glow);
+    stroke-width: 1.4;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  .flare.is-firing circle {
+    animation: flare 1.3s var(--ease-expo);
+  }
+  @keyframes flare {
+    0% {
+      transform: scale(0.2);
+      opacity: 1;
+      stroke-width: 3;
+    }
+    100% {
+      transform: scale(2.6);
+      opacity: 0;
+      stroke-width: 0.5;
+    }
+  }
+  .spark-core {
+    fill: var(--color-white);
+  }
+  .spark-ring {
+    fill: none;
+    stroke: var(--color-gold-glow);
+    stroke-width: 1.2;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spark-ping 1.9s var(--ease-expo) infinite;
+  }
+  @keyframes spark-ping {
+    0% {
+      transform: scale(0.7);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2.8);
+      opacity: 0;
+    }
+  }
+  .leader {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-iris-soft) 85%, transparent);
+    stroke-width: 1;
+  }
+  .leader-end {
+    fill: var(--color-night);
+    stroke: var(--color-iris-soft);
+    stroke-width: 1.5;
+  }
+
+  /* Datum marks (desktop), placed by script at each plate's right corner. */
+  .datum {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+    grid-template-columns: auto auto auto;
+    align-items: center;
+    column-gap: 0.45rem;
+    width: max-content;
+    padding-left: 3.1rem;
+    color: var(--color-grey-400);
+    transition: color 0.6s var(--ease-calm);
+  }
+  .datum-line {
+    position: absolute;
+    left: 0.35rem;
+    top: 0.62rem;
+    width: 2.4rem;
+    border-top: 1px dashed color-mix(in srgb, currentColor 70%, transparent);
+  }
+  .datum-mark {
+    width: 0.8rem;
+    color: currentColor;
+  }
+  .datum-level {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    font-variant-numeric: lining-nums;
+  }
+  .datum-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-grey-200);
+    transition: color 0.6s var(--ease-calm);
+  }
+  .datum-cap {
+    grid-column: 2 / -1;
+    font-size: 0.78rem;
+    color: var(--color-grey-400);
+  }
+  .datum.is-passed {
+    color: var(--color-iris-soft);
+  }
+  .datum.is-active {
+    color: var(--color-iris-soft);
+  }
+  .datum.is-active .datum-name {
+    color: var(--color-white);
+  }
+
+  /* ── Notes ──────────────────────────────────────────────────────────── */
+  .notes {
+    position: relative;
+    z-index: 3;
+    padding: 2rem max(1rem, min(5vw, 4.5rem)) 6rem;
+  }
+  .notes-title {
+    margin-top: 1rem;
+    max-width: 30rem;
+    font-size: clamp(1.7rem, 2.3vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.04;
+  }
+  .notes-body {
+    margin-top: 2.25rem;
+  }
+  .notes-list {
+    display: grid;
+    gap: 2.25rem;
+  }
+  .note-level {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .note-mark {
+    width: 0.85rem;
+    color: var(--color-iris-soft);
+  }
+  .note-num {
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-variant-numeric: lining-nums tabular-nums;
+    color: var(--color-iris-soft);
+  }
+  .note-of {
+    display: none;
+    margin-left: 0.35em;
+    color: var(--color-grey-400);
+  }
+  .note-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-white);
+  }
+  .note-title,
+  .note-end-title {
+    margin-top: 0.6rem;
+    max-width: 31rem;
+    font-size: clamp(1.32rem, 1.7vw, 1.8rem);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  .note-end-title {
+    font-size: clamp(1.6rem, 2.3vw, 2.4rem);
+    font-weight: 600;
+  }
+  .note-body {
+    margin-top: 0.65rem;
+    max-width: 33rem;
+    font-size: 1.04rem;
+    line-height: 1.55;
+    color: var(--color-grey-200);
+  }
+  .note-how {
+    margin-top: 0.7rem;
+    max-width: 33rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--color-grey-400);
+  }
+  .note-how > span {
+    margin-right: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-grey-200);
+  }
+  .note-end {
+    margin-top: 2.5rem;
+  }
+  .note-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: var(--color-grey-200);
+  }
+  .note-stats b {
+    font-weight: 800;
+    color: var(--color-white);
+  }
+  /* One segment per stage under the heading: how far the project has come. */
+  .notes-progress {
+    display: none;
+    gap: 0.35rem;
+    max-width: 22rem;
+    margin-top: 1.1rem;
+  }
+  .notes-progress > span {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--color-white) 12%, transparent);
+  }
+  .notes-progress i {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transform-origin: left;
+    transform: scaleX(var(--f, 0));
+    background: linear-gradient(90deg, var(--color-iris-soft), var(--color-gold));
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-iris) 80%, transparent);
+  }
+
+  /*
+   * ── Live: one pinned stage, driven by scroll ─────────────────────────
+   * Everything above is the static version (no JavaScript, reduced motion):
+   * every plate lit, the steps listed. From here on, the scripted version.
+   */
+  :global(html.js:not(.reduced-motion)) .journey {
+    height: calc(100svh + var(--len));
+  }
+  :global(html.js:not(.reduced-motion)) .stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+  }
+  :global(html.js:not(.reduced-motion)) .intro {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: min(46rem, 50vw);
+    min-height: 100svh;
+    padding-block: 7rem 5rem;
+  }
+  :global(html.js:not(.reduced-motion)) .platform {
+    position: absolute;
+    left: 64%;
+    top: 53%;
+    width: 0;
+    height: 0;
+  }
+  :global(html.js:not(.reduced-motion)) .beam {
+    display: block;
+  }
+  :global(html.js:not(.reduced-motion)) .datum {
+    display: grid;
+  }
+  :global(html.js:not(.reduced-motion)) .plate-top {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 17%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-white) 22%, transparent);
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-passed .plate-top {
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 30%, transparent);
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .plate-top {
+    box-shadow:
+      inset 0 0 0 1.5px color-mix(in srgb, var(--color-gold) 85%, transparent),
+      inset 0 0 2.5em color-mix(in srgb, var(--color-gold) 14%, transparent),
+      0 0 4em color-mix(in srgb, var(--color-gold) 26%, transparent);
+  }
+  :global(html.js:not(.reduced-motion)) .ui {
+    opacity: 0.36;
+  }
+  :global(html.js:not(.reduced-motion)) .is-passed .ui {
+    opacity: 0.6;
+  }
+  /* Stages the project has passed sit above the one it has reached: their glass
+     clears and their surface quietens, so the reached plate reads through them. */
+  :global(html.js:not(.reduced-motion)) .plate.is-passed:not(.is-active) .ui {
+    opacity: 0.2;
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-passed:not(.is-active) .plate-top {
+    background-color: color-mix(in srgb, var(--color-night) 15%, transparent);
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .ui {
+    opacity: 1;
+  }
+  /* Each plate's surface plays its moment when the project arrives. */
+  :global(html.js:not(.reduced-motion)) .bubble-us {
+    transform: translateY(0.8em);
+    opacity: 0.4;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .bubble-us,
+  :global(html.js:not(.reduced-motion)) .is-passed .bubble-us {
+    transform: none;
+    opacity: 1;
+    transition-delay: 0.45s;
+  }
+  /* The ticket drops from the back of the plate into the Built lane. */
+  :global(html.js:not(.reduced-motion)) .is-active .ticket,
+  :global(html.js:not(.reduced-motion)) .is-passed .ticket {
+    transform: translateY(calc(var(--plate) * 0.82 * 0.415));
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .lane-target {
+    color: var(--color-white);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 70%, transparent),
+      0 0 1.4em color-mix(in srgb, var(--color-violet) 40%, transparent);
+    transition-delay: 0.9s;
+  }
+  :global(html.js:not(.reduced-motion)) .graph-lines path {
+    stroke-dashoffset: 60;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .graph-lines path,
+  :global(html.js:not(.reduced-motion)) .is-passed .graph-lines path {
+    stroke-dashoffset: 0;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .graph-lines path:nth-child(2) {
+    transition-delay: 0.15s;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .graph-lines path:nth-child(3) {
+    transition-delay: 0.3s;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .node {
+    box-shadow:
+      inset 0 0 0 1px var(--color-azure),
+      0 0 1.4em color-mix(in srgb, var(--color-azure) 45%, transparent);
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .alert,
+  :global(html.js:not(.reduced-motion)) .is-passed .alert {
+    transform: translate(calc((50 - var(--x)) / 100 * var(--plate) * 0.82), calc((50 - var(--y)) / 100 * var(--plate) * 0.82));
+    opacity: 0;
+  }
+  :global(html.js:not(.reduced-motion)) .alert-card {
+    transform: translateY(0.6em);
+    opacity: 0;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .alert-card,
+  :global(html.js:not(.reduced-motion)) .is-passed .alert-card {
+    transform: none;
+    opacity: 1;
+  }
+  :global(html.js:not(.reduced-motion)) .kb-line {
+    transform: scaleX(0.15);
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .kb-line,
+  :global(html.js:not(.reduced-motion)) .is-passed .kb-line {
+    transform: none;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .kb-line:nth-of-type(3) {
+    transition-delay: 0.2s;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .kb-line:nth-of-type(4) {
+    transition-delay: 0.4s;
+  }
+  :global(html.js:not(.reduced-motion)) .seal {
+    transform: scale(0.4);
+    opacity: 0.3;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .seal {
+    transform: none;
+    opacity: 1;
+  }
+
+  :global(html.js:not(.reduced-motion)) .go-fill {
+    transform: scaleX(0.08);
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .go-fill,
+  :global(html.js:not(.reduced-motion)) .is-passed .go-fill {
+    transform: none;
+  }
+  :global(html.js:not(.reduced-motion)) .go-live {
+    transform: translateY(0.5em);
+    opacity: 0;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .go-live,
+  :global(html.js:not(.reduced-motion)) .is-passed .go-live {
+    transform: none;
+    opacity: 1;
+  }
+  :global(html.js:not(.reduced-motion)) .beat path {
+    stroke-dashoffset: 160;
+  }
+  :global(html.js:not(.reduced-motion)) .is-active .beat path,
+  :global(html.js:not(.reduced-motion)) .is-passed .beat path {
+    stroke-dashoffset: 0;
+  }
+
+  /*
+   * Readable words on the reached plate. Each label turns about its own
+   * centre to undo the stack's spin (so it reads level) and stretches to
+   * undo most of the tilt's squash, while staying on the plate. Brighter
+   * and on darker backings than the dimmed plates around it.
+   */
+  .lvl {
+    /* On the active plate (always square to the reader by then) the words grow and
+       stretch to undo most of the tilt's squash. */
+    transition:
+      scale 0.9s var(--ease-calm),
+      color 0.6s var(--ease-calm),
+      background-color 0.6s var(--ease-calm);
+  }
+  .lane-t,
+  .ticket-in {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+  }
+  .lane-t {
+    position: relative;
+    font-weight: inherit;
+    transform-origin: 0 50%;
+  }
+  /* Turned labels overhang their own boxes: keep them above neighbouring bars and chips. */
+  .lvl {
+    z-index: 1;
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .lvl {
+    scale: 1.15 1.75;
+  }
+  /* Phones: the plates are smaller, so the words grow a little more. */
+  @media (max-width: 1023px) {
+    :global(html.js:not(.reduced-motion)) .plate.is-active .lvl {
+      scale: 1.32 2;
+    }
+  }
+  /* While the stack closes up, every plate is lit but the words stay flat. */
+  :global(html.js:not(.reduced-motion)) .stack.is-closing .plate.is-active .lvl {
+    scale: 1;
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .plate-name {
+    color: var(--color-white);
+    text-shadow: 0 0 1em rgb(4 10 22 / 0.9);
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .plate-num {
+    color: var(--color-white);
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .bubble-you {
+    background-color: color-mix(in srgb, var(--color-white) 22%, var(--color-night));
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .bubble-us {
+    background-color: color-mix(in srgb, var(--color-iris) 45%, var(--color-night));
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .note-chip {
+    background-color: color-mix(in srgb, var(--color-gold) 30%, var(--color-night));
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .lane {
+    color: var(--color-white);
+    background-color: color-mix(in srgb, var(--color-white) 10%, var(--color-night));
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .node {
+    background-color: color-mix(in srgb, var(--color-azure) 30%, var(--color-night));
+  }
+  :global(html.js:not(.reduced-motion)) .plate.is-active .kb {
+    background-color: color-mix(in srgb, var(--color-white) 16%, var(--color-night));
+  }
+
+  :global(html.js:not(.reduced-motion)) .notes {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: min(38rem, 44vw);
+    padding: 7.25rem 0 3rem max(1rem, min(5vw, 4.5rem));
+    opacity: 0;
+    pointer-events: none;
+  }
+  :global(html.js:not(.reduced-motion)) .notes-body {
+    position: relative;
+  }
+  :global(html.js:not(.reduced-motion)) .notes-list {
+    display: block;
+  }
+  :global(html.js:not(.reduced-motion)) .note {
+    position: absolute;
+    inset: 0 0 auto 0;
+    margin: 0;
+  }
+  :global(html.js:not(.reduced-motion)) .note-of {
+    display: inline;
+  }
+  :global(html.js:not(.reduced-motion)) .notes-progress {
+    display: flex;
+  }
+  /* Notes hand over as one crossfade: the old one fades quickly, the new one settles in with a short drift. */
+  :global(html.js:not(.reduced-motion)) .note > * {
+    opacity: 0;
+    transform: translateY(0.45rem);
+    transition:
+      opacity 0.3s var(--ease-calm),
+      transform 0.4s var(--ease-calm);
+  }
+  :global(html.js:not(.reduced-motion)) .note.is-active > * {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.6s var(--ease-calm) 0.1s,
+      transform 0.7s var(--ease-calm) 0.1s;
+  }
+  :global(html.js:not(.reduced-motion)) .note.is-active > :nth-child(2) {
+    transition-delay: 0.14s;
+  }
+  :global(html.js:not(.reduced-motion)) .note.is-active > :nth-child(3) {
+    transition-delay: 0.18s;
+  }
+  :global(html.js:not(.reduced-motion)) .note.is-active > :nth-child(4) {
+    transition-delay: 0.22s;
+  }
+  :global(html.js:not(.reduced-motion)) .note.is-active > :nth-child(5) {
+    transition-delay: 0.26s;
+  }
+
+  /* Phones and tablets in portrait: platform on top, the note below it. */
+  @media (max-width: 1023px) {
+    .bg-floor {
+      left: 50%;
+      top: 58%;
+      width: 90vw;
+    }
+    .journey {
+      --len-intro: 55svh;
+      --len-close: 70svh;
+      --plate: min(44vw, 200px);
+      --gap: calc(var(--plate) * 0.2);
+    }
+    .intro {
+      /* Clear of the nav dock (its top inset plus its height), with room to spare. */
+      padding-block: calc(max(0.85rem, env(safe-area-inset-top)) + 5.25rem) 3rem;
+    }
+    .intro > .eyebrow {
+      font-size: 0.74rem;
+      letter-spacing: 0.09em;
+    }
+    /* Centred by auto margins (not justify-content), so when screen one is taller than the
+       screen it starts below the nav instead of spilling up under it. */
+    .intro {
+      justify-content: flex-start;
+    }
+    .intro > :first-child {
+      margin-top: auto;
+    }
+    .intro > :last-child {
+      margin-bottom: auto;
+    }
+    .pill {
+      gap: 0.5rem;
+      padding-inline: 0.65rem 0.8rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.06em;
+    }
+    .j-ctas .btn {
+      flex: 1 1 auto;
+    }
+    .cue {
+      margin-top: 2.25rem;
+    }
+    .note-body {
+      font-size: 0.98rem;
+    }
+    .note-how {
+      font-size: 0.86rem;
+    }
+    :global(html.js:not(.reduced-motion)) .intro {
+      width: 100%;
+    }
+    /* journey.ts fits the stack between the heading and the note; this is the starting point. */
+    :global(html.js:not(.reduced-motion)) .platform {
+      left: 50%;
+      top: 48%;
+    }
+    :global(html.js:not(.reduced-motion)) .datum {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .notes {
+      inset: 0;
+      width: auto;
+      padding: 0;
+    }
+    :global(html.js:not(.reduced-motion)) .notes-head {
+      position: absolute;
+      left: max(1rem, env(safe-area-inset-left));
+      right: max(1rem, env(safe-area-inset-right));
+      /* Below the nav dock with a clear gap. */
+      top: calc(max(0.85rem, env(safe-area-inset-top)) + 4.9rem);
+    }
+    :global(html.js:not(.reduced-motion)) .notes-head .eyebrow {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .notes-title {
+      margin-top: 0;
+      font-size: 1.22rem;
+      line-height: 1.12;
+    }
+    :global(html.js:not(.reduced-motion)) .notes-body {
+      position: absolute;
+      left: max(1rem, env(safe-area-inset-left));
+      right: max(1rem, env(safe-area-inset-right));
+      bottom: max(1.4rem, env(safe-area-inset-bottom));
+      margin: 0;
+    }
+    :global(html.js:not(.reduced-motion)) .note {
+      inset: auto 0 0 0;
+    }
+  }
+  @media (max-width: 1023px) and (max-height: 760px) {
+    :global(html.js:not(.reduced-motion)) .note-how {
+      display: none;
+    }
+  }
+  @media (min-width: 1600px) and (min-height: 900px) {
+    .journey {
+      --plate: 290px;
+      --gap: 78px;
+    }
+  }
+  @media (min-width: 1024px) and (max-height: 820px) {
+    .journey {
+      --plate: 210px;
+      --gap: 54px;
+    }
+  }
+  @media (max-width: 380px) {
+    .j-title {
+      font-size: 1.95rem;
+    }
+  }
+  /* Shorter phones: tighter spacing on screen one, so all of it fits below the nav. */
+  @media (max-width: 1023px) and (max-height: 800px) {
+    .intro {
+      padding-bottom: 1.5rem;
+    }
+    .j-title {
+      margin-top: 1rem;
+    }
+    .j-lead {
+      margin-top: 1.1rem;
+    }
+    .j-ctas {
+      margin-top: 1.4rem;
+    }
+    .intro-stats {
+      margin-top: 1.25rem;
+    }
+    .cue {
+      margin-top: 1.25rem;
+    }
+  }
+  @media (max-width: 1023px) and (max-height: 650px) {
+    .j-title {
+      font-size: 1.85rem;
+    }
+    .j-lead {
+      margin-top: 0.8rem;
+      font-size: 0.92rem;
+    }
+    /* With the cue hidden, the stats are the last thing on screen one: they take its auto margin. */
+    .intro-stats {
+      margin-top: 0.9rem;
+      margin-bottom: auto;
+    }
+    .j-ctas {
+      gap: 0.6rem;
+    }
+    .j-ctas {
+      margin-top: 1.1rem;
+    }
+    .j-ctas .btn {
+      min-height: 2.75rem;
+      padding-block: 0.6rem;
+    }
+    .cue {
+      display: none;
+    }
+  }
+  .note-cta {
+    margin-top: 1.4rem;
+  }
+  /* The closing note's button is only reachable while that note shows. */
+  :global(html.js:not(.reduced-motion)) .note-end.is-active {
+    pointer-events: auto;
+  }
+  :global(html.js:not(.reduced-motion)) .note-end:not(.is-active) .note-cta {
+    visibility: hidden;
+    transition: visibility 0s linear 0.3s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cue-line > span,
+    .spark-ring,
+    .plate-port > span {
+      animation: none !important;
+    }
+  }
+</style>

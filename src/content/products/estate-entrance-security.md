@@ -4,6 +4,8 @@ headline: Estate Entrance Security System for residential estates
 descriptor: code-based visitor access for residential estates
 summary: Code-based visitor access for residential estates, so the gate knows who's expected.
 status: in-development
+icon: gate
+accent: wine
 audience:
   - Residential estates
   - Facility managers

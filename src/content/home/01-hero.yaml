@@ -1,11 +1,19 @@
 order: 1
-eyebrow: Software engineering · Products · Nigeria
-heading: Software built around reality.
-chrome: reality.
-lead: We build, fix, test and maintain software for Nigerian businesses, and we make products for fleets, estates and growing companies.
+eyebrow: Software products that solve real problems
+heading: Built around reality. Engineered for impact.
+lines:
+  - text: Built around reality.
+    lit: reality.
+  - text: Engineered for impact.
+    lit: impact.
+lead: Synovika is a Nigerian software company. We make products for fleets, estates and growing businesses, and we build, fix, test and look after software for companies like yours.
 ctas:
-  - label: Start a project
-    href: /contact/
-  - label: See our products
+  - label: Explore products
     href: /products/
-telemetry: UNIT 07 ON ROUTE · GATE CODE 482 913 · STATUS VERIFIED
+  - label: Book a call
+    href: /contact/?topic=call
+items:
+  - title: "3"
+    body: products on the way
+  - title: "6"
+    body: ways we can help

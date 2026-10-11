@@ -1,0 +1,97 @@
+---
+/**
+ * 08 · Inside Selvion (raleston-web's integration spotlight). One event,
+ * followed from the tracker in the vehicle to the alert on your phone, as a
+ * 3D flow with an amber packet travelling across it. The words say the same
+ * thing for anyone who can't see the model.
+ */
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import Flow from '../scenes/Flow.astro';
+import { home } from '../../lib/content';
+
+const head = (await home())['selvion-flow']!;
+---
+
+<section id="inside-selvion" class="section sf" data-theme="dark" aria-labelledby="sf-title">
+  <div class="gutter">
+    <div class="card sf-card">
+      <div>
+        <p class="eyebrow">{head.eyebrow}</p>
+        <h2 id="sf-title" class="h2 sf-title mt-4" data-reveal><Lit text={head.heading} lit={head.lit} /></h2>
+        <p class="lead mt-4 max-w-[30rem]" data-reveal>{head.lead}</p>
+        {head.body && <p class="mt-4 max-w-[32rem] text-grey-200" data-reveal>{head.body}</p>}
+        <ol class="sf-steps" data-reveal>
+          {
+            head.items.map((s, i) => (
+              <li>
+                <span class="sf-num">{String(i + 1).padStart(2, '0')}</span>
+                <b>{s.title}</b>
+                <span>{s.body}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3" data-reveal>
+          <a href={head.ctas[0]!.href} class="btn btn-primary">{head.ctas[0]!.label} <Icon name="arrow" /></a>
+          <a href={head.ctas[1]!.href} class="link-arrow">{head.ctas[1]!.label}<span class="sr-only"> for Selvion</span> <Icon name="arrow" /></a>
+        </div>
+      </div>
+
+      <Flow steps={head.items.map((s) => ({ label: s.title, icon: s.icon ?? 'check' }))} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .sf {
+    padding-block: clamp(3rem, 6vw, 5rem);
+    background: var(--color-night);
+  }
+  .sf-card {
+    display: grid;
+    gap: 1rem;
+    overflow: hidden;
+    padding: clamp(1.6rem, 4vw, 3rem);
+    background:
+      radial-gradient(60% 80% at 100% 50%, color-mix(in srgb, var(--color-iris) 11%, transparent), transparent 70%),
+      radial-gradient(40% 50% at 0% 100%, color-mix(in srgb, var(--color-gold) 4%, transparent), transparent 70%),
+      color-mix(in srgb, var(--color-navy) 60%, var(--color-night));
+  }
+  @media (min-width: 1024px) {
+    .sf-card {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      align-items: center;
+      gap: 2rem;
+    }
+  }
+  .sf-title {
+    font-size: clamp(1.8rem, 3.2vw, 2.7rem);
+  }
+  .sf-steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 1.25rem;
+    margin-top: 1.6rem;
+  }
+  .sf-steps li {
+    display: grid;
+    gap: 0.1rem;
+    border-left: 1px solid color-mix(in srgb, var(--color-iris-soft) 30%, transparent);
+    padding-left: 0.85rem;
+  }
+  .sf-num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    color: var(--color-iris-soft);
+  }
+  .sf-steps b {
+    font-size: 1.02rem;
+    color: var(--color-white);
+  }
+  .sf-steps li > span:last-child {
+    font-size: 0.92rem;
+    color: var(--color-grey-400);
+  }
+</style>

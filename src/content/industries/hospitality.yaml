@@ -1,4 +1,24 @@
 order: 6
 name: Hospitality
 note: Hotels, restaurants and event spaces.
-confirmed: false
+icon: hotel
+confirmed: true
+lead: In hospitality, the guest sees the result of every system you run, from the booking to the bill. When software gets in the way, guests notice. We build tools that keep things moving behind the scenes.
+problems:
+  - Bookings arrive by phone, WhatsApp, email and walk-in, and none of them talk to each other.
+  - Menus, prices and room rates on the website are out of date.
+  - Staff waste time on handovers that software could carry.
+  - Systems from different suppliers don't share information.
+helps:
+  - title: A website you keep current
+    body: Menus, rates and events updated by your own team from a simple admin panel.
+    href: /products/websites-with-admin-panel/
+  - title: Booking and operations tools
+    body: Software for bookings, rotas and handovers, shaped around how your place actually runs.
+    href: /services/software-development/
+  - title: Joining systems up
+    body: We design how your systems share information, so nobody re-types a booking twice.
+    href: /services/system-architecture/
+seo:
+  title: Software for hotels, restaurants and event spaces | Synovika
+  description: Websites you can keep current, plus booking and operations tools for hotels, restaurants and event spaces in Nigeria, built by Synovika around how you work.

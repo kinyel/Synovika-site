@@ -1,176 +1,221 @@
+import { gsap } from 'gsap';
+import type Lenis from 'lenis';
+import { $progress } from '../lib/store';
+
 /**
- * Header behaviour (markup and styles in src/components/layout/Header.astro).
- * Ported from synov-timer's nav.ts without GSAP: CSS transitions do the
- * motion, this file only measures and sets state.
- *
- *  - the gliding hover highlight
- *  - one flyout that morphs between the Services and Products panes
- *  - the dock drawing in on scroll, with a page-progress line
- *  - colours that follow the section under the header (data-theme)
- *  - the phone sheet: Escape closes it, links close it, the page stops scrolling
+ * Navigation behaviour: gliding hover highlight, the morphing Services
+ * flyout, the dock drawing in on scroll (and its page-progress line), deep
+ * links that land inside a pinned section, and the mobile sheet. The active
+ * page is marked at build time. Styling lives in src/components/chrome/Nav.astro.
  */
-export function initNav() {
-  const header = document.querySelector<HTMLElement>('[data-header]');
-  if (!header) return;
+export function initNav(lenis: Lenis | null, reduced: boolean) {
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  if (!nav) return { closeMenu: () => {} };
+  const $ = <T extends Element = HTMLElement>(s: string, r: ParentNode = nav) => r.querySelector<T & Element>(s);
+  const $$ = <T extends Element = HTMLElement>(s: string, r: ParentNode = nav) => [...r.querySelectorAll<T & Element>(s)];
   const html = document.documentElement;
-  const nav = header.querySelector<HTMLElement>('[data-nav]')!;
-  const hover = header.querySelector<HTMLElement>('[data-hover]')!;
-  const flyout = header.querySelector<HTMLElement>('[data-flyout]')!;
-  const clip = header.querySelector<HTMLElement>('[data-clip]')!;
-  const panes = new Map([...header.querySelectorAll<HTMLElement>('[data-pane]')].map((p) => [p.dataset.pane!, p]));
-  const toggles = [...header.querySelectorAll<HTMLButtonElement>('[data-toggle]')];
-  const items = [...header.querySelectorAll<HTMLElement>('.hdr-item')];
+  const dur = reduced ? 0 : 1;
 
-  // ── Gliding hover highlight ──────────────────────────────────────────
-  const moveHover = (item: HTMLElement | null) => {
-    if (!item) return void hover.style.setProperty('--o', '0');
-    const n = nav.getBoundingClientRect();
-    const r = item.getBoundingClientRect();
-    hover.style.setProperty('--x', `${(r.left - n.left).toFixed(1)}px`);
-    hover.style.setProperty('--w', `${r.width.toFixed(1)}px`);
-    hover.style.setProperty('--o', '1');
+  // ── Deep links: land on a card inside a pinned section ──────────────────
+  const jump = (section: string, p: number) => {
+    const el = document.getElementById(section);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + scrollY;
+    const y = top + Math.max(0, el.offsetHeight - innerHeight) * p;
+    if (lenis) lenis.scrollTo(y, { duration: 1.6 * dur || 0.01, easing: (t) => 1 - Math.pow(1 - t, 4) });
+    else scrollTo({ top: y, behavior: reduced ? 'auto' : 'smooth' });
   };
+  for (const a of $$<HTMLAnchorElement>('[data-nav-jump]', document)) {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      closeFlyout(true);
+      closeMenu();
+      jump(a.dataset.navJump!, Number(a.dataset.navP ?? 0));
+    });
+  }
 
-  // ── Morphing flyout ──────────────────────────────────────────────────
-  let open: string | null = null;
+  // ── Gliding hover highlight ─────────────────────────────────────────────
+  const pill = $('[data-nav-pill]');
+  const hover = $('[data-nav-hover]');
+  const links = $$('.nav-link');
+  const moveHover = (link: HTMLElement | null) => {
+    if (!hover || !pill) return;
+    if (!link) {
+      gsap.to(hover, { opacity: 0, duration: 0.3 * dur });
+      return;
+    }
+    const pr = pill.getBoundingClientRect();
+    const lr = link.getBoundingClientRect();
+    const first = Number(getComputedStyle(hover).opacity) < 0.05;
+    gsap.to(hover, {
+      x: lr.left - pr.left,
+      width: lr.width,
+      opacity: 1,
+      duration: first ? 0 : 0.5 * dur,
+      ease: 'expo.out',
+      overwrite: 'auto',
+    });
+  };
+  for (const l of links) {
+    l.addEventListener('pointerenter', () => moveHover(l));
+    l.addEventListener('focus', () => moveHover(l));
+  }
+
+  // ── Morphing flyout ─────────────────────────────────────────────────────
+  const flyout = $('[data-nav-flyout]');
+  const clip = $('[data-nav-clip]');
+  const arrow = $('[data-nav-arrow]');
+  const panes = new Map($$('[data-nav-pane]').map((p) => [p.dataset.navPane!, p]));
+  const triggers = $$<HTMLButtonElement>('[data-nav-trigger]');
+  let openId: string | null = null;
   let openTimer = 0;
   let closeTimer = 0;
-  const show = (id: string, focusFirst = false) => {
-    const pane = panes.get(id);
-    const item = items.find((i) => i.dataset.item === id);
-    if (!pane || !item) return;
-    clearTimeout(closeTimer);
-    if (open === id) return;
-    const prev = open ? panes.get(open) : null;
-    open = id;
-    for (const t of toggles) t.setAttribute('aria-expanded', String(t.dataset.toggle === id));
+
+  const placeFlyout = (trigger: HTMLElement, pane: HTMLElement, instant: boolean) => {
+    if (!flyout || !clip || !pill) return;
     pane.hidden = false;
-    // Measure before showing, then let CSS animate the clip from the old size to the new one.
     const w = pane.offsetWidth;
     const h = pane.offsetHeight;
-    const n = nav.getBoundingClientRect();
-    const r = item.getBoundingClientRect();
-    const centre = r.left + r.width / 2;
-    const left = Math.min(Math.max(16, centre - w / 2), innerWidth - 16 - w) - n.left;
-    flyout.style.setProperty('--fx', `${left.toFixed(1)}px`);
-    clip.style.setProperty('--fw', `${w}px`);
-    clip.style.setProperty('--fh', `${h}px`);
+    const pr = pill.getBoundingClientRect();
+    const tr = trigger.getBoundingClientRect();
+    // Centre under the trigger, kept inside the viewport.
+    const centre = tr.left + tr.width / 2;
+    const left = gsap.utils.clamp(16, innerWidth - 16 - w, centre - w / 2);
+    const t = instant ? 0 : 0.55 * dur;
+    gsap.to(clip, { width: w, height: h, duration: t, ease: 'expo.out' });
+    gsap.to(flyout, { x: left - pr.left, duration: t, ease: 'expo.out' });
+    if (arrow) gsap.to(arrow, { x: centre - left - 5, duration: t, ease: 'expo.out' });
+  };
+
+  const openFlyout = (id: string) => {
+    const trigger = triggers.find((t) => t.dataset.navTrigger === id);
+    const pane = panes.get(id);
+    if (!flyout || !trigger || !pane) return;
+    clearTimeout(closeTimer);
+    const wasOpen = openId !== null;
+    if (openId === id) return;
+    const prev = openId ? panes.get(openId) : null;
+    openId = id;
+    for (const t of triggers) t.setAttribute('aria-expanded', String(t === trigger));
+    // Cross-fade panes: old one out, new one in (absolutely stacked while they swap).
+    for (const p of panes.values()) {
+      p.style.position = 'absolute';
+      p.style.top = '0';
+      p.style.left = '0';
+    }
     if (prev && prev !== pane) {
       delete prev.dataset.shown;
-      setTimeout(() => open !== prev.dataset.pane && (prev.hidden = true), 240);
+      gsap.to(prev, { opacity: 0, duration: 0.2 * dur, onComplete: () => void (openId !== prev.dataset.navPane && (prev.hidden = true)) });
     }
+    // Opening fresh: make sure no pane from an earlier visit is still showing.
+    if (!wasOpen) for (const p of panes.values()) if (p !== pane) (p.hidden = true), delete p.dataset.shown;
+    pane.hidden = false;
+    gsap.fromTo(pane, { opacity: 0 }, { opacity: 1, duration: 0.3 * dur, delay: wasOpen ? 0.08 * dur : 0 });
     requestAnimationFrame(() => (pane.dataset.shown = ''));
-    flyout.toggleAttribute('data-open', true);
-    moveHover(item);
-    if (focusFirst) pane.querySelector<HTMLElement>('a')?.focus();
+    placeFlyout(trigger, pane, !wasOpen);
+    flyout.dataset.open = '';
+    moveHover(trigger);
   };
-  const hide = (now = false) => {
+
+  function closeFlyout(now = false) {
     clearTimeout(openTimer);
     clearTimeout(closeTimer);
     const run = () => {
-      if (!open) return;
-      const pane = panes.get(open);
+      if (!flyout || openId === null) return;
+      delete flyout.dataset.open;
+      const pane = panes.get(openId);
       if (pane) {
         delete pane.dataset.shown;
-        setTimeout(() => !open && (pane.hidden = true), 240);
+        gsap.delayedCall(0.4 * dur, () => void (openId === null && (pane.hidden = true)));
       }
-      open = null;
-      flyout.removeAttribute('data-open');
-      for (const t of toggles) t.setAttribute('aria-expanded', 'false');
+      openId = null;
+      for (const t of triggers) t.setAttribute('aria-expanded', 'false');
       moveHover(null);
     };
     if (now) run();
     else closeTimer = window.setTimeout(run, 180);
-  };
-
-  for (const item of items) {
-    const id = item.dataset.item;
-    item.addEventListener('pointerenter', (e) => {
-      if (e.pointerType !== 'mouse') return;
-      moveHover(item);
-      clearTimeout(openTimer);
-      if (id) openTimer = window.setTimeout(() => show(id), open ? 0 : 80);
-      else hide(true), moveHover(item);
-    });
   }
-  for (const t of toggles) {
-    t.addEventListener('click', () => (open === t.dataset.toggle ? hide(true) : show(t.dataset.toggle!)));
+
+  for (const t of triggers) {
+    const id = t.dataset.navTrigger!;
+    t.addEventListener('pointerenter', (e) => {
+      if ((e as PointerEvent).pointerType !== 'mouse') return;
+      clearTimeout(openTimer);
+      clearTimeout(closeTimer);
+      openTimer = window.setTimeout(() => openFlyout(id), openId ? 0 : 90);
+    });
+    t.addEventListener('click', () => (openId === id ? closeFlyout(true) : openFlyout(id)));
     t.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        show(t.dataset.toggle!, true);
+        openFlyout(id);
+        $<HTMLAnchorElement>('.nav-item', panes.get(id))?.focus();
       }
     });
   }
-  nav.addEventListener('pointerleave', () => hide());
-  nav.addEventListener('pointerenter', () => clearTimeout(closeTimer));
-  nav.addEventListener('focusout', (e) => {
-    if (!nav.contains(e.relatedTarget as Node)) hide(true);
-  });
-  document.addEventListener('pointerdown', (e) => open && !nav.contains(e.target as Node) && hide(true));
+  pill?.addEventListener('pointerleave', () => closeFlyout());
+  pill?.addEventListener('pointerenter', () => clearTimeout(closeTimer));
+  for (const l of links.filter((l) => !l.dataset.navTrigger)) l.addEventListener('pointerenter', () => closeFlyout(true));
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
-    if (open) {
-      const toggle = toggles.find((t) => t.dataset.toggle === open);
-      hide(true);
-      toggle?.focus();
+    if (openId) {
+      const t = triggers.find((x) => x.dataset.navTrigger === openId);
+      closeFlyout(true);
+      t?.focus();
     }
-    if (sheet?.open) {
-      sheet.open = false;
-      sheet.querySelector('summary')?.focus();
+    closeMenu();
+  });
+  document.addEventListener('pointerdown', (e) => {
+    if (openId && !pill?.contains(e.target as Node)) closeFlyout(true);
+  });
+
+  // ── Condense once scrolled (with hysteresis so it never flickers at the threshold).
+  // The header stays visible everywhere; it never hides.
+  let menuOpen = false;
+  let condensed = false;
+  gsap.ticker.add(() => {
+    const y = scrollY;
+    const next = condensed ? y > 24 : y > 80;
+    if (next !== condensed) {
+      condensed = next;
+      nav.toggleAttribute('data-condensed', condensed);
     }
   });
 
-  // ── Dock draws in on scroll; page progress along its foot ────────────
-  const progress = header.querySelector<HTMLElement>('[data-progress]');
-  let condensed = false;
-  let ticking = false;
-  const onScroll = () => {
-    ticking = false;
-    const y = scrollY;
-    // Hysteresis, so it never flickers at the threshold.
-    const next = condensed ? y > 24 : y > 80;
-    if (next !== condensed) header.toggleAttribute('data-condensed', (condensed = next));
-    const max = document.documentElement.scrollHeight - innerHeight;
-    progress?.style.setProperty('--progress', max > 0 ? (y / max).toFixed(4) : '0');
-  };
-  addEventListener('scroll', () => !ticking && ((ticking = true), requestAnimationFrame(onScroll)), { passive: true });
-  onScroll();
+  // ── Page progress along the foot of the dock ────────────────────────────
+  const line = $('[data-nav-progress]');
+  if (line) $progress.subscribe((p) => (line.style.transform = `scaleX(${p.toFixed(4)})`));
 
-  // ── Colours follow the section under the header ──────────────────────
-  // A one-pixel line at the header's middle: whichever section crosses it sets the theme.
-  const sections = [...document.querySelectorAll<HTMLElement>('main [data-theme], footer[data-theme]')];
-  if (sections.length && 'IntersectionObserver' in window) {
-    let io: IntersectionObserver;
-    const watch = () => {
-      io?.disconnect();
-      const line = header.offsetHeight / 2;
-      io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (!e.isIntersecting) continue;
-            const theme = (e.target as HTMLElement).dataset.theme!;
-            if (html.dataset.navTheme !== theme) html.dataset.navTheme = theme;
-          }
-        },
-        { rootMargin: `-${line}px 0px -${Math.max(0, innerHeight - line - 1)}px 0px` },
-      );
-      for (const s of sections) io.observe(s);
-    };
-    watch();
-    let t = 0;
-    addEventListener('resize', () => (clearTimeout(t), (t = window.setTimeout(watch, 150))));
+  // ── Mobile / tablet sheet ───────────────────────────────────────────────
+  const sheet = $('[data-menu]');
+  const toggle = $<HTMLButtonElement>('[data-menu-toggle]');
+  function closeMenu() {
+    if (!menuOpen || !sheet || !toggle) return;
+    menuOpen = false;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Open menu');
+    sheet.setAttribute('aria-hidden', 'true');
+    sheet.inert = true;
+    delete html.dataset.menuOpen;
+    lenis?.start();
   }
+  toggle?.addEventListener('click', () => {
+    if (!sheet) return;
+    if (menuOpen) return closeMenu();
+    menuOpen = true;
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'Close menu');
+    sheet.setAttribute('aria-hidden', 'false');
+    sheet.inert = false;
+    html.dataset.menuOpen = '';
+    lenis?.stop();
+    if (!reduced) gsap.fromTo($$('.nav-sheet-row, .nav-sheet .nav-cta', sheet), { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'expo.out', stagger: 0.05, delay: 0.15 });
+  });
+  for (const b of $$<HTMLButtonElement>('[data-sheet-toggle]')) {
+    b.addEventListener('click', () => b.setAttribute('aria-expanded', String(b.getAttribute('aria-expanded') !== 'true')));
+  }
+  for (const a of $$<HTMLAnchorElement>('.nav-sheet a:not([data-nav-jump])')) a.addEventListener('click', () => closeMenu());
 
-  // ── Phone sheet ──────────────────────────────────────────────────────
-  const sheet = header.querySelector<HTMLDetailsElement>('[data-sheet]');
-  if (sheet) {
-    sheet.addEventListener('toggle', () => {
-      html.toggleAttribute('data-menu-open', sheet.open);
-      sheet.querySelector('summary')?.setAttribute('aria-label', sheet.open ? 'Close menu' : 'Menu');
-    });
-    for (const a of sheet.querySelectorAll('a')) a.addEventListener('click', () => (sheet.open = false));
-    // Close the sheet if the window grows past the breakpoint.
-    matchMedia('(min-width: 64rem)').addEventListener('change', (e) => e.matches && (sheet.open = false));
-  }
+  return { closeMenu };
 }

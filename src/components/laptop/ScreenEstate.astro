@@ -1,0 +1,62 @@
+---
+/**
+ * The Estate Entrance Security System on the laptop's screen (decorative).
+ * Code-based visitor access: a code checked at the gate, and the log. Made-up
+ * demo data (House 12, Gate 1).
+ */
+const log = [
+  { t: '14:06', who: 'Visitor for House 12', ok: true },
+  { t: '13:52', who: 'Visitor for House 4', ok: true },
+  { t: '13:40', who: 'Unknown code', ok: false },
+  { t: '13:21', who: 'Visitor for House 9', ok: true },
+  { t: '12:58', who: 'Delivery for House 2', ok: true },
+];
+---
+
+<div class="app app-estate">
+  <div class="app-side">
+    <p class="app-brand"><span class="app-dot is-gate"></span>Estate access</p>
+    <ul>
+      <li class="is-on">Gate 1</li>
+      <li>Visitor codes</li>
+      <li>Entry log</li>
+      <li>Residents</li>
+      <li>Guards</li>
+    </ul>
+  </div>
+  <div class="app-main">
+    <div class="app-bar">
+      <p class="app-title">Gate 1 · Check a code</p>
+      <span class="app-demo">Demo data</span>
+    </div>
+    <div class="gate-grid">
+      <div class="gate-check">
+        <p class="app-h">Visitor code</p>
+        <div class="gate-code">{['4', '8', '2', '9', '1', '3'].map((d) => <span>{d}</span>)}</div>
+        <p class="gate-status"><i></i>Verified</p>
+        <dl class="gate-meta">
+          <div><dt>House</dt><dd>12</dd></div>
+          <div><dt>Valid until</dt><dd>18:00</dd></div>
+          <div><dt>Uses</dt><dd>1 of 1</dd></div>
+        </dl>
+        <p class="gate-try">Wrong code? The light turns wine and the gate stays shut.</p>
+      </div>
+      <div class="gate-log">
+        <p class="app-h">Today's entries</p>
+        {
+          log.map((l) => (
+            <p class:list={['log-row', !l.ok && 'is-denied']}>
+              <time>{l.t}</time>
+              <span>{l.who}</span>
+              <b>{l.ok ? 'Verified' : 'Denied'}</b>
+            </p>
+          ))
+        }
+      </div>
+      <div class="gate-phone">
+        <span class="gate-phone-notch"></span>
+        <p class="gate-note"><b>House 12</b>Your visitor has arrived.</p>
+      </div>
+    </div>
+  </div>
+</div>

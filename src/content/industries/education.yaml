@@ -1,4 +1,24 @@
 order: 5
 name: Education
 note: Schools and training centres.
-confirmed: false
+icon: school
+confirmed: true
+lead: Schools and training centres deal with parents, students, staff, fees and timetables, often with very little time and a tight budget. We build software that saves the office hours, and that parents can actually use on their phones.
+problems:
+  - Parents ring the office for information that could be on the website.
+  - Results, fees and attendance live in separate spreadsheets.
+  - The school website was built years ago, and nobody on staff can change it.
+  - Systems break at the busiest time of term, when there's no one to call.
+helps:
+  - title: A website the office can edit
+    body: Term dates, news and notices updated by your own staff from a simple admin panel.
+    href: /products/websites-with-admin-panel/
+  - title: Portals for parents and staff
+    body: Results, fees and notices in one place, designed for the phones parents carry.
+    href: /services/software-development/
+  - title: Support that stays
+    body: Updates, monitoring and quick fixes, so the system holds up through the busiest weeks.
+    href: /services/maintenance-and-support/
+seo:
+  title: Software and websites for schools in Nigeria | Synovika
+  description: School websites your office can edit, plus portals for results, fees and notices, built by Synovika for schools and training centres in Nigeria.

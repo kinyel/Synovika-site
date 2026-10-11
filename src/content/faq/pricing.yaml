@@ -1,4 +1,4 @@
 order: 1
 q: How much does a project cost?
 a: It depends on what you need, so we don't guess. After a first call we send a written quote, broken into stages, before any work starts.
-confirmed: false
+confirmed: true

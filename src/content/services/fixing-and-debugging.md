@@ -1,6 +1,8 @@
 ---
 name: Fixing and debugging
 blurb: Find the real cause, then fix it properly
+icon: bug
+group: run
 summary: Something's broken, slow or doing odd things. We find out why and fix it properly, even if someone else built it.
 problem: "It worked last month. Now orders go missing, the app crashes, and the developer who built it isn't answering."
 whatWeDo:
@@ -14,6 +16,15 @@ deliverables:
   - Tests that guard against the bug returning
   - Notes on anything else risky we spotted on the way
 visual: xray
+diagram:
+  kind: flow
+  steps:
+    - Make it happen again
+    - Find the real cause
+    - Fix it properly
+    - Test the fix
+    - Write it up
+  caption: We don't patch symptoms. We find what's really wrong, fix that, and tell you what we found.
 faqs:
   - q: Will you fix software someone else built?
     a: Yes. Most of the fixing we do is on code we didn't write. We start by reading it.

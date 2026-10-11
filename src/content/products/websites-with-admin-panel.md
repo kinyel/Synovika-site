@@ -4,6 +4,8 @@ headline: Websites with an Admin Panel your team can edit
 descriptor: business websites you edit yourself
 summary: A business website with its own admin panel, so your team can change the text and add pages without calling a developer.
 status: in-development
+icon: browser
+accent: blue
 audience:
   - Small and growing businesses
   - Schools, clinics, churches and associations

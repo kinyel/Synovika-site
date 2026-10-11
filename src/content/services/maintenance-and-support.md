@@ -1,6 +1,8 @@
 ---
 name: Maintenance and support
 blurb: Updates, monitoring and fixes after launch
+icon: heartbeat
+group: run
 summary: We look after your software once it's live. Updates, fixes and monitoring, so it keeps working while you get on with business.
 problem: "The launch went fine. Now nobody's watching it, and we only hear about problems from angry customers."
 whatWeDo:
@@ -14,6 +16,14 @@ deliverables:
   - Fixes and small changes, as agreed
   - A monthly summary in plain words
 visual: heartbeat
+diagram:
+  kind: cycle
+  stages:
+    - Watch
+    - Update
+    - Fix
+    - Report
+  caption: Every month we watch it, keep it updated, fix what breaks, and tell you what we did.
 relatedProducts: [selvion, websites-with-admin-panel]
 faqs:
   - q: Can you support software you didn't build?

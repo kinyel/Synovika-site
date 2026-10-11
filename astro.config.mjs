@@ -15,7 +15,7 @@ const SHOW_DRAFTS = env.PUBLIC_SHOW_DRAFTS === 'true';
 const variable = (/** @type {string} */ pkg, /** @type {string} */ file) => `./node_modules/@fontsource-variable/${pkg}/files/${file}`;
 
 /** Pages that are not for search engines. */
-const unlisted = ['/lab/', '/contact/thanks/', '/404/', '/og/'];
+const unlisted = ['/404/', '/og/'];
 
 /**
  * On a draft build, every response carries X-Robots-Tag: noindex, on any

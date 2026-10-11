@@ -4,6 +4,8 @@ headline: Selvion fleet tracking for Nigerian businesses
 descriptor: fleet tracking platform
 summary: See every vehicle live, get told when one starts, leaves a zone or needs stopping, and get a report on every trip.
 status: in-development
+icon: route
+accent: teal
 audience:
   - Logistics and haulage companies
   - Businesses running delivery vans, buses or pool cars
@@ -53,7 +55,7 @@ stations:
     readout: UNIT 07 · LEFT DEPOT A · 07:18
   - feature: phone-alerts
     heading: Alert
-    body: The alert reaches your phone in seconds, so you can call the driver while it still matters.
+    body: The alert comes straight to your phone, so you can call the driver while it still matters.
     readout: Unit 07 left Depot A at 07:18
   - feature: trip-reports
     heading: Trip report
@@ -61,7 +63,7 @@ stations:
 faqs:
   - q: Can I use Selvion today?
     a: Not yet. Selvion is in development. Join the waitlist and we'll tell you as soon as you can use it.
-    confirmed: false
+    confirmed: true
   - q: Do I need special hardware?
     a: Each vehicle needs a GPS tracker fitted. We'll tell you which trackers work with Selvion before you buy anything.
     confirmed: false

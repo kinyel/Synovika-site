@@ -1,0 +1,71 @@
+---
+/** Industries: the six sectors we build for, each with its own page. */
+import { getEntry } from 'astro:content';
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { industries } from '../../lib/content';
+import { itemList } from '../../lib/schema';
+
+const page = (await getEntry('pages', 'industries'))!.data;
+const ind = await industries();
+---
+
+<Page
+  title={page.seo.title}
+  description={page.seo.description}
+  heading={page.title}
+  lit="build for"
+  lead={page.lead}
+  eyebrow="Who we build for"
+  icon="globe"
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Industries', href: '/industries/' }]}
+  schema={[itemList('/industries/', 'list', 'Industries Synovika builds for', ind.map((i) => ({ name: i.data.name, path: `/industries/${i.id}/` })))]}
+>
+  <section class="section" data-theme="dark" aria-label="Industries">
+    <ul class="gutter ind-cards">
+      {
+        ind.map((i) => (
+          <li data-reveal>
+            <a href={`/industries/${i.id}/`} class="card card-hover ind-card">
+              <span class="icon-tile">
+                <Icon name={i.data.icon} />
+              </span>
+              <h2 class="h3 mt-5">{i.data.name}</h2>
+              <p class="mt-2 text-grey-200">{i.data.note}</p>
+              <span class="link-arrow mt-auto pt-5">
+                See what we'd build<span class="sr-only"> for {i.data.name.toLowerCase()}</span> <Icon name="arrow" />
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Page>
+
+<style>
+  .ind-cards {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .ind-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .ind-cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .ind-cards > li {
+    display: flex;
+  }
+  .ind-card {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 1.6rem;
+  }
+</style>

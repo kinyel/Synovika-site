@@ -1,37 +1,39 @@
 /* Scan src/ only: words in scripts and docs must not turn into utilities. */
 @import 'tailwindcss' source('../');
 @import './tokens.css';
+@import 'lenis/dist/lenis.css';
 
-/* Animatable scroll progress for the chrome highlight and the 3D scenes. */
-@property --p {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 0.35;
-}
+/*
+ * The site's styles are raleston-web's (synov-timer), ported with Synovika's
+ * colours (D-045, D-047), plus what Synovika adds: chrome text, the signal
+ * sphere, the pill, the waves, draft markers and form fields.
+ */
+
 @property --lift {
   syntax: '<length>';
   inherits: false;
   initial-value: 0px;
 }
+@property --p {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
 
 @layer base {
   html {
     background: var(--color-night);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
+    color: var(--color-white);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: clip;
-    /* Focus and anchors never land under the fixed header. */
-    scroll-padding-top: calc(var(--header-height) + 1.5rem);
+    scroll-padding-top: 6.5rem;
     -webkit-text-size-adjust: 100%;
-    scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--color-teal-300) 55%, transparent) transparent;
   }
   body {
-    font-size: var(--text-body);
-    line-height: var(--text-body--line-height);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
     font-weight: 450;
     overflow-x: clip;
     font-synthesis: none;
@@ -40,13 +42,16 @@
     overflow: hidden;
   }
   ::selection {
-    background: var(--color-teal-300);
+    background: var(--color-iris-soft);
     color: var(--color-night);
   }
-  /* 2 px ring, 2 px offset: teal-300 on dark, blue-600 on paper, white on teal. */
   :focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
+    outline: 2px solid var(--color-iris-soft);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  [data-theme='paper'] :focus-visible {
+    outline-color: var(--color-blue-600);
   }
   a {
     color: inherit;
@@ -66,159 +71,53 @@
     text-decoration: underline dotted;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
     cursor: help;
   }
 }
 
 @layer components {
-  /* ── Sections and registers ───────────────────────────────────────── */
   [data-theme] {
-    background-color: var(--color-surface);
     color: var(--color-ink);
   }
   [data-theme='paper'] {
+    background: var(--color-white);
     font-weight: 400;
   }
-  .section {
-    position: relative;
-    isolation: isolate;
-    padding-block: clamp(5rem, 10vw, 8.5rem);
+  .gutter {
+    padding-inline: max(1rem, env(safe-area-inset-left), min(5vw, 4.5rem));
   }
   .wrap {
-    position: relative;
     width: 100%;
-    max-width: calc(var(--grid-max) + 2 * var(--grid-margin));
+    max-width: 90rem;
     margin-inline: auto;
-    padding-inline: max(var(--grid-margin), env(safe-area-inset-left)) max(var(--grid-margin), env(safe-area-inset-right));
+    padding-inline: max(1rem, env(safe-area-inset-left), min(5vw, 4.5rem));
   }
-  .grid-site {
-    display: grid;
-    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-  }
-  .hairline {
-    border: 0;
-    border-top: 1px solid var(--color-line);
-  }
-
-  /*
-   * ── Atmosphere (synov-timer's colouring, in teal: D-045) ───────────
-   * A section's light: a deep base, a large teal glow, a blue one opposite,
-   * and a faint drafting grid that fades out. Tune per section with
-   * --glow-x/--glow-y (teal) and --glow2-x/--glow2-y (blue).
-   */
-  .atmos {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-    --glow-x: 82%;
-    --glow-y: 12%;
-    --glow2-x: 4%;
-    --glow2-y: 92%;
-    background:
-      radial-gradient(46% 54% at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--color-teal-600) 30%, transparent), transparent 72%),
-      radial-gradient(50% 60% at var(--glow2-x) var(--glow2-y), color-mix(in srgb, var(--color-blue-700) 18%, transparent), transparent 74%),
-      /* Night at both edges, so stacked sections never show a seam. */
-      linear-gradient(180deg, var(--color-night) 0%, color-mix(in srgb, var(--color-teal-950) 60%, var(--color-night)) 50%, var(--color-night) 100%);
-  }
-  .atmos::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(to right, color-mix(in srgb, var(--color-white) 4%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in srgb, var(--color-white) 4%, transparent) 1px, transparent 1px);
-    background-size: 72px 72px;
-    background-position: center;
-    mask-image: radial-gradient(60% 70% at var(--grid-x, 66%) var(--grid-y, 42%), #000 22%, transparent 78%);
-  }
-  /* A soft pool of light under a 3D object. */
-  .floor-glow {
-    position: absolute;
-    width: var(--w, 46vw);
-    height: var(--h, 22vh);
-    left: var(--x, 64%);
-    top: var(--y, 88%);
-    translate: -50% -50%;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-teal-500) 24%, transparent), transparent);
-    pointer-events: none;
-  }
-  /* Teal flood (principles): its own glows on teal-900. */
-  [data-theme='teal'] .atmos {
-    background:
-      radial-gradient(50% 60% at var(--glow-x) var(--glow-y), color-mix(in srgb, var(--color-teal-400) 22%, transparent), transparent 72%),
-      radial-gradient(50% 60% at var(--glow2-x) var(--glow2-y), color-mix(in srgb, var(--color-teal-950) 60%, transparent), transparent 74%),
-      var(--color-teal-900);
-  }
-
-  /* ── Type ─────────────────────────────────────────────────────────── */
-  .t-display {
+  .display {
     font-family: var(--font-display);
-    font-size: var(--text-display);
-    line-height: var(--text-display--line-height);
-    letter-spacing: var(--text-display--letter-spacing);
     font-weight: 600;
-    text-wrap: balance;
+    letter-spacing: -0.03em;
+    line-height: 1;
   }
-  .t-h2 {
-    font-family: var(--font-display);
-    font-size: var(--text-h2);
-    line-height: var(--text-h2--line-height);
-    letter-spacing: var(--text-h2--letter-spacing);
-    font-weight: 600;
-    text-wrap: balance;
-  }
-  .t-h3 {
-    font-family: var(--font-display);
-    font-size: var(--text-h3);
-    line-height: var(--text-h3--line-height);
-    letter-spacing: var(--text-h3--letter-spacing);
-    font-weight: 600;
-  }
-  .t-lead {
-    font-size: var(--text-lead);
-    line-height: var(--text-lead--line-height);
-    color: var(--color-ink-soft);
-    max-width: 36em;
-    text-wrap: pretty;
-  }
-  .t-body {
-    max-width: 38em;
-    text-wrap: pretty;
-  }
-  .t-muted {
-    color: var(--color-ink-muted);
-  }
-  /* Mono labels echo the tagline: uppercase and widely tracked. */
-  .t-label {
+  .label {
     font-family: var(--font-mono);
-    font-size: var(--text-label);
-    line-height: var(--text-label--line-height);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
+    font-size: 0.72rem;
     font-weight: 500;
-    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: lining-nums tabular-nums;
   }
-  .t-eyebrow {
-    color: var(--color-live-ink);
-  }
-  .t-mono {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-  }
-  /* Eyebrow: a double rule, then the label (synov-timer's, in teal). */
+  /* Eyebrow: a double rule, then small caps text, lit teal. */
   .eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.7rem;
     font-family: var(--font-mono);
-    font-size: var(--text-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
+    font-size: 0.72rem;
     font-weight: 500;
-    color: var(--color-live-ink);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
   }
   .eyebrow::before {
     content: '';
@@ -227,25 +126,26 @@
     height: 5px;
     border-block: 1.5px solid currentColor;
   }
-  /* Lit emphasis in headlines: teal-300 with a soft glow. */
+  /* Emphasised words on dark: lit teal with a soft glow (the reference image's highlight). */
   .text-lit {
-    color: var(--color-live-ink);
-    text-shadow: 0 0 32px color-mix(in srgb, var(--color-teal-500) 65%, transparent);
+    color: var(--color-iris-soft);
+    text-shadow: 0 0 30px color-mix(in srgb, var(--color-iris) 70%, transparent);
   }
-  [data-theme='paper'] .text-lit {
-    color: var(--color-teal-700);
-    text-shadow: none;
+  .text-gold-lit {
+    color: var(--color-gold);
+    text-shadow: 0 0 28px color-mix(in srgb, var(--color-gold) 45%, transparent);
   }
-
-  /*
-   * Chrome: white through silver to steel, clipped to the text. The
-   * specular band follows --p (0 to 1), which scroll can drive. At most one
-   * chrome word per headline.
-   */
+  .line-mask {
+    display: block;
+    padding-block: 0.06em 0.12em;
+    margin-block: -0.06em -0.12em;
+  }
+  .is-revealing .line-mask {
+    overflow: clip;
+  }
+  /* Chrome: white through silver to steel, for one word at most. */
   .chrome {
-    background-image:
-      linear-gradient(100deg, transparent calc(var(--p) * 140% - 32%), rgb(255 255 255 / 0.85) calc(var(--p) * 140% - 20%), transparent calc(var(--p) * 140% - 8%)),
-      linear-gradient(180deg, var(--chrome-top) 8%, var(--chrome-mid) 58%, var(--chrome-low) 96%);
+    background-image: linear-gradient(180deg, var(--chrome-top) 8%, var(--chrome-mid) 58%, var(--chrome-low) 96%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -253,27 +153,56 @@
     padding-bottom: 0.08em;
     margin-bottom: -0.08em;
   }
-  .chrome-border {
-    border: 1px solid transparent;
-    background:
-      linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
-      linear-gradient(180deg, var(--chrome-top), var(--chrome-mid) 50%, var(--chrome-low)) border-box;
+
+  /* ── Pill eyebrow with a live signal ────────────────────────────── */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: fit-content;
+    border-radius: 999px;
+    padding: 0.42rem 0.95rem 0.45rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+    background: color-mix(in srgb, var(--color-iris) 14%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 35%, transparent),
+      0 0 28px -8px color-mix(in srgb, var(--color-iris) 80%, transparent);
   }
-  /* Giant outlined words behind objects. Always decorative (aria-hidden). */
-  .t-giant {
-    font-family: var(--font-display);
-    font-size: var(--text-giant);
-    line-height: var(--text-giant--line-height);
-    letter-spacing: var(--text-giant--letter-spacing);
-    font-weight: 700;
-    color: transparent;
-    -webkit-text-stroke: 1px color-mix(in srgb, var(--color-ink) 12%, transparent);
-    white-space: nowrap;
-    user-select: none;
-    pointer-events: none;
+  .pill-dot {
+    position: relative;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--color-iris-soft);
+    box-shadow: 0 0 10px var(--color-iris-soft);
+  }
+  .pill-dot::after {
+    content: '';
+    position: absolute;
+    inset: -0.3rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-iris-soft);
+    opacity: 0;
+    /* Pings a few times, then rests (WCAG 2.2.2). */
+    animation: pill-ping 2.4s var(--ease-expo) 0.6s 3;
+  }
+  @keyframes pill-ping {
+    from {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    to {
+      transform: scale(1.8);
+      opacity: 0;
+    }
   }
 
-  /* ── The signal: the logo's glossy teal sphere, in CSS ────────────── */
+  /* ── The signal: the logo's glossy teal sphere ───────────────────── */
   .signal {
     --size: 0.75rem;
     display: inline-block;
@@ -281,249 +210,85 @@
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
-    background: radial-gradient(circle at 34% 30%, var(--color-white) 0 5%, var(--color-teal-200) 14%, var(--color-teal-400) 34%, var(--color-teal-700) 70%, var(--color-teal-950) 100%);
-    box-shadow:
-      0 0 0 1px rgb(0 0 0 / 0.15),
-      0 0 calc(var(--size) * 1.6) color-mix(in srgb, var(--color-teal-300) 55%, transparent);
-  }
-  .signal[data-state='alert'] {
-    background: radial-gradient(circle at 34% 30%, var(--color-wine-50) 0 6%, var(--color-wine-300) 18%, var(--color-wine-700) 50%, var(--color-wine-950) 100%);
-    box-shadow:
-      0 0 0 1px rgb(0 0 0 / 0.15),
-      0 0 calc(var(--size) * 1.6) color-mix(in srgb, var(--color-wine-400) 55%, transparent);
-  }
-  .signal[data-state='idle'] {
-    background: radial-gradient(circle at 34% 30%, var(--color-neutral-50) 0 6%, var(--color-neutral-400) 22%, var(--color-neutral-700) 60%, var(--color-neutral-900) 100%);
-    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.15);
+    background: radial-gradient(circle at 34% 30%, #fff 0 5%, var(--color-teal-200) 14%, var(--color-teal-400) 34%, var(--color-teal-700) 70%, var(--color-teal-950) 100%);
+    box-shadow: 0 0 calc(var(--size) * 1.6) color-mix(in srgb, var(--color-teal-300) 55%, transparent);
   }
 
-  /* Pill eyebrow with a live signal that pings a few times, then rests (WCAG 2.2.2). */
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.65rem;
-    width: fit-content;
-    border-radius: var(--radius-full);
-    padding: 0.45rem 0.95rem 0.48rem 0.7rem;
-    font-family: var(--font-mono);
-    font-size: var(--text-label);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    font-weight: 500;
-    color: var(--color-live-ink);
-    background: color-mix(in srgb, var(--color-teal-600) 14%, var(--color-night));
-    box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 32%, transparent),
-      0 0 28px -8px color-mix(in srgb, var(--color-teal-500) 80%, transparent);
-  }
-  @media (max-width: 30rem) {
-    .pill {
-      letter-spacing: 0.08em;
-      font-size: 0.6875rem;
-    }
-  }
-  .pill .signal {
-    --size: 0.55rem;
-    position: relative;
-  }
-  .pill .signal::after {
-    content: '';
-    position: absolute;
-    inset: -0.3rem;
-    border-radius: 50%;
-    border: 1px solid var(--color-teal-300);
-    opacity: 0;
-    animation: ping 2.4s var(--ease-out) 0.6s 3;
-  }
-  @keyframes ping {
-    from {
-      transform: scale(0.5);
-      opacity: 1;
-    }
-    to {
-      transform: scale(1.9);
-      opacity: 0;
-    }
-  }
-
-  /* ── Buttons ──────────────────────────────────────────────────────── */
+  /* ── Buttons (raleston-web's, in teal) ───────────────────────────── */
   .btn {
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.65rem;
+    gap: 0.6rem;
     min-height: 3rem;
-    padding: 0.85rem 1.45rem;
-    border-radius: var(--radius-full);
-    font-size: 1rem;
+    border-radius: 0.8rem;
+    padding: 0.9rem 1.45rem;
     font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: -0.005em;
+    font-size: 1rem;
+    line-height: 1;
     white-space: nowrap;
     transition:
-      background-color var(--dur-2) var(--ease-out),
-      color var(--dur-2) var(--ease-out),
-      box-shadow var(--dur-3) var(--ease-out),
-      translate var(--dur-2) var(--ease-out);
+      background-color 0.4s var(--ease-expo),
+      color 0.4s var(--ease-expo),
+      box-shadow 0.4s var(--ease-expo);
+    will-change: transform;
   }
   .btn:active {
-    translate: 0 1px;
+    transform: scale(0.97);
   }
   .btn svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.05rem;
+    height: 1.05rem;
   }
-  /* Primary: teal-700 into blue-700, white text, glowing (synov-timer's iris into azure, in our colours). */
+  /* Primary: solid teal, white text (teal-700, 5.47:1), glowing. */
   .btn-primary {
-    padding-left: 1.05rem;
-    color: var(--color-on-action);
-    background: linear-gradient(100deg, var(--color-action) 10%, var(--color-action-end) 100%);
+    color: var(--color-white);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-teal-600) 55%, var(--color-teal-700)), var(--color-teal-700));
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.2),
-      inset 0 0 0 1px rgb(255 255 255 / 0.08),
-      0 12px 34px -10px color-mix(in srgb, var(--color-teal-500) 60%, transparent);
+      inset 0 1px 0 color-mix(in srgb, var(--color-white) 22%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 10%, transparent),
+      0 12px 34px -10px color-mix(in srgb, var(--color-teal-500) 65%, transparent);
   }
   .btn-primary:hover {
+    background: var(--color-teal-700);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.28),
-      inset 0 0 0 1px rgb(255 255 255 / 0.16),
+      inset 0 1px 0 color-mix(in srgb, var(--color-white) 30%, transparent),
+      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 18%, transparent),
       0 0 46px 2px color-mix(in srgb, var(--color-teal-500) 50%, transparent);
   }
-  .btn-primary .signal {
-    --size: 0.7rem;
-  }
-  /* Secondary: a white hairline that fills softly, over glass. */
-  .btn-secondary {
-    color: var(--color-ink);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 34%, transparent);
+  /* Secondary on dark: a white hairline that fills softly. */
+  .btn-outline {
+    color: var(--color-white);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-white) 34%, transparent);
     backdrop-filter: blur(10px);
   }
-  .btn-secondary:hover {
-    background-color: color-mix(in srgb, var(--color-ink) 8%, transparent);
-    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-ink) 70%, transparent);
+  .btn-outline:hover {
+    background: color-mix(in srgb, var(--color-white) 8%, transparent);
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-white) 70%, transparent);
   }
-  /* Quiet: text with an underline that draws in. WhatsApp and email links. */
   .btn-quiet {
     padding-inline: 0.4rem;
-    color: var(--color-ink);
+    color: var(--color-white);
   }
   .btn-quiet > span {
     background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
     padding-bottom: 2px;
-    transition: background-size var(--dur-3) var(--ease-out);
+    transition: background-size 0.5s var(--ease-expo);
   }
   .btn-quiet:hover > span {
     background-size: 0% 1px;
     background-position: 100% 100%;
   }
 
-  /* ── Links ───────────────────────────────────────────────────────── */
-  .link {
-    color: var(--color-data-ink);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.22em;
-    text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
-    transition: text-decoration-color var(--dur-2) var(--ease-out);
-  }
-  .link:hover {
-    text-decoration-color: currentColor;
-  }
-  .link-arrow {
-    display: inline-flex;
-    min-height: 44px;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
-    color: var(--color-live-ink);
-    transition:
-      gap var(--dur-3) var(--ease-out),
-      color var(--dur-2) var(--ease-out);
-  }
-  .link-arrow:hover {
-    gap: 0.8rem;
-    color: var(--color-ink);
-  }
-  .link-arrow svg {
-    width: 1.1rem;
-    height: 1.1rem;
-  }
-
-  /* ── Glass (synov-timer's cards, in teal) ─────────────────────────── */
-  .glass {
-    position: relative;
-    border-radius: var(--radius-lg);
-    background:
-      linear-gradient(160deg, color-mix(in srgb, var(--color-white) 5.5%, transparent), color-mix(in srgb, var(--color-white) 1.5%, transparent) 60%),
-      color-mix(in srgb, var(--color-teal-950) 55%, var(--color-night));
-    box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 9%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-white) 10%, transparent),
-      0 30px 60px -40px rgb(0 0 0 / 0.8);
-  }
-  .glass-hover {
-    transition:
-      transform var(--dur-4) var(--ease-out),
-      box-shadow var(--dur-4) var(--ease-out);
-  }
-  .glass-hover:hover {
-    transform: translateY(-4px);
-    box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 38%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-white) 14%, transparent),
-      0 40px 70px -40px color-mix(in srgb, var(--color-teal-500) 55%, transparent);
-  }
-  /* A glass tile for an icon. */
-  .icon-tile {
-    display: grid;
-    flex: none;
-    width: 2.9rem;
-    height: 2.9rem;
-    place-items: center;
-    border-radius: var(--radius-md);
-    color: var(--color-live-ink);
-    background: color-mix(in srgb, var(--color-teal-600) 18%, var(--color-night));
-    box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 30%, transparent),
-      0 0 24px -8px color-mix(in srgb, var(--color-teal-500) 70%, transparent);
-  }
-  .icon-tile svg {
-    width: 1.4rem;
-    height: 1.4rem;
-  }
-
-  /* ── Status chips (product status) ────────────────────────────────── */
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 0.75rem 0.35rem 0.55rem;
-    border-radius: var(--radius-full);
-    font-family: var(--font-mono);
-    font-size: var(--text-label);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-weight: 500;
-    line-height: 1;
-    white-space: nowrap;
-    color: var(--color-ink);
-    background: color-mix(in srgb, var(--color-white) 4%, transparent);
-    box-shadow: inset 0 0 0 1px var(--color-line);
-  }
-  .chip .signal {
-    --size: 0.5rem;
-  }
-
-  /* Meaning badges: teal is live, blue is data, wine is an alert. */
+  /* ── Badges: teal is live, blue is data, amber is an outcome, wine an alert ─ */
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    border-radius: var(--radius-full);
+    border-radius: 999px;
     padding: 0.28rem 0.62rem 0.3rem 0.5rem;
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-size: 0.66rem;
     font-weight: 500;
     letter-spacing: 0.12em;
     line-height: 1;
@@ -539,18 +304,25 @@
     box-shadow: 0 0 10px currentColor;
   }
   .badge-live {
-    color: var(--color-teal-300);
-    background: color-mix(in srgb, var(--color-teal-500) 8%, var(--color-night));
+    color: var(--color-iris-soft);
+    background: color-mix(in srgb, var(--color-iris) 10%, var(--color-night));
     box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--color-teal-400) 40%, transparent),
-      0 0 22px -6px color-mix(in srgb, var(--color-teal-500) 70%, transparent);
+      inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 40%, transparent),
+      0 0 22px -6px color-mix(in srgb, var(--color-iris) 70%, transparent);
   }
   .badge-data {
-    color: var(--color-blue-400);
-    background: color-mix(in srgb, var(--color-blue-500) 8%, var(--color-night));
+    color: var(--color-violet-soft);
+    background: color-mix(in srgb, var(--color-violet) 9%, var(--color-night));
     box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--color-blue-500) 45%, transparent),
-      0 0 22px -6px color-mix(in srgb, var(--color-blue-500) 70%, transparent);
+      inset 0 0 0 1px color-mix(in srgb, var(--color-violet) 45%, transparent),
+      0 0 22px -6px color-mix(in srgb, var(--color-violet) 70%, transparent);
+  }
+  .badge-outcome {
+    color: var(--color-gold-glow);
+    background: color-mix(in srgb, var(--color-gold) 9%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 45%, transparent),
+      0 0 22px -6px color-mix(in srgb, var(--color-gold) 70%, transparent);
   }
   .badge-alert {
     color: var(--color-wine-300);
@@ -559,126 +331,437 @@
       inset 0 0 0 1px color-mix(in srgb, var(--color-wine-400) 45%, transparent),
       0 0 22px -6px color-mix(in srgb, var(--color-wine-500) 70%, transparent);
   }
-
-  /* ── Form fields ──────────────────────────────────────────────────── */
-  .field {
-    display: grid;
-    gap: 0.45rem;
-  }
-  .field-label {
-    font-size: var(--text-small);
-    font-weight: 600;
-  }
-  .field-hint {
-    font-size: var(--text-small);
-    color: var(--color-ink-muted);
-  }
-  .field-error {
-    font-size: var(--text-small);
-    color: var(--color-alert-ink);
-  }
-  .input {
-    width: 100%;
-    min-height: 3rem;
-    padding: 0.75rem 0.95rem;
-    border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--color-white) 4%, var(--color-surface));
-    color: var(--color-ink);
-    font: inherit;
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 20%, transparent);
-    transition: box-shadow var(--dur-2) var(--ease-out);
-  }
-  .input:hover {
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ink) 40%, transparent);
-  }
-  .input:focus-visible {
-    outline-offset: 0;
-    box-shadow:
-      inset 0 0 0 1px var(--color-focus),
-      0 0 24px -8px color-mix(in srgb, var(--color-teal-500) 70%, transparent);
-  }
-  .input[aria-invalid='true'] {
-    box-shadow: inset 0 0 0 1px var(--color-alert-ink);
-  }
-  textarea.input {
-    min-height: 9rem;
-    resize: vertical;
-  }
-  select.input option {
-    background: var(--color-surface);
-    color: var(--color-ink);
-  }
-  .check {
-    display: flex;
-    gap: 0.75rem;
-    align-items: flex-start;
-    font-size: var(--text-small);
-  }
-  .check input {
-    flex: none;
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-top: 0.1rem;
-    accent-color: var(--color-teal-500);
-  }
-
-  /* ── Draft-only markers (never in a production build) ─────────────── */
-  .todo {
-    display: inline-block;
-    padding: 0.1rem 0.45rem;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: 0.8em;
-    font-weight: 500;
-    background: var(--color-wine-800);
-    color: var(--color-white);
-  }
-  .to-confirm {
+  /* A product's status. */
+  .chip {
     display: inline-flex;
     align-items: center;
-    padding: 0.2rem 0.5rem;
-    border-radius: var(--radius-sm);
+    gap: 0.5rem;
+    width: fit-content;
+    padding: 0.32rem 0.7rem 0.32rem 0.55rem;
+    border-radius: 999px;
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-size: 0.66rem;
     letter-spacing: 0.12em;
-    font-weight: 600;
-    background: var(--color-wine-800);
-    color: var(--color-white);
-    vertical-align: middle;
+    text-transform: uppercase;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--color-gold-glow);
+    background: color-mix(in srgb, var(--color-gold) 9%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 40%, transparent);
   }
-
-  /* ── Texture ──────────────────────────────────────────────────────── */
-  /* A static 2.5% noise layer over dark sections, so the glows don't band. */
-  .noise {
-    position: relative;
-    isolation: isolate;
-  }
-  .noise::after {
+  .chip::before {
     content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--color-gold);
+    box-shadow: 0 0 10px var(--color-gold);
   }
-  /* The hero's soft vignette. */
-  .vignette::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background-image: radial-gradient(120% 90% at 62% 42%, transparent 45%, rgb(0 0 0 / 0.5) 100%);
+  .chip[data-status='live'],
+  .chip[data-status='pilot'] {
+    color: var(--color-iris-soft);
+    background: color-mix(in srgb, var(--color-iris) 10%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 40%, transparent);
+  }
+  .chip[data-status='live']::before,
+  .chip[data-status='pilot']::before {
+    background: var(--color-iris-soft);
+    box-shadow: 0 0 10px var(--color-iris-soft);
   }
 }
 
-/*
- * ── CSS 3D scenes (synov-timer's primitives, in teal: D-046) ──────────
- * Small axonometric models of glass, driven by src/scripts/scenes.ts:
- * --p is scroll progress (0 to 1), --tx/--ty the pointer tilt. Without
- * JavaScript or with reduced motion, --p stays 1: the finished model.
- */
+/* ── Page building blocks ─────────────────────────────────────────────── */
+@layer components {
+  .is-page {
+    background: var(--color-night);
+  }
+  .is-page .section {
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+  }
+  .section {
+    position: relative;
+    padding-block: clamp(5rem, 10vw, 8.5rem);
+    color: var(--color-white);
+  }
+  .h1 {
+    font-size: clamp(2.3rem, 5vw, 4.6rem);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+  .h2 {
+    font-size: clamp(1.9rem, 3.6vw, 3.1rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .h3 {
+    font-size: clamp(1.15rem, 1.5vw, 1.4rem);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .lead {
+    font-size: clamp(1.02rem, 1.25vw, 1.15rem);
+    line-height: 1.65;
+    color: var(--color-grey-200);
+    text-wrap: pretty;
+  }
+  .body {
+    font-size: 0.98rem;
+    line-height: 1.7;
+    color: var(--color-grey-200);
+  }
+  .muted {
+    color: var(--color-grey-400);
+  }
+  /* Glass card on the night (raleston-web's navy glass, in teal). */
+  .card {
+    position: relative;
+    border-radius: 1.25rem;
+    background:
+      linear-gradient(160deg, color-mix(in srgb, var(--color-white) 5.5%, transparent), color-mix(in srgb, var(--color-white) 1.5%, transparent) 60%),
+      color-mix(in srgb, var(--color-navy) 55%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 9%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-white) 10%, transparent),
+      0 30px 60px -40px rgb(0 0 0 / 0.8);
+  }
+  .card-hover {
+    transition:
+      transform 0.6s var(--ease-expo),
+      box-shadow 0.6s var(--ease-expo);
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 35%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-white) 14%, transparent),
+      0 40px 70px -40px color-mix(in srgb, var(--color-iris) 60%, transparent);
+  }
+  .icon-tile {
+    --tint: var(--color-iris);
+    --tint-soft: var(--color-iris-soft);
+    display: grid;
+    flex: none;
+    width: 2.9rem;
+    height: 2.9rem;
+    place-items: center;
+    border-radius: 0.8rem;
+    color: var(--tint-soft);
+    background: color-mix(in srgb, var(--tint) 20%, var(--color-night));
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--tint-soft) 30%, transparent),
+      0 0 24px -8px color-mix(in srgb, var(--tint) 70%, transparent);
+  }
+  .icon-tile svg {
+    width: 1.45rem;
+    height: 1.45rem;
+  }
+  .icon-tile.is-sm {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.7rem;
+  }
+  .icon-tile.is-sm svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .icon-tile.is-lg {
+    width: 3.6rem;
+    height: 3.6rem;
+    border-radius: 1rem;
+  }
+  .icon-tile.is-lg svg {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+  /* The reference image's coloured product tiles. */
+  .tint-teal {
+    --tint: var(--color-teal-600);
+    --tint-soft: var(--color-teal-300);
+  }
+  .tint-blue {
+    --tint: var(--color-blue-600);
+    --tint-soft: var(--color-blue-400);
+  }
+  .tint-wine {
+    --tint: var(--color-wine-600);
+    --tint-soft: var(--color-wine-300);
+  }
+  .tint-amber {
+    --tint: var(--color-gold);
+    --tint-soft: var(--color-gold-glow);
+  }
+  .ticks {
+    display: grid;
+    gap: 0.7rem;
+  }
+  .ticks li {
+    position: relative;
+    padding-left: 1.7rem;
+  }
+  .ticks li::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.45em;
+    width: 0.85rem;
+    height: 0.5rem;
+    border-left: 2px solid var(--color-iris-soft);
+    border-bottom: 2px solid var(--color-iris-soft);
+    transform: rotate(-45deg);
+  }
+  .link-arrow {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--color-iris-soft);
+    transition:
+      gap 0.4s var(--ease-expo),
+      color 0.3s;
+  }
+  .link-arrow:hover {
+    gap: 0.8rem;
+    color: var(--color-white);
+  }
+  .link-arrow svg {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  .prose-links a,
+  .prose a {
+    color: var(--color-iris-soft);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .prose-links a:hover,
+  .prose a:hover {
+    color: var(--color-white);
+  }
+  /* Long-form text (articles, legal, pages). */
+  .prose {
+    max-width: 44rem;
+    color: var(--color-grey-200);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+  }
+  .prose > * + * {
+    margin-top: 1.1em;
+  }
+  .prose h2 {
+    margin-top: 2.2em;
+    font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--color-white);
+  }
+  .prose h3 {
+    margin-top: 1.8em;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-white);
+  }
+  .prose ul,
+  .prose ol {
+    display: grid;
+    gap: 0.5em;
+    padding-left: 1.3em;
+  }
+  .prose ul {
+    list-style: disc;
+  }
+  .prose ol {
+    list-style: decimal;
+  }
+  .prose li::marker {
+    color: var(--color-iris-soft);
+  }
+  .prose strong {
+    color: var(--color-white);
+    font-weight: 600;
+  }
+  .prose blockquote {
+    padding-left: 1.2rem;
+    border-left: 2px solid var(--color-iris);
+    color: var(--color-white);
+  }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+  .prose th,
+  .prose td {
+    padding: 0.6rem 0.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-white) 10%, transparent);
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose th {
+    color: var(--color-white);
+  }
+  /* An answer-first summary at the top of a page, for readers and AI answers. */
+  .tldr {
+    max-width: 44rem;
+    border-radius: 1rem;
+    padding: 1.1rem 1.25rem;
+    background: color-mix(in srgb, var(--color-iris) 9%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 25%, transparent);
+  }
+  .tldr b {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+}
+
+/* Layering inside pinned sections: background, copy, then chrome. */
+@layer components {
+  .layer-bg {
+    z-index: 0;
+  }
+  .layer-copy {
+    position: relative;
+    z-index: 20;
+  }
+}
+
+/* ── Draft-only markers (never in a production build) ─────────────────── */
+.todo {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+  background: var(--color-wine-800);
+  color: var(--color-white);
+}
+.to-confirm {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  background: var(--color-wine-800);
+  color: var(--color-white);
+  vertical-align: middle;
+}
+
+/* ── Form fields ──────────────────────────────────────────────────────── */
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+.field-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.field-hint {
+  font-size: 0.9rem;
+  color: var(--color-grey-400);
+}
+.field-error {
+  font-size: 0.9rem;
+  color: var(--color-wine-300);
+}
+.input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--color-white) 4%, var(--color-night));
+  color: var(--color-white);
+  font: inherit;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 18%, transparent);
+  transition: box-shadow 0.3s var(--ease-expo);
+}
+.input:hover {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 36%, transparent);
+}
+.input:focus-visible {
+  outline-offset: 0;
+  box-shadow:
+    inset 0 0 0 1px var(--color-iris-soft),
+    0 0 24px -8px color-mix(in srgb, var(--color-iris) 70%, transparent);
+}
+.input[aria-invalid='true'] {
+  box-shadow: inset 0 0 0 1px var(--color-wine-300);
+}
+textarea.input {
+  min-height: 9rem;
+  resize: vertical;
+}
+select.input option {
+  background: var(--color-night);
+  color: var(--color-white);
+}
+.check {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: 0.95rem;
+}
+.check input {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  accent-color: var(--color-teal-500);
+}
+
+/* Film grain: a static noise layer over everything, so glows don't band. */
+#fx-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-iris-soft) 60%, transparent) transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: linear-gradient(var(--color-iris-soft), var(--color-iris));
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Custom cursor: only if Hero turns it on (off by default, brief section 12). */
+@media (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor a,
+  html.has-cursor button {
+    cursor: none;
+  }
+}
+
+/* ── CSS 3D scenes ──────────────────────────────────────────────────────
+   raleston-web's axonometric glass models, driven by src/scripts/scenes.ts:
+   --p is scroll progress (0 to 1), --tx/--ty the pointer tilt. Without
+   JavaScript or with reduced motion, --p stays 1: the finished model. */
 .s3d {
   --p: 1;
   --tx: 0deg;
@@ -700,26 +783,6 @@
 .s3d-world * {
   transform-style: preserve-3d;
 }
-/* A board: the glass ground a model stands on, with a faint grid. */
-.board {
-  position: absolute;
-  left: calc(var(--w) / -2);
-  top: calc(var(--d, var(--w)) / -2);
-  width: var(--w);
-  height: var(--d, var(--w));
-  border-radius: 0.6rem;
-  background:
-    linear-gradient(to right, color-mix(in srgb, var(--color-teal-300) 9%, transparent) 1px, transparent 1px) 0 0 / var(--cell, 40px) var(--cell, 40px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--color-teal-300) 9%, transparent) 1px, transparent 1px) 0 0 / var(--cell, 40px) var(--cell, 40px),
-    linear-gradient(135deg, color-mix(in srgb, var(--color-white) 6%, transparent), transparent 60%),
-    color-mix(in srgb, var(--color-teal-950) 70%, var(--color-night));
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 30%, transparent),
-    0 0 60px color-mix(in srgb, var(--color-teal-600) 25%, transparent);
-}
-/* A block with a square footprint (--w) and a height (--h), standing at
-   (--x, --y), lifted by --z. With the world turned 45 degrees, the east and
-   south faces are the ones the camera sees. */
 .blk {
   --w: 80px;
   --h: 20px;
@@ -741,11 +804,11 @@
 .blk-top {
   inset: 0;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--color-white) 16%, transparent), color-mix(in srgb, var(--color-white) 4%, transparent) 55%, color-mix(in srgb, var(--color-teal-500) 18%, transparent)),
-    color-mix(in srgb, var(--color-teal-950) 75%, var(--color-night));
+    linear-gradient(135deg, color-mix(in srgb, var(--color-white) 18%, transparent), color-mix(in srgb, var(--color-white) 5%, transparent) 55%, color-mix(in srgb, var(--color-iris) 22%, transparent)),
+    color-mix(in srgb, var(--color-navy) 80%, var(--color-indigo));
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 42%, transparent),
-    inset 1px 1px 0 color-mix(in srgb, var(--color-white) 20%, transparent);
+    inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 45%, transparent),
+    inset 1px 1px 0 color-mix(in srgb, var(--color-white) 22%, transparent);
 }
 .blk-e {
   left: 100%;
@@ -754,8 +817,8 @@
   height: 100%;
   transform-origin: 0 50%;
   transform: rotateY(90deg);
-  background: linear-gradient(90deg, color-mix(in srgb, var(--color-teal-900) 80%, var(--color-night)), var(--color-night));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 16%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-indigo) 92%, var(--color-white) 4%), var(--color-night));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 18%, transparent);
 }
 .blk-s {
   left: 0;
@@ -764,33 +827,22 @@
   height: var(--h);
   transform-origin: 50% 0;
   transform: rotateX(-90deg);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-teal-900) 70%, var(--color-white) 6%), color-mix(in srgb, var(--color-night) 85%, var(--color-teal-950)));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 20%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-navy) 80%, var(--color-white) 8%), color-mix(in srgb, var(--color-night) 85%, var(--color-indigo)));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 22%, transparent);
 }
-/* Lit: the signal's light inside the glass, a teal-300 rim. */
 .blk.is-lit .blk-top {
   background:
-    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-teal-300) 32%, transparent), transparent 75%),
+    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-gold) 26%, transparent), transparent 75%),
     linear-gradient(135deg, color-mix(in srgb, var(--color-white) 16%, transparent), color-mix(in srgb, var(--color-white) 4%, transparent) 55%),
-    color-mix(in srgb, var(--color-teal-900) 70%, var(--color-night));
+    color-mix(in srgb, var(--color-navy) 88%, var(--color-night));
   box-shadow:
-    inset 0 0 0 1.5px color-mix(in srgb, var(--color-teal-300) 90%, transparent),
-    0 0 36px color-mix(in srgb, var(--color-teal-400) 40%, transparent);
+    inset 0 0 0 1.5px color-mix(in srgb, var(--color-gold) 85%, transparent),
+    0 0 36px color-mix(in srgb, var(--color-gold) 30%, transparent);
 }
 .blk.is-lit .blk-e,
 .blk.is-lit .blk-s {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 45%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 45%, transparent);
 }
-/* Alert: wine, for a security event. */
-.blk.is-alert .blk-top {
-  background:
-    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-wine-400) 34%, transparent), transparent 75%),
-    color-mix(in srgb, var(--color-wine-900) 60%, var(--color-night));
-  box-shadow:
-    inset 0 0 0 1.5px var(--color-wine-300),
-    0 0 36px color-mix(in srgb, var(--color-wine-500) 45%, transparent);
-}
-/* A label printed on a block's top face. */
 .blk-label {
   position: absolute;
   inset: 0;
@@ -799,14 +851,19 @@
   justify-content: flex-end;
   gap: 0.3em;
   padding: 0.7em;
-  font-family: var(--font-mono);
-  font-size: calc(var(--w) / 10);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 1.15;
-  color: color-mix(in srgb, var(--color-white) 85%, transparent);
+  font-size: calc(var(--w) / 9);
+  font-weight: 700;
+  line-height: 1.1;
+  color: color-mix(in srgb, var(--color-white) 88%, transparent);
 }
-/* A line of light on the ground, from (--x1,--y1), --len long at angle --ang. */
+.blk-label svg {
+  width: 2.1em;
+  height: 2.1em;
+  color: var(--color-iris-soft);
+}
+.blk.is-lit .blk-label svg {
+  color: var(--color-gold-glow);
+}
 .s3d-line {
   position: absolute;
   left: var(--x1);
@@ -816,52 +873,8 @@
   margin-top: -1px;
   transform-origin: 0 50%;
   transform: translateZ(var(--z, 1px)) rotateZ(var(--ang)) scaleX(var(--draw, 1));
-  background: linear-gradient(90deg, color-mix(in srgb, var(--color-teal-400) 30%, transparent), var(--color-teal-400) 60%, var(--color-teal-200));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--color-teal-400) 70%, transparent);
-}
-/* A glass plate: a slab with layered edges, a sheen and a teal rim. */
-.plate {
-  --size: 220px;
-  position: absolute;
-  left: calc(var(--size) / -2);
-  top: calc(var(--size) / -2);
-  width: var(--size);
-  height: var(--size);
-  font-size: calc(var(--size) / 22);
-  transform: translateZ(var(--pz, 0px));
-}
-.plate-edge,
-.plate-face {
-  position: absolute;
-  inset: 0;
-  border-radius: 1.1em;
-}
-.plate-edge {
-  transform: translateZ(calc(var(--e) * -3px));
-  background: color-mix(in srgb, var(--color-white) 2%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 7%, transparent);
-}
-.plate-face {
-  background-color: color-mix(in srgb, var(--color-night) 55%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-teal-300) 38%, transparent);
-  overflow: hidden;
-}
-.plate-face::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: linear-gradient(140deg, color-mix(in srgb, var(--color-white) 11%, transparent), color-mix(in srgb, var(--color-white) 3%, transparent) 48%, color-mix(in srgb, var(--color-teal-500) 12%, transparent));
-}
-.plate.is-lit .plate-face {
-  box-shadow:
-    inset 0 0 0 1.5px var(--color-teal-300),
-    0 0 50px color-mix(in srgb, var(--color-teal-400) 35%, transparent);
-}
-.plate.is-lit .plate-face::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-teal-300) 24%, transparent), transparent 70%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-gold) 30%, transparent), var(--color-gold) 60%, var(--color-gold-glow));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-gold) 70%, transparent);
 }
 .s3d.is-off *,
 .s3d.is-off *::before,
@@ -869,22 +882,15 @@
   animation-play-state: paused !important;
 }
 
-/* Forced colours: chrome text and outlined words fall back to system colours. */
 @media (forced-colors: active) {
   .chrome {
     background: none;
     color: CanvasText;
     -webkit-text-fill-color: CanvasText;
   }
-  .t-giant {
-    -webkit-text-stroke: 1px GrayText;
-  }
-  .signal {
-    forced-color-adjust: none;
-  }
 }
 
-/* Reduced motion: nothing transitions or animates on its own. */
+/* Reduced motion: nothing transitions or animates on its own; every scene shows its finished state. */
 html.reduced-motion *,
 html.reduced-motion *::before,
 html.reduced-motion *::after {

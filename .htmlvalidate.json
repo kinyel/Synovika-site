@@ -1,8 +1,16 @@
 {
-  "extends": ["html-validate:recommended"],
+  "extends": [
+    "html-validate:recommended"
+  ],
   "rules": {
     "no-inline-style": "off",
     "long-title": "off",
-    "no-trailing-whitespace": "off"
+    "no-trailing-whitespace": "off",
+    "valid-id": [
+      "error",
+      {
+        "relaxed": true
+      }
+    ]
   }
 }

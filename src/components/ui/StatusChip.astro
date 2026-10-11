@@ -1,5 +1,5 @@
 ---
-/** A product's status: a teal signal when it's live or in pilot, a grey one while in development. */
+/** A product's status chip: amber while it's in development, teal once it's in pilot or live. */
 import { STATUS, type Status } from '../../data/status';
 interface Props {
   status: Status;
@@ -8,4 +8,4 @@ interface Props {
 const { status, class: className } = Astro.props;
 ---
 
-<span class:list={['chip', className]}><span class="signal" data-state={status === 'in-development' ? 'idle' : undefined} aria-hidden="true"></span>{STATUS[status].chip}</span>
+<span class:list={['chip', className]} data-status={status}>{STATUS[status].chip}</span>

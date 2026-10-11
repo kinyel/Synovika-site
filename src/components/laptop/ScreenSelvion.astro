@@ -1,0 +1,73 @@
+---
+/**
+ * Selvion on its product page (decorative: the page carries the
+ * words). A live fleet dashboard with made-up demo data (brief rule 6):
+ * Unit 07, Depot A. Sized in em, so it scales with the screen.
+ */
+const units = [
+  { x: 54, y: 46, live: true, label: 'Unit 07' },
+  { x: 30, y: 62, live: true },
+  { x: 72, y: 30, live: true },
+  { x: 66, y: 70, live: false },
+  { x: 40, y: 28, live: true },
+  { x: 84, y: 56, live: true },
+];
+const alerts = [
+  { t: '07:18', text: 'Unit 07 left Depot A', tone: 'alert' },
+  { t: '06:58', text: 'Unit 11 idle for 15 min', tone: 'warn' },
+  { t: '06:42', text: 'Unit 07 ignition on', tone: 'live' },
+  { t: '06:31', text: 'Unit 03 trip ended, 18.4 km', tone: 'live' },
+];
+---
+
+<div class="app app-selvion">
+  <div class="app-side">
+    <p class="app-brand"><span class="app-dot"></span>Selvion</p>
+    <ul>
+      <li class="is-on">Live map</li>
+      <li>Vehicles</li>
+      <li>Trips</li>
+      <li>Alerts <b>3</b></li>
+      <li>Geofences</li>
+      <li>Reports</li>
+    </ul>
+  </div>
+  <div class="app-main">
+    <div class="app-bar">
+      <p class="app-title">Live vehicles</p>
+      <span class="app-search">Search units</span>
+      <span class="app-demo">Demo data</span>
+    </div>
+    <div class="app-kpis">
+      <div><span>On route</span><b>18</b></div>
+      <div><span>Idle</span><b>4</b></div>
+      <div class="is-alert"><span>Alerts</span><b>3</b></div>
+      <div><span>Distance today</span><b>412 km</b></div>
+    </div>
+    <div class="app-body">
+      <div class="app-map">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path class="map-water" d="M-5 78 C 20 70, 32 88, 52 82 S 80 64, 105 70 L105 105 L-5 105Z"></path>
+          <path class="map-road" d="M0 40 H100 M0 18 H100 M0 62 H100 M22 0 V100 M48 0 V100 M74 0 V100"></path>
+          <path class="map-road minor" d="M0 29 H60 M35 0 V60 M60 40 V100 M86 10 V60 M10 51 H48"></path>
+          <rect class="map-zone" x="14" y="22" width="26" height="26" rx="2"></rect>
+          <path class="map-route" d="M22 40 H48 V62 H74 V40 H86"></path>
+        </svg>
+        <span class="map-zone-label">Depot A</span>
+        {units.map((u) => <i class:list={['map-unit', u.live && 'is-live']} style={`left:${u.x}%;top:${u.y}%`}>{u.label && <span>{u.label} · 42 km/h</span>}</i>)}
+      </div>
+      <div class="app-alerts">
+        <p class="app-h">Alerts</p>
+        {
+          alerts.map((a) => (
+            <p class={`alert is-${a.tone}`}>
+              <i />
+              <span>{a.text}</span>
+              <time>{a.t}</time>
+            </p>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>

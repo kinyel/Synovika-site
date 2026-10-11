@@ -1,0 +1,138 @@
+---
+/**
+ * A flow as a 3D model (raleston-web's TcpFlow): four square blocks in a
+ * row, and an amber packet that travels across them, lighting each step as
+ * it arrives. Used for "Inside Selvion": from the tracker in the vehicle to
+ * the alert on your phone.
+ */
+import Icon from '../ui/Icon.astro';
+import type { IconName } from '../ui/icons';
+import { blk, line } from '../../lib/iso';
+
+interface Props {
+  steps: { label: string; icon: IconName }[];
+}
+const { steps } = Astro.props;
+const X = [-195, -65, 65, 195];
+---
+
+<div class="s3d flow-scene" data-s3d aria-hidden="true">
+        <div class="s3d-world">
+          <span class="flow-pool"></span>
+          <span class="s3d-line flow-line" style={line(X[0]!, 0, X[3]!, 0, 1)}></span>
+          {
+            steps.map((s, i) => (
+              <div class="blk flow-blk" style={blk(X[i]!, 0, 100, 22, 0, `--i:${i}`)}>
+                <b class="blk-top">
+                  <span class="blk-label">
+                    <Icon name={s.icon} />
+                    {s.label}
+                  </span>
+                </b>
+                <b class="blk-e" />
+                <b class="blk-s" />
+              </div>
+            ))
+          }
+          <div class="blk flow-packet" style={blk(X[0]!, 0, 16, 16, 34)}>
+            <b class="blk-top"></b>
+            <b class="blk-e"></b>
+            <b class="blk-s"></b>
+          </div>
+        </div>
+      </div>
+
+<style>
+  /* ── The flow ── */
+  .flow-scene {
+    --k: 0.62;
+    height: 260px;
+  }
+  @media (min-width: 640px) {
+    .flow-scene {
+      --k: 0.9;
+      height: 340px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .flow-scene {
+      --k: 1;
+      height: 380px;
+    }
+  }
+  .flow-pool {
+    position: absolute;
+    left: -300px;
+    top: -300px;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 21%, transparent), transparent);
+    transform: translateZ(-2px);
+  }
+  .flow-line {
+    --draw: clamp(0, calc(var(--p) * 1.6 - 0.4), 1);
+    background: linear-gradient(90deg, var(--color-teal-400), var(--color-gold));
+  }
+  .flow-blk {
+    --q: clamp(0, calc(var(--p) * 1.8 - var(--i) * 0.2), 1);
+    --dz: calc((1 - var(--q)) * (1 - var(--q)) * 140px);
+  }
+  .flow-blk > b {
+    opacity: var(--q);
+  }
+  /* Each step lights as the packet reaches it. */
+  .flow-blk .blk-top::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow:
+      inset 0 0 0 1.5px var(--color-gold),
+      inset 0 0 22px color-mix(in srgb, var(--color-gold) 28%, transparent),
+      0 0 26px color-mix(in srgb, var(--color-gold) 35%, transparent);
+    opacity: 0;
+    animation: flow-lit 6s linear infinite;
+    animation-delay: calc(var(--i) * 1.5s - 0.4s);
+  }
+  @keyframes flow-lit {
+    0%,
+    22%,
+    100% {
+      opacity: 0;
+    }
+    6%,
+    14% {
+      opacity: 1;
+    }
+  }
+  /* The packet: a small amber cube, carried from the vehicle to your phone. */
+  .flow-packet {
+    animation: flow-packet 6s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+  }
+  .flow-packet > b {
+    background: var(--color-gold-glow) !important;
+    box-shadow: 0 0 18px 4px color-mix(in srgb, var(--color-gold) 70%, transparent) !important;
+    /* Fade the faces, not the cube: opacity on the cube itself would flatten it. */
+    animation: flow-fade 6s linear infinite;
+  }
+  @keyframes flow-packet {
+    0% {
+      translate: 0 0 0;
+    }
+    75%,
+    100% {
+      translate: 390px 0 0;
+    }
+  }
+  @keyframes flow-fade {
+    0%,
+    85%,
+    100% {
+      opacity: 0;
+    }
+    5%,
+    75% {
+      opacity: 1;
+    }
+  }
+</style>

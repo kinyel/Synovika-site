@@ -1,4 +1,24 @@
 order: 4
 name: Professional services
 note: Firms that run on records, clients and deadlines.
-confirmed: false
+icon: briefcase
+confirmed: true
+lead: Law firms, consultancies, agencies and practices run on records, clients and deadlines. When those live in inboxes and spreadsheets, things slip. We build the systems that keep them in one place.
+problems:
+  - Client files are spread across email, shared drives and personal laptops.
+  - Deadlines are tracked in someone's head, or in a spreadsheet only they understand.
+  - Staff re-type the same details into several systems.
+  - Old software nobody can maintain any more holds the most important records.
+helps:
+  - title: Client and case tools
+    body: Portals and internal tools for client records, documents and deadlines, built around how your firm already works.
+    href: /services/software-development/
+  - title: A plan before code
+    body: We map how work moves through your firm and write down what the software must do, so nothing important is missed.
+    href: /services/requirements-engineering/
+  - title: Looking after the old system
+    body: If you depend on software someone else built, we can read it, fix it and keep it running.
+    href: /services/maintenance-and-support/
+seo:
+  title: Software for law firms, consultancies and agencies | Synovika
+  description: Client portals, case tools and record systems for professional services firms in Nigeria and abroad, from Synovika. Built around how your firm really works.

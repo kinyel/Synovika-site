@@ -262,3 +262,78 @@ All of these are for Hero to approve on `/lab`.
   - **Services:** small glass models.
 - **The hero:** synov-timer has no WebGL; we keep the brief's single WebGL mark, set on a glowing grid floor with drifting dust, as synov-timer's plates are.
 - **No scene copies synov-timer's content or layout one-for-one.**
+
+---
+
+## Hero's direction: the reference image, on raleston-web's engine (11 October 2026)
+
+Hero: "use raleston-web exactly how it is but just change colors and text... the attached image is exactly how I want the site to look... but enhance it... forget phases... do everything right now... incorporate every single 3D effect and engine that is present in raleston-web... high advanced SEO and AI search optimization... I am giving you full autonomy."
+
+**D-047. The site is rebuilt on raleston-web's engine, laid out like Hero's reference image.** This supersedes the phase plan (brief section 20), the WebGL hero mark (D-046's hero) and `/lab`.
+- **Engine, ported as it is:** one GSAP ticker drives Lenis and every scene; ScrollTrigger with `ignoreMobileResize`; the layout cache (`track`, `rectOf`); style writes skipped when unchanged; CSS sticky stages; the nav dock with its morphing flyout and phone sheet; magnetic buttons; copy buttons; reveals; the motion setting.
+- **Every 3D scene, given a Synovika job:** the spiral staircase (services), the kinetic words and the 27-block cube (Why Synovika), the capabilities board (what we build), the exploded glass plates with the spark, the leader line and the datum marks (how we work, 7 stages), the packet flow (inside Selvion), the layered model (your data, put to work), the industries ring, the sealed files (from the notebook), the plate stack (inner-page headers) and the dust canvas.
+- **Colour aliases:** raleston's token names are kept so its CSS ports as it is, mapped to Synovika's palette: iris is teal-600, iris-soft teal-300, azure and violet are blues, gold is amber (#f59e0b, the image's warm glow), navy and indigo are deep teals, night is #031514.
+- **Removed:** three.js, the WebGL mark, the poster and logo-trace tooling, and `/lab`. raleston-web has no WebGL, and the laptop is now the hero's 3D object.
+
+**D-048. The hero is a laptop that opens, shows each product, and closes (Hero's brief for the 3D).**
+- **Screen one:** the image's layout. Headline left; on the right, a CSS 3D laptop, half closed at an angle, with Selvion still visible on its screen.
+- **On scroll** (one pinned stage, `src/scripts/tour.ts`): the lid opens as the laptop turns to face you and comes down to fill the view. Its screen then shows Selvion, the Estate Entrance Security System and Websites with an Admin Panel in turn, with each product's note on the screen's left (under it on phones) and a dock showing which app is open. Then the lid closes smoothly, showing the Synovika mark on its back, as the services come up.
+- **The screen is real HTML** laid out at its full-screen size (`--sw`) and scaled down elsewhere, so it is sharp when it fills the view. The apps carry "Demo data" and made-up names (Unit 07, Depot A, House 12, Example Bakery).
+- **Without JavaScript or with reduced motion:** an open laptop beside the headline, and the three products as cards.
+- **A "Skip the product tour" link** appears on keyboard focus.
+
+**D-049. Honest replacements for the image's trust signals, and its other details.**
+- **Client logo wall:** Synovika has no clients to show yet, so the band names the six sectors we build for, each linking to its page.
+- **Stats band and "Impact" numbers:** replaced by plain facts that are true today (6 services, 3 products in development, 7 stages, Nigeria and worldwide).
+- **Testimonial:** none. The products' demo screens and the notebook (real articles) take its place.
+- **"Book a demo"** becomes "Book a call": nothing is live yet (D-032).
+- **No light/dark toggle:** the site is dark by design (D-045), and one theme keeps contrast checked and the 3D lit consistently.
+- **"Tracking Portal"** in the image stays "Selvion", the product's real name. The image's other product names (FarmTrace, MeterGuard, ComplyRadar, SiteLedger, PatrolProof) are not used: Hero hasn't confirmed them. Question for Hero.
+- **"Measurable results"** becomes "Results you can see": we have no measurements to show.
+- **Pricing** (in the image's nav) is a page that explains how we quote, with no figures.
+
+**D-050. DOM budget on home: 2,500 nodes, not 1,500.** Every raleston scene on one page takes about 2,400 elements (raleston-web's own home is about 1,660 with fewer sections). Icons moved to a cached sprite (`/icons.svg`) to save what could be saved. Lighthouse stays the performance gate.
+
+**D-051. The contact form needs no server, for now.** It writes the message and opens it in the visitor's own email app or WhatsApp, pre-filled from links (`?waitlist=`, `?service=`, `?industry=`, `?topic=call`). Nothing is stored on the site. Without JavaScript it falls back to a `mailto:` form. A real form (Pages Function, Turnstile, an email provider) can come later; the `/contact/thanks/` page is removed until then.
+
+**D-052. Search and AI search.**
+- **AI assistants:** `/llms.txt` (the map) and `/llms-full.txt` (the whole site as plain text), both built from the content collections with the same draft rules, so they never say more than the pages. robots.txt welcomes every crawler and names the AI search, assistant and training crawlers one by one (D-028's default of allow).
+- **Structured data:** an Organization with contact points, area served and, on the home page, an offer catalogue of every service and product; ItemLists for products, services, industries and articles; FAQPage wherever answers show; a DefinedTermSet for the glossary; BlogPosting with keywords and word count; `speakable` on the H1 and the answer-first summaries.
+- **New pages that answer real searches:** six industry pages, pricing, FAQ, a glossary of 21 terms, and eight published articles, each opening with "The short answer".
+- **Signals:** `hreflang` en-NG and x-default, geo meta for Nigeria, `max-image-preview:large`, article dates, a share card for every page.
+- **IndexNow:** a key file and `npm run indexnow` to ping Bing and Yandex after each deploy.
+
+**D-053. Content confirmed under Hero's full autonomy (each listed for Hero's review in PROGRESS.md).**
+- **The six industries** are shown, written as what we build for, never as past clients.
+- **Six FAQ answers** grounded in the brief are confirmed. "Who owns the code?" stays unconfirmed.
+- **The eight articles are published,** credited to "the Synovika team" until Hero names an author. No statistics are used in them.
+- **Legal pages** are drafted to match how the site really works, and still say "Draft: to be reviewed by a lawyer".
+
+**D-054. Performance trade-offs on the home page.**
+- **Scenes below the first screen start only when they come near** (`whenNear`), and the reveals wait for an idle moment, so the first load does little work: mobile TBT fell from about 1.6 s to under 50 ms.
+- **The headline keeps each line on one line,** sized to fit, so its line count can't change when the web font arrives (layout shift fell from 0.13 to 0).
+- **On phones the headline isn't split into words or masked,** because new word elements reset the LCP.
+- **Mobile LCP in the lab is 2.3 to 2.4 s** (the brief's budget is 2.0 s; Google's "good" is under 2.5 s). In a real browser it paints on the first frame (about 0.16 s); the lab figure comes from the home page's larger HTML, which carries every scene's CSS. Every other page measures about 1.95 s. Mobile Performance is 97, desktop 100.
+
+---
+
+## Hero's next round (11 October 2026)
+
+Hero: "remove the 3D laptop and replace with something better... think out of the box... be very creative... and secondly make the site darker... and then change the 3D spiral staircase design feel and look to the one used in primetrack.rw."
+
+**D-055. The site is darker.** Night is now #010706 (from #031514), the deep teals #041513 and #08221f, the footer #020404. Every section's background glow is turned down to about 60% (the 3D scenes' own pools to 80%). Contrast only improves on a darker ground; all text still passes AA.
+
+**D-056. The hero is a night city, not a laptop (supersedes D-048): "reality, in miniature".** The tagline is "built around reality", so the hero shows the reality: a small isometric city at night, built from raleston's CSS 3D blocks, with a depot and its geofence, a gated estate, a high street, towers (the tallest carries the official mark on its roof, used as it is), traffic on a ring road, amber street lights and a teal scan line sweeping the streets.
+- **Screen one:** the headline left; the city on the right, turning slowly with the pointer.
+- **On scroll** (`src/scripts/city.ts`), the camera flies to each product's district and the software acts on the real world: Unit 07 drives out of Depot A and the geofence alert goes out (Selvion); a visitor's code checks out, the barrier lifts and the car drives in (Estate Entrance Security System); the bakery's opening hours change on its website (Websites with an Admin Panel). Each product's note carries the words. Then the camera pulls back and the lights dim as the services come up.
+- **The glass panels** sit in a flat layer above the city, placed each frame by projecting their anchor through the same camera, so nothing in the model can cut through them and their text stays crisp.
+- **Every scene uses demo data** and is marked so ("Demo data", "Example site"). The barrier lifting shows a gate letting a visitor in, not a feature claim; the estate's features stay unconfirmed (D-035).
+- **Without JavaScript or with reduced motion:** the city stands still beside the headline, and the products are cards.
+- The product pages keep each app's demo screen in a glass frame; only the hero's laptop is gone.
+
+**D-057. The services spiral follows primetrack.rw's, in Synovika's teal (supersedes the raleston staircase for services).** Six glass cards on a helix, 60° apart and a step higher each, around one thin spine of light with a soft glow. The card at the front is sharp and lit (teal edge and glow); the others dim to about a quarter and blur with their distance round the turn. Beside it, a rolling counter, a progress rail and the list of services. No stair treads or rails. Its look and behaviour were studied on primetrack.rw; no code or content was copied.
+
+**D-058. The motion engine loads just after the first paint (supersedes part of D-054).**
+- **A tiny loader** imports `src/scripts/main.ts` one frame after the page first paints, so about 60 KB of JavaScript no longer competes with the page for the network (initial JavaScript on the home page: 1.6 KB).
+- **The hero's entrance is pure CSS,** so it plays from the first paint. The city and its glow stay hidden until the engine places them, then rise in; if the engine never arrives, they show after four seconds anyway.
+- **Result:** Lighthouse mobile 100 on every inner page (LCP about 1.5 s, from about 1.95 s), 98 on the home page (LCP 2.24 s, under Google's 2.5 s "good" line but still over the brief's 2.0 s, because the home page's HTML carries every scene). Desktop 100 everywhere.

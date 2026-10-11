@@ -1,0 +1,24 @@
+order: 8
+eyebrow: Inside Selvion
+heading: From the ignition to your phone.
+lit: to your phone.
+lead: How a single event travels through Selvion, our fleet tracking platform.
+body: The tracker in the vehicle reports the moment the ignition comes on. Selvion checks it against the rules you've set, like your geofences, and if it matters, it tells you on your phone.
+items:
+  - title: Tracker
+    body: Fitted in the vehicle
+    icon: truck
+  - title: Network
+    body: The reading goes out
+    icon: network
+  - title: Selvion
+    body: Checked against your rules
+    icon: route
+  - title: Your phone
+    body: An alert you can act on
+    icon: device
+ctas:
+  - label: See Selvion
+    href: /products/selvion/
+  - label: Join the waitlist
+    href: /contact/?waitlist=selvion

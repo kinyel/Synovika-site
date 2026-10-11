@@ -2,15 +2,17 @@
 /**
  * Every page: the head (title, description, canonical, Open Graph, JSON-LD,
  * fonts, icons, prefetch rules), the motion setting applied before first
- * paint, the header, the page and the footer.
+ * paint, the navigation dock, the page, the closing call to action, the
+ * footer, and the motion engine (src/scripts/main.ts).
  */
 import { Font } from 'astro:assets';
 import '../styles/global.css';
-import Header from '../components/layout/Header.astro';
+import Nav from '../components/layout/Nav.astro';
+import CtaBand from '../components/sections/CtaBand.astro';
 import Footer from '../components/layout/Footer.astro';
 import { SITE } from '../data/site';
 import { SHOW_DRAFTS } from '../lib/drafts';
-import { services } from '../lib/content';
+import { products, services } from '../lib/content';
 import { absolute, ogPath } from '../lib/seo';
 import { breadcrumbs, graph, organization, webPage, website } from '../lib/schema';
 import type { Thing } from 'schema-dts';
@@ -34,8 +36,13 @@ interface Props {
   navTheme?: 'dark' | 'paper' | 'teal';
   ogType?: 'website' | 'article';
   noindex?: boolean;
+  /** The closing "Ready to build around reality?" band; false to leave it out (contact, legal pages). */
+  cta?: boolean | { title?: string; lit?: string; lead?: string; primary?: { label: string; href: string } };
+  /** Article dates, for article pages. */
+  published?: Date;
+  modified?: Date;
 }
-const { title, description, crumbs = [], schema = [], pageType = 'WebPage', name, navTheme = 'dark', ogType = 'website', noindex = false } = Astro.props;
+const { title, description, crumbs = [], schema = [], pageType = 'WebPage', name, navTheme = 'dark', ogType = 'website', noindex = false, cta = true, published, modified } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = absolute(path);
 // Pages without their own card (404, /lab) share the home card.
@@ -43,9 +50,17 @@ const image = absolute(/^\/(404|lab)/.test(path) ? '/og/home.png' : ogPath(path)
 // A draft build is never indexed (D-007), and neither is anything marked noindex.
 const hidden = noindex || (SHOW_DRAFTS && import.meta.env.PROD);
 const svc = await services();
+const prod = await products();
 const pageName = name ?? title.split(' | ')[0]!;
+const catalogue = {
+  services: svc.map((s) => ({ name: s.data.name, path: `/services/${s.id}/`, description: s.data.summary })),
+  products: prod.map((p) => ({ name: p.data.name, path: `/products/${p.id}/`, description: p.data.summary })),
+};
 const ld = graph([
-  organization(svc.map((s) => s.data.name)),
+  organization(
+    [...svc.map((s) => s.data.name), 'Fleet tracking', 'Visitor access control', 'Website content management', 'Custom software for Nigerian businesses'],
+    path === '/' ? catalogue : undefined,
+  ),
   website(),
   webPage(path, pageName, description, pageType, crumbs.length > 0),
   ...(crumbs.length ? [breadcrumbs(path, crumbs)] : []),
@@ -70,7 +85,14 @@ const speculation = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {hidden && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="alternate" hreflang="en-NG" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    {hidden ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />}
+    <meta name="author" content={SITE.name} />
+    <meta name="geo.region" content="NG" />
+    <meta name="geo.placename" content="Nigeria" />
+    <link rel="alternate" type="text/plain" title="Synovika for AI assistants" href="/llms.txt" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
     <Font cssVariable="--font-urbanist" preload />
     <Font cssVariable="--font-geist-mono" />
     <script is:inline>
@@ -90,7 +112,7 @@ const speculation = {
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="theme-color" content="#031514" />
+    <meta name="theme-color" content="#010706" />
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.shortName} />
     <meta property="og:locale" content="en_NG" />
@@ -101,6 +123,8 @@ const speculation = {
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={`${pageName}. Synovika, built around reality.`} />
+    {published && <meta property="article:published_time" content={published.toISOString()} />}
+    {modified && <meta property="article:modified_time" content={modified.toISOString()} />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -110,10 +134,24 @@ const speculation = {
     <slot name="head" />
   </head>
   <body>
-    <Header />
+    <Nav />
     <main id="main" tabindex="-1">
       <slot />
     </main>
+    {cta !== false && <CtaBand {...(typeof cta === 'object' ? cta : {})} />}
     <Footer />
+    <div id="fx-grain" aria-hidden="true"></div>
+    <script>
+      // The motion engine loads just after the first paint, so the first screen
+      // never waits for it (the hero's entrance is CSS; scenes have static states).
+      let started = false;
+      const start = () => {
+        if (started) return;
+        started = true;
+        import('../scripts/main.ts');
+      };
+      requestAnimationFrame(() => setTimeout(start, 0));
+      setTimeout(start, 1500);
+    </script>
   </body>
 </html>

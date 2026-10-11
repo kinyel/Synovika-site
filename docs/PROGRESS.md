@@ -2,9 +2,37 @@
 
 ## Now
 
-**Phase 1 (Foundation and brand lab): done, waiting at the gate.** Gate: Hero approves the look on `/lab` (in a draft build or `npx astro dev --background --port 4331`, then open /lab/).
+**The full site is built (11 October 2026), on raleston-web's engine and laid out like Hero's reference image (D-047).** Hero's next round is in too: the night city replaces the laptop (D-056), the site is darker (D-055), and the services spiral follows primetrack.rw (D-057). Every page exists, every QA script passes, and the work is waiting for Hero's review. The questions below are the ones that change what visitors are told.
+
+## Questions for Hero
+
+1. **The image's other product names** (FarmTrace, MeterGuard, ComplyRadar, SiteLedger, PatrolProof): are any of these real Synovika products? None are shown until you say so (D-049).
+2. **"Who owns the code?"** The draft answer is "You do... the code lives in your own account". Confirm it, or tell me the real terms; it stays hidden until then.
+3. **Articles:** they're credited to "the Synovika team". Would you like your name and a short bio on them? Named authors help search engines trust articles.
+4. **The six industries** (logistics, estates, retail and SMEs, professional services, education, hospitality) are published as sectors we build for. Remove any you'd rather not name.
+5. **Contact form:** it opens a ready-written email or WhatsApp message (D-051). Happy with that for launch, or do you want messages delivered to an inbox by the site? That needs an email provider account.
 
 ## Done
+
+### The rebuild, 11 October 2026 (D-047 to D-054)
+- **Engine:** raleston-web's main script, nav, scroll choreography, scenes and layout cache, ported with the colours mapped to teal, blue and amber.
+- **Home, in the image's order:**
+  - the night city (hero; the camera visits each product's district) (D-056, replacing the laptop of D-048);
+  - the services helix, after primetrack.rw (D-057);
+  - the industries band, where the image has client logos (D-049);
+  - Why Synovika with the cube, four promises and the plain facts;
+  - what we build (the capabilities board);
+  - how we work (seven glass plates);
+  - inside Selvion (the packet flow);
+  - your data, put to work (the layered model);
+  - the industries ring;
+  - from the notebook (the latest articles);
+  - questions;
+  - "Ready to build around reality?" with the drifting waves.
+- **Inner pages:** products (with each app's demo screen), services (with a diagram each), six industry pages, pricing, how we work, about, FAQ, glossary, insights, contact, legal, 404. Each has raleston's plate-stack header.
+- **Content:** industries written in full; eight Insights articles written and published, each answer-first; legal pages drafted to match the site; the glossary (21 terms).
+- **Search and AI search** (D-052): `llms.txt`, `llms-full.txt`, AI crawlers welcomed by name, richer structured data, IndexNow.
+- **Removed:** three.js and the WebGL mark, `/lab`, the poster and trace tooling, the old header, the thanks page.
 
 ### Phase 0, 10 October 2026
 - Read the brief (Part B), synov-timer's README, `reference/AUDIT.md`, `references/NOTES.md`, and every file listed in brief section 6 (`../raleston-web`, see D-001).
@@ -48,15 +76,6 @@
 - **QA scripts:** copy, prod-guard, pages, contrast, widths, tour, a11y, lh, jsonld, links, html, nojs, motion, size and fps.
 - **CI workflow:** `.github/workflows/ci.yml`. It runs once Hero pushes.
 
-## Next
-
-Phase 2 (hero and motion system), after Hero approves `/lab`.
-
-## Questions for Hero at the Phase 1 gate
-
-1. **Header logo:** is the crop without the tagline line right for the header and footer? The tagline would be about 2 px tall there. The full lockup is used where it's large.
-2. **The 3D object in the hero is built from your logo's shapes** (it turns, and its sphere orbits). It is never used as the logo. Keep it, or would you rather the hero use something else?
-
 ## Open `TODO(hero)` items
 
 Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft builds only) and the production guard fails on it. Part A of the brief, which has Hero's own list, has not been shared; this list is built from Part B and Hero's answers.
@@ -77,23 +96,33 @@ Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft
 - Prices or durations: none are shown unless you give them.
 
 **Content to review**
-- Every drafted headline and section copy, the FAQ answers, the principles, and the industries list (all marked TO CONFIRM).
-- The eight Insights drafts (Phase 5).
-- The author name to show on articles (Phase 5).
-- Founder section on About: yes or no, and if yes a bio and a photo (Phase 5).
+- Every headline and section, the FAQ answers, the four promises and the six industries (D-053).
+- The eight published Insights articles, and the author name to show on them.
+- Founder section on About: yes or no, and if yes a bio and a photo.
 - Case studies: written permission from each client before any work is shown (brief 8.10).
 
-**Accounts and settings (Phase 5 and 7)**
-- Cloudflare account with the Pages project.
-- Turnstile site and secret keys.
-- A Resend account with `synovika.com` verified as a sending domain, plus `CONTACT_FROM` (for example `Synovika website <web@synovika.com>`).
-- AI training crawlers: allow (the default, D-028) or block.
+**Accounts and settings**
+- Cloudflare account with the Pages project, and the www to bare-domain Redirect Rule (D-038).
+- After each deploy: `npm run indexnow` (D-052).
 - Google Search Console, Bing Webmaster Tools, Google Business Profile, Bing Places and Apple Business Connect: you create the profiles, I write the text.
+- If you want the site itself to deliver contact messages: an email provider account and Turnstile keys (D-051).
 - A lawyer's review of the privacy, cookies and terms pages.
 
 ## Section reviews
 
 The three weakest things found in each round of the screenshot loop, one section at a time.
+
+**The night city and the spiral (11 October 2026):**
+1. The city's glass panels lived inside the 3D model, so passing cars and buildings cut through them. Fixed: they float in a flat layer above the city, placed by projecting their anchors through the camera.
+2. On phones the panels rose under the navigation bar. Fixed: they never go above it; if the anchor is too high, the panel slides down over its own beam.
+3. The spiral's small list numbers were too faint on the darker night (3.0:1). Fixed: grey-400.
+
+**The rebuild (11 October 2026):**
+1. The laptop's floor shadow, reaching behind the lid, made Chrome draw it over the lid's lower bezel. Fixed: the shadow starts at the hinge.
+2. With six services on the staircase, the fifth card (a full turn round) showed above the first. Fixed: cards fade with their distance round the stair, not only with the way they face.
+3. Without motion, the staircase cards floated out of the page flow and over the products. Fixed: the stair's tilt wrapper and Tailwind 4's `translate` utilities are reset too. (raleston-web has the same two gaps.)
+4. The ring's centre cube showed through the front industry panel, because opacity on a 3D face upsets Chrome's sorting. Fixed: panels dim with a veil instead.
+5. The hero headline gained a line when the web font arrived (layout shift 0.13). Fixed: each line stays on one line, sized to fit (D-054).
 
 **Logo trace (Phase 1, superseded by D-044):**
 1. The bowl's top was missing (removing the ring split the bowl in two). Fixed: every part of the bowl is kept.
@@ -117,14 +146,24 @@ The three weakest things found in each round of the screenshot loop, one section
 
 ## Performance report
 
-Measured on the production build, 11 October 2026 (Phase 1: no hero 3D or scroll scenes on the home page yet).
+Measured on the production build, 11 October 2026, after the night city, the darker palette, the new spiral and the engine loading after first paint (D-058).
 
 | Budget | Measured | Limit |
 |---|---|---|
-| Initial JavaScript, home (gzip) | 1.9 KB | 65 KB |
-| 3D chunk, lazy (gzip; in /lab for now) | 170.0 KB | 200 KB |
+| Lighthouse mobile Performance, home | 98 | 97 |
+| Lighthouse mobile Performance, inner pages | 100 | 97 |
+| Lighthouse desktop Performance | 100 | 100 |
+| Accessibility, Best Practices, SEO | 100 | 100 |
+| LCP mobile, home (lab) | 2.24 s (D-058) | 2.0 s |
+| LCP mobile, inner pages (lab) | 1.50 to 1.58 s | 2.0 s |
+| LCP desktop | 0.38 to 0.52 s | 0.8 s |
+| CLS | 0.000 | 0.02 |
+| TBT mobile | 0 ms | 150 ms |
+| Initial JavaScript, home (gzip) | 1.6 KB (the engine follows the first paint) | 65 KB |
 | Fonts | 49.7 KB, 1 preload | 80 KB, 2 preloads |
-| Home HTML with inlined CSS (gzip) | 18.1 KB | 60 KB |
-| DOM nodes, home | 464 | 1,500 |
-| Contrast | 1,130 text elements, all AA | |
-| Pages, links, HTML, JSON-LD, prod-guard, copy rules, parity | all clean | |
+| Home HTML with inlined CSS (gzip) | 48.9 KB | 60 KB |
+| DOM nodes, home | 2,236 | 2,500 (D-050) |
+| Contrast | 2,911 text elements, all AA | |
+| axe | no violations, both motion modes, desktop and phone | |
+| Widths | no overflow, 38 pages, 320 to 1920 px | |
+| Pages, links, HTML, JSON-LD, prod-guard, copy rules, no-JS and reduced-motion parity | all clean | |

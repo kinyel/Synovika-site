@@ -1,0 +1,56 @@
+---
+/** 12 · Questions people ask us (raleston-web's FAQ band), with straight answers. */
+import Faq from '../ui/Faq.astro';
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import { faqs, home } from '../../lib/content';
+
+const head = (await home()).faq!;
+const items = (await faqs()).map((f) => f.data);
+---
+
+{
+  items.length > 0 && (
+    <section id="faq" class="section faq-section" data-theme="dark" aria-labelledby="faq-title">
+      <div class="gutter faq-wrap">
+        <div>
+          <p class="eyebrow">{head.eyebrow}</p>
+          <h2 id="faq-title" class="h2 mt-4" data-reveal>
+            <Lit text={head.heading} lit={head.lit} />
+          </h2>
+          <p class="lead mt-4 max-w-[26rem]" data-reveal>
+            {head.lead}
+          </p>
+          <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+            <a href="/faq/" class="link-arrow" data-reveal>
+              All questions <Icon name="arrow" />
+            </a>
+            <a href="/contact/" class="link-arrow" data-reveal>
+              Ask your own <Icon name="arrow" />
+            </a>
+          </div>
+        </div>
+        <Faq items={items} />
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .faq-section {
+    background:
+      radial-gradient(40% 50% at 0% 50%, color-mix(in srgb, var(--color-iris) 7%, transparent), transparent 70%),
+      var(--color-night);
+  }
+  .faq-wrap {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .faq-wrap {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+</style>

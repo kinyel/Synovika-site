@@ -1,215 +1,281 @@
 ---
 /**
- * The footer (brief section 7): every section of the site, how to reach us,
- * the area we serve, the BN number once Hero gives it, the motion setting,
- * and the tagline.
+ * The footer (the reference image's layout, raleston-web's details): the
+ * logo and tagline, every section of the site, how to reach us with copy
+ * buttons, the motion setting, and the fine print.
  */
 import Logo from '../brand/Logo.astro';
 import Icon from '../ui/Icon.astro';
 import Todo from '../ui/Todo.astro';
-import { products, services } from '../../lib/content';
+import { industries, products, services } from '../../lib/content';
 import { SITE } from '../../data/site';
 import { isTodo } from '../../lib/drafts';
 
-const svc = await services();
 const prod = await products();
-const groups = [
-  { title: 'Services', links: svc.map((s) => ({ label: s.data.name, href: `/services/${s.id}/` })) },
-  { title: 'Products', links: prod.map((p) => ({ label: p.data.name, href: `/products/${p.id}/` })) },
+const svc = await services();
+const ind = await industries();
+const cols = [
+  { title: 'Products', links: [...prod.map((p) => ({ label: p.data.name, href: `/products/${p.id}/` })), { label: 'All products', href: '/products/' }] },
+  { title: 'Solutions', links: svc.map((s) => ({ label: s.data.name, href: `/services/${s.id}/` })) },
   {
     title: 'Company',
     links: [
+      { label: 'About us', href: '/about/' },
       { label: 'How we work', href: '/how-we-work/' },
-      { label: 'About', href: '/about/' },
-      { label: 'Insights', href: '/insights/' },
+      { label: 'Industries', href: '/industries/' },
+      { label: 'Pricing', href: '/pricing/' },
       { label: 'Contact', href: '/contact/' },
     ],
   },
   {
-    title: 'Legal',
+    title: 'Resources',
     links: [
-      { label: 'Privacy notice', href: '/privacy/' },
-      { label: 'Cookie notice', href: '/cookies/' },
-      { label: 'Terms of use', href: '/terms/' },
+      { label: 'Insights', href: '/insights/' },
+      { label: 'FAQ', href: '/faq/' },
+      { label: 'Glossary', href: '/glossary/' },
+      ...ind.slice(0, 3).map((i) => ({ label: i.data.name, href: `/industries/${i.id}/` })),
     ],
   },
 ];
 const year = new Date().getFullYear();
 ---
 
-<footer class="ftr noise" data-theme="black">
-  <div class="wrap">
-    <div class="ftr-top">
-      <div class="ftr-brand">
-        <a href="/" aria-label="Synovika, home" class="ftr-logo"><Logo height={60} /></a>
-        <p class="ftr-area t-muted">{SITE.areaServed.sentence}</p>
-        <ul class="ftr-contact">
-          <li><a href={`mailto:${SITE.email}`}><Icon name="mail" /><span>{SITE.email}</span></a></li>
-          <li><a href={SITE.whatsapp} rel="noopener"><Icon name="chat" /><span>WhatsApp {SITE.phone.display}</span></a></li>
-          <li><a href={`tel:${SITE.phone.tel}`}><Icon name="phone" label="Phone" /><span>{SITE.phone.display}</span></a></li>
-        </ul>
-      </div>
-      <nav class="ftr-links" aria-label="Footer">
-        {
-          groups.map((g) => (
-            <div>
-              <h2 class="t-label t-muted">{g.title}</h2>
-              <ul>
-                {g.links.map((l) => (
-                  <li>
-                    <a href={l.href}>{l.label}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))
-        }
-      </nav>
+<footer class="site-footer" data-theme="dark">
+  <div class="gutter footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo" aria-label="Synovika, home"><Logo height={64} tagline /></a>
+      <p class="footer-about">Synovika Technologies is a Nigerian software company. We build, fix, test and look after software, and we make products for fleets, estates and growing businesses. {SITE.areaServed.sentence}</p>
+      <ul class="footer-contact">
+        <li>
+          <Icon name="mail" />
+          <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+          <button type="button" class="copy" data-copy={SITE.email} aria-label="Copy email address"><Icon name="copy" /></button>
+        </li>
+        <li>
+          <Icon name="phone" />
+          <a href={`tel:${SITE.phone.tel}`}>{SITE.phone.display}</a>
+          <button type="button" class="copy" data-copy={SITE.phone.tel} aria-label="Copy phone number"><Icon name="copy" /></button>
+        </li>
+        <li>
+          <Icon name="chat" />
+          <a href={SITE.whatsapp} rel="noopener">Chat on WhatsApp</a>
+        </li>
+      </ul>
     </div>
-
-    <div class="ftr-bottom">
-      <p class="ftr-legal t-muted">
-        © {year} {SITE.name}
-        {isTodo(SITE.bn) ? <Todo need="CAC business name (BN) number" /> : <span>· {SITE.bn}</span>}
-      </p>
-      <div class="motion" role="group" aria-label="Motion" data-motion-setting>
-        <span class="t-label t-muted">Motion</span>
-        <button type="button" data-motion="full" aria-pressed="false">Full</button>
-        <button type="button" data-motion="reduced" aria-pressed="false">Reduced</button>
-      </div>
-      <p class="ftr-tagline t-label">{SITE.tagline}</p>
+    <nav class="footer-cols" aria-label="Footer">
+      {
+        cols.map((c) => (
+          <div>
+            <p class="footer-head">{c.title}</p>
+            <ul>
+              {c.links.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </nav>
+  </div>
+  <div class="gutter footer-base">
+    <p>
+      © {year} {SITE.name}. All rights reserved.
+      {isTodo(SITE.bn) ? <Todo need="CAC business name (BN) number" /> : <span> {SITE.bn}</span>}
+    </p>
+    <div class="motion" role="group" aria-label="Motion">
+      <span>Motion</span>
+      <button type="button" data-motion="full" aria-pressed="false">Full</button>
+      <button type="button" data-motion="reduced" aria-pressed="false">Reduced</button>
     </div>
+    <p class="footer-legal">
+      <a href="/privacy/">Privacy notice</a>
+      <a href="/cookies/">Cookie notice</a>
+      <a href="/terms/">Terms of use</a>
+    </p>
   </div>
 </footer>
 
 <style>
-  .ftr {
-    padding-block: clamp(4rem, 8vw, 7rem) max(2rem, env(safe-area-inset-bottom));
-    border-top: 1px solid var(--color-line);
+  .site-footer {
+    position: relative;
+    background:
+      radial-gradient(50% 80% at 0% 0%, color-mix(in srgb, var(--color-iris) 10%, transparent), transparent 70%),
+      var(--color-black);
+    border-top: 1px solid color-mix(in srgb, var(--color-white) 8%, transparent);
+    padding-top: clamp(3.5rem, 7vw, 5.5rem);
   }
-  .ftr-top {
+  .footer-grid {
     display: grid;
     gap: 3rem;
   }
-  @media (min-width: 64rem) {
-    .ftr-top {
-      grid-template-columns: 4fr 8fr;
-      gap: var(--grid-gap);
+  @media (min-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+      gap: 4rem;
     }
   }
-  .ftr-logo {
+  .footer-logo {
     display: inline-flex;
-    border-radius: var(--radius-sm);
+    border-radius: 0.5rem;
   }
-  .ftr-area {
-    margin-top: 1.5rem;
-    max-width: 22rem;
+  .footer-logo :global(.logo) {
+    width: auto;
+    height: 64px;
   }
-  .ftr-contact {
-    display: grid;
-    gap: 0.25rem;
+  .footer-about {
     margin-top: 1.25rem;
+    max-width: 26rem;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-grey-400);
   }
-  .ftr-contact a {
-    display: inline-flex;
+  .footer-contact {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: 1.4rem;
+  }
+  .footer-contact li {
+    display: flex;
     align-items: center;
-    gap: 0.7rem;
-    min-height: 44px;
+    gap: 0.6rem;
+    font-size: 0.95rem;
   }
-  .ftr-contact a:hover span {
-    text-decoration: underline;
-    text-underline-offset: 0.25em;
+  .footer-contact li > :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--color-iris-soft);
   }
-  .ftr-contact :global(.icon) {
-    width: 1.15rem;
-    height: 1.15rem;
-    color: var(--color-live-ink);
+  .footer-contact a {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    color: var(--color-grey-200);
   }
-  .ftr-links {
+  .footer-contact a:hover {
+    color: var(--color-white);
+  }
+  .copy {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    color: var(--color-grey-400);
+    cursor: pointer;
+    transition:
+      color 0.3s,
+      background-color 0.3s;
+  }
+  .copy:hover {
+    color: var(--color-white);
+    background: rgb(255 255 255 / 0.06);
+  }
+  .copy[data-copied] {
+    color: var(--color-iris-soft);
+  }
+  .copy :global(svg) {
+    width: 1rem;
+    height: 1rem;
+  }
+  .footer-cols {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2.5rem var(--grid-gap);
+    gap: 2.25rem 1.5rem;
   }
-  @media (min-width: 48rem) {
-    .ftr-links {
+  @media (min-width: 768px) {
+    .footer-cols {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
-  .ftr-links h2 {
-    margin-bottom: 0.75rem;
+  .footer-head {
+    margin-bottom: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
   }
-  .ftr-links a {
+  .footer-cols a {
     display: inline-flex;
+    min-height: 34px;
     align-items: center;
-    min-height: 40px;
-    color: var(--color-ink);
-    transition: color var(--dur-2) var(--ease-out);
+    font-size: 0.93rem;
+    color: var(--color-grey-400);
+    transition: color 0.3s;
   }
-  .ftr-links a:hover {
-    color: var(--color-live-ink);
+  .footer-cols a:hover {
+    color: var(--color-white);
   }
-  .ftr-bottom {
+  .footer-base {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 1rem 2rem;
-    margin-top: clamp(3rem, 6vw, 5rem);
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--color-line);
-    font-size: var(--text-small);
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    padding-block: 1.4rem max(1.4rem, env(safe-area-inset-bottom));
+    border-top: 1px solid color-mix(in srgb, var(--color-white) 8%, transparent);
+    font-size: 0.88rem;
+    color: var(--color-grey-400);
   }
-  .ftr-legal {
+  .footer-legal {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.5rem 1.4rem;
+  }
+  .footer-legal a {
+    display: inline-flex;
+    min-height: 32px;
     align-items: center;
+  }
+  .footer-legal a:hover {
+    color: var(--color-white);
   }
   .motion {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
   }
-  .motion .t-label {
-    margin-right: 0.5rem;
+  .motion > span {
+    margin-right: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
   .motion button {
-    min-height: 2.25rem;
+    min-height: 2.1rem;
     min-width: 44px;
-    padding: 0.3rem 0.8rem;
-    border-radius: var(--radius-full);
-    color: var(--color-ink-muted);
+    padding: 0.25rem 0.8rem;
+    border-radius: 999px;
     font: inherit;
+    color: var(--color-grey-400);
     cursor: pointer;
-    box-shadow: inset 0 0 0 1px transparent;
     transition:
-      color var(--dur-2) var(--ease-out),
-      box-shadow var(--dur-2) var(--ease-out);
+      color 0.3s,
+      box-shadow 0.3s;
   }
   .motion button[aria-pressed='true'] {
-    color: var(--color-ink);
-    box-shadow: inset 0 0 0 1px var(--color-line);
+    color: var(--color-white);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
   }
-  /* The setting needs JavaScript to apply; without it the system setting rules. */
   :global(html:not(.js)) .motion {
     display: none;
-  }
-  .ftr-tagline {
-    letter-spacing: var(--tracking-wide);
-    color: var(--color-structure);
   }
 </style>
 
 <script>
-  /** The motion setting: stored, then the page reloads so every scene starts in the right mode (D-023). */
-  const KEY = 'synovika:motion';
+  /** The motion setting: stored, then the page reloads so every scene starts in the right mode. */
   const html = document.documentElement;
   for (const b of document.querySelectorAll<HTMLButtonElement>('button[data-motion]')) {
     b.setAttribute('aria-pressed', String(b.dataset.motion === html.dataset.motion));
     b.addEventListener('click', () => {
       if (b.dataset.motion === html.dataset.motion) return;
       try {
-        localStorage.setItem(KEY, b.dataset.motion!);
+        localStorage.setItem('synovika:motion', b.dataset.motion!);
         location.reload();
       } catch {
         /* Storage is blocked, so the choice can't be remembered: the system setting stays in charge. */

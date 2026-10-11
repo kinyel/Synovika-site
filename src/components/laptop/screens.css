@@ -1,0 +1,526 @@
+/*
+ * The product apps on the laptop's screen. Everything is in em, on the
+ * screen's font size (--sw / 72), so the apps scale with the laptop and stay
+ * crisp when the screen fills the viewport.
+ */
+.app {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 11.5em 1fr;
+  color: #e6efee;
+  font-family: var(--font-sans);
+  font-size: 1em;
+  line-height: 1.3;
+  background:
+    radial-gradient(70% 60% at 80% 0%, rgb(13 148 136 / 0.16), transparent 70%),
+    linear-gradient(180deg, #071413, #050d0d);
+}
+.app-side {
+  padding: 1.6em 1.1em;
+  border-right: 1px solid rgb(255 255 255 / 0.06);
+  background: rgb(255 255 255 / 0.015);
+}
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  margin-bottom: 1.6em;
+  font-size: 1.05em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.app-dot {
+  width: 0.75em;
+  height: 0.75em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #fff 0 6%, #99f6e4 16%, #2dd4bf 36%, #0f766e 72%, #042f2e);
+  box-shadow: 0 0 0.8em rgb(45 212 191 / 0.6);
+}
+.app-dot.is-gate {
+  background: radial-gradient(circle at 34% 30%, #fff 0 6%, #fbc9cb 16%, #d2868b 36%, #722f37 72%, #37030e);
+  box-shadow: 0 0 0.8em rgb(210 134 139 / 0.55);
+}
+.app-dot.is-web {
+  background: radial-gradient(circle at 34% 30%, #fff 0 6%, #bfdbfe 16%, #60a5fa 36%, #1d4ed8 72%, #172554);
+  box-shadow: 0 0 0.8em rgb(96 165 250 / 0.55);
+}
+.app-side ul {
+  display: grid;
+  gap: 0.25em;
+}
+.app-side li {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 0.6em;
+  padding: 0.6em 0.75em;
+  font-size: 0.82em;
+  color: rgb(230 239 238 / 0.62);
+}
+.app-side li b {
+  border-radius: 1em;
+  padding: 0 0.5em;
+  font-size: 0.85em;
+  color: #fff;
+  background: #722f37;
+}
+.app-side li.is-on {
+  color: #fff;
+  background: rgb(45 212 191 / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.3);
+}
+.app-side li.is-add {
+  color: #5eead4;
+}
+.app-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.4em 1.6em 1.6em;
+}
+.app-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+}
+.app-title {
+  font-size: 1.3em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.app-search {
+  margin-left: auto;
+  border-radius: 0.6em;
+  padding: 0.45em 2.4em 0.45em 0.8em;
+  font-size: 0.75em;
+  color: rgb(230 239 238 / 0.45);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+.app-demo {
+  border-radius: 0.4em;
+  padding: 0.35em 0.6em;
+  font-family: var(--font-mono);
+  font-size: 0.62em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fcd34d;
+  box-shadow: inset 0 0 0 1px rgb(245 158 11 / 0.45);
+}
+.app-bar .app-demo:first-child,
+.app-title + .app-demo {
+  margin-left: auto;
+}
+.app-h {
+  margin-bottom: 0.6em;
+  font-family: var(--font-mono);
+  font-size: 0.62em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(230 239 238 / 0.5);
+}
+.app-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8em;
+  margin-top: 1.2em;
+}
+.app-kpis > div {
+  display: grid;
+  gap: 0.3em;
+  border-radius: 0.8em;
+  padding: 0.8em 0.9em;
+  background: rgb(255 255 255 / 0.03);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+.app-kpis span {
+  font-size: 0.72em;
+  color: rgb(230 239 238 / 0.55);
+}
+.app-kpis b {
+  font-size: 1.45em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.app-kpis .is-alert b {
+  color: #f4a5aa;
+}
+.app-body {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 0.9em;
+  flex: 1;
+  min-height: 0;
+  margin-top: 0.9em;
+}
+/* The map: roads in silver, water in blue, the route in teal, Depot A's zone. */
+.app-map {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.9em;
+  background:
+    radial-gradient(60% 60% at 50% 40%, rgb(13 148 136 / 0.12), transparent 75%),
+    #081211;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+.app-map svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.map-water {
+  fill: rgb(37 99 235 / 0.28);
+  stroke: rgb(96 165 250 / 0.5);
+  stroke-width: 0.3;
+}
+.map-road {
+  fill: none;
+  stroke: rgb(192 192 192 / 0.38);
+  stroke-width: 0.9;
+  vector-effect: non-scaling-stroke;
+}
+.map-road.minor {
+  stroke: rgb(192 192 192 / 0.16);
+}
+.map-zone {
+  fill: rgb(114 47 55 / 0.12);
+  stroke: #d2868b;
+  stroke-width: 0.5;
+  stroke-dasharray: 2 1.4;
+  vector-effect: non-scaling-stroke;
+}
+.map-route {
+  fill: none;
+  stroke: #2dd4bf;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 3px rgb(45 212 191 / 0.8));
+}
+.map-zone-label {
+  position: absolute;
+  left: 15%;
+  top: 23%;
+  font-family: var(--font-mono);
+  font-size: 0.55em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f4a5aa;
+}
+.map-unit {
+  position: absolute;
+  width: 0.7em;
+  height: 0.7em;
+  margin: -0.35em 0 0 -0.35em;
+  border-radius: 50%;
+  background: #a3a3a3;
+}
+.map-unit.is-live {
+  background: radial-gradient(circle at 34% 30%, #fff 0 8%, #5eead4 30%, #0d9488 80%);
+  box-shadow: 0 0 0.9em rgb(45 212 191 / 0.9);
+}
+.map-unit > span {
+  position: absolute;
+  left: 1.2em;
+  top: -0.5em;
+  border-radius: 0.5em;
+  padding: 0.35em 0.6em;
+  font-size: 0.68em;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #fff;
+  background: rgb(4 20 19 / 0.92);
+  box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.5);
+}
+.app-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  border-radius: 0.9em;
+  padding: 0.9em;
+  background: rgb(255 255 255 / 0.025);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+.alert {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.55em;
+  border-radius: 0.6em;
+  padding: 0.55em 0.6em;
+  font-size: 0.72em;
+  background: rgb(255 255 255 / 0.03);
+}
+.alert i {
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: #2dd4bf;
+  box-shadow: 0 0 0.6em currentColor;
+}
+.alert.is-alert {
+  background: rgb(114 47 55 / 0.35);
+  box-shadow: inset 0 0 0 1px rgb(210 134 139 / 0.45);
+}
+.alert.is-alert i {
+  background: #f4a5aa;
+}
+.alert.is-warn i {
+  background: #f59e0b;
+}
+.alert time {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: rgb(230 239 238 / 0.5);
+}
+
+/* Estate: the code check, the log, the resident's phone. */
+.gate-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 0.62fr;
+  gap: 0.9em;
+  flex: 1;
+  min-height: 0;
+  margin-top: 1.2em;
+}
+.gate-check,
+.gate-log {
+  border-radius: 0.9em;
+  padding: 1.1em;
+  background: rgb(255 255 255 / 0.025);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+.gate-code {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.4em;
+  margin-top: 0.4em;
+}
+.gate-code span {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.5em;
+  font-family: var(--font-mono);
+  font-size: 1.7em;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(180deg, #0f1c1b 50%, #0a1514 50%);
+  box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.35);
+}
+.gate-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: 1em;
+  border-radius: 2em;
+  padding: 0.55em 1em;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #042f2e;
+  background: #5eead4;
+  box-shadow: 0 0 1.6em rgb(45 212 191 / 0.55);
+}
+.gate-status i {
+  width: 0.7em;
+  height: 0.4em;
+  border-left: 0.16em solid currentColor;
+  border-bottom: 0.16em solid currentColor;
+  transform: rotate(-45deg) translateY(-0.1em);
+}
+.gate-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5em;
+  margin-top: 1.1em;
+}
+.gate-meta dt {
+  font-size: 0.66em;
+  color: rgb(230 239 238 / 0.5);
+}
+.gate-meta dd {
+  font-size: 0.95em;
+  font-weight: 600;
+}
+.gate-try {
+  margin-top: 1em;
+  font-size: 0.66em;
+  color: #f4a5aa;
+}
+.log-row {
+  display: grid;
+  grid-template-columns: 3.4em 1fr auto;
+  gap: 0.5em;
+  align-items: center;
+  border-bottom: 1px solid rgb(255 255 255 / 0.06);
+  padding: 0.6em 0;
+  font-size: 0.72em;
+}
+.log-row time {
+  font-family: var(--font-mono);
+  color: rgb(230 239 238 / 0.5);
+}
+.log-row b {
+  border-radius: 1em;
+  padding: 0.15em 0.6em;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: #5eead4;
+  box-shadow: inset 0 0 0 1px rgb(94 234 212 / 0.4);
+}
+.log-row.is-denied b {
+  color: #fff;
+  background: #722f37;
+  box-shadow: none;
+}
+.gate-phone {
+  position: relative;
+  align-self: center;
+  aspect-ratio: 9 / 18;
+  border-radius: 1.4em;
+  padding: 2.2em 0.7em 0.7em;
+  background: linear-gradient(180deg, #0f1918, #070d0d);
+  box-shadow:
+    inset 0 0 0 0.25em #1c2625,
+    inset 0 0 0 0.32em rgb(255 255 255 / 0.12);
+}
+.gate-phone-notch {
+  position: absolute;
+  left: 50%;
+  top: 0.7em;
+  width: 2.6em;
+  height: 0.55em;
+  margin-left: -1.3em;
+  border-radius: 1em;
+  background: #000;
+}
+.gate-note {
+  display: grid;
+  gap: 0.2em;
+  border-radius: 0.8em;
+  padding: 0.7em;
+  font-size: 0.66em;
+  background: rgb(45 212 191 / 0.14);
+  box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.4);
+}
+
+/* Websites: the admin panel and the live example site. */
+.app-publish {
+  margin-left: auto;
+  border-radius: 0.6em;
+  padding: 0.5em 1em;
+  font-size: 0.78em;
+  font-weight: 600;
+  color: #fff;
+  background: #0f766e;
+  box-shadow: 0 0 1.4em rgb(20 184 166 / 0.55);
+}
+.web-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.3fr;
+  gap: 0.9em;
+  flex: 1;
+  min-height: 0;
+  margin-top: 1.2em;
+}
+.web-editor {
+  border-radius: 0.9em;
+  padding: 1.1em;
+  background: rgb(255 255 255 / 0.025);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+}
+.web-field {
+  position: relative;
+  margin-bottom: 1em;
+  border-radius: 0.6em;
+  padding: 0.6em 0.75em;
+  font-size: 0.8em;
+  background: rgb(255 255 255 / 0.04);
+  box-shadow: inset 0 0 0 1px rgb(96 165 250 / 0.35);
+}
+.web-field.is-area {
+  min-height: 3.6em;
+}
+.web-caret {
+  display: inline-block;
+  width: 0.12em;
+  height: 1.1em;
+  margin-left: 0.15em;
+  vertical-align: -0.2em;
+  background: #2dd4bf;
+  box-shadow: 0 0 0.5em #2dd4bf;
+}
+.web-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.7em;
+  color: #5eead4;
+}
+.web-saved i {
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  background: #2dd4bf;
+  box-shadow: 0 0 0.6em #2dd4bf;
+}
+.web-preview {
+  overflow: hidden;
+  border-radius: 0.9em;
+  color: #171717;
+  background: #fff;
+  box-shadow: 0 1em 3em -1em rgb(0 0 0 / 0.6);
+}
+.web-nav {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0.8em 1.1em;
+  font-size: 0.72em;
+  border-bottom: 1px solid #eee;
+}
+.web-nav b {
+  margin-right: auto;
+  font-size: 1.1em;
+}
+.web-hero {
+  padding: 1.8em 1.4em 1.4em;
+  background: linear-gradient(135deg, #f0fdfa, #fff 60%);
+}
+.web-h {
+  max-width: 14em;
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.web-p {
+  margin-top: 0.6em;
+  font-size: 0.78em;
+  color: #5c5c5c;
+}
+.web-btn {
+  display: inline-block;
+  margin-top: 1em;
+  border-radius: 0.5em;
+  padding: 0.5em 1em;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #fff;
+  background: #0f766e;
+}
+.web-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7em;
+  padding: 1em 1.4em 1.4em;
+}
+.web-cards span {
+  height: 4.5em;
+  border-radius: 0.6em;
+  background: linear-gradient(135deg, #e6e6e6, #f4f4f4);
+}

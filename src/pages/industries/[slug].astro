@@ -1,0 +1,192 @@
+---
+/**
+ * An industry page: what tends to go wrong in that sector, and what we'd
+ * build or fix for it, with links to the products and services that fit.
+ * Written as "what we build for", never as past client work.
+ */
+import type { GetStaticPaths } from 'astro';
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { industries } from '../../lib/content';
+import { service as serviceNode } from '../../lib/schema';
+import type { CollectionEntry } from 'astro:content';
+
+type Industry = CollectionEntry<'industries'>;
+export const getStaticPaths = (async () => {
+  const all = await industries();
+  return all.map((i) => ({ params: { slug: i.id }, props: { i, others: all.filter((o) => o.id !== i.id) } }));
+}) satisfies GetStaticPaths;
+const { i, others } = Astro.props as { i: Industry; others: Industry[] };
+const d = i.data;
+const path = `/industries/${i.id}/`;
+---
+
+<Page
+  title={d.seo.title}
+  description={d.seo.description}
+  heading={`Software for ${d.name.toLowerCase()}`}
+  lit={d.name.toLowerCase()}
+  lead={d.lead}
+  eyebrow="Industries"
+  icon={d.icon}
+  crumbs={[
+    { name: 'Industries', href: '/industries/' },
+    { name: d.name, href: path },
+  ]}
+  schema={[serviceNode(path, `Software for ${d.name.toLowerCase()}`, d.seo.description)]}
+>
+  <div slot="hero" class="mt-8 flex flex-wrap gap-3">
+    <a href={`/contact/?industry=${i.id}`} class="btn btn-primary" data-magnetic>Tell us how you work <Icon name="arrow" /></a>
+    <a href="/contact/?topic=call" class="btn btn-outline">Book a call <Icon name="calendar" /></a>
+  </div>
+
+  {
+    d.problems.length > 0 && (
+      <section class="section" data-theme="dark" aria-labelledby="prob-title">
+        <div class="gutter ind-grid">
+          <div>
+            <p class="eyebrow">What we hear</p>
+            <h2 id="prob-title" class="h2 mt-4" data-reveal>
+              Problems that <span class="text-lit">keep coming up</span>
+            </h2>
+          </div>
+          <ul class="prob-list">
+            {d.problems.map((p) => (
+              <li class="prob" data-reveal>
+                <span class="prob-mark" aria-hidden="true" />
+                {p}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    d.helps.length > 0 && (
+      <section class="section" data-theme="dark" aria-labelledby="help-title">
+        <div class="gutter">
+          <p class="eyebrow">How we help</p>
+          <h2 id="help-title" class="h2 mt-4" data-reveal>
+            What we'd <span class="text-lit">build for you</span>
+          </h2>
+          <ul class="help-grid">
+            {d.helps.map((h) => (
+              <li data-reveal>
+                <a href={h.href ?? '/contact/'} class="card card-hover help-card">
+                  <h3 class="h3">{h.title}</h3>
+                  <p class="mt-3 text-grey-200">{h.body}</p>
+                  <span class="link-arrow mt-auto pt-5">
+                    Read more<span class="sr-only"> about {h.title.toLowerCase()}</span> <Icon name="arrow" />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section" data-theme="dark" aria-labelledby="other-title">
+    <div class="gutter">
+      <h2 id="other-title" class="h3">Other industries we build for</h2>
+      <ul class="other-grid">
+        {
+          others.map((o) => (
+            <li>
+              <a href={`/industries/${o.id}/`} class="other">
+                <span class="icon-tile is-sm">
+                  <Icon name={o.data.icon} />
+                </span>
+                {o.data.name}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Page>
+
+<style>
+  .ind-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+  @media (min-width: 1024px) {
+    .ind-grid {
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+  }
+  .prob-list {
+    display: grid;
+    border-top: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+  }
+  .prob {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1.15rem 0.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+    font-size: 1.1rem;
+    line-height: 1.5;
+    color: var(--color-white);
+  }
+  .prob-mark {
+    flex: none;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-gold);
+    box-shadow: 0 0 10px var(--color-gold);
+    translate: 0 -0.1rem;
+  }
+  .help-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  @media (min-width: 900px) {
+    .help-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .help-grid > li {
+    display: flex;
+  }
+  .help-card {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 1.6rem;
+  }
+  .other-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  .other {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 0.7rem;
+    border-radius: 999px;
+    padding: 0.35rem 1.1rem 0.35rem 0.4rem;
+    font-weight: 600;
+    color: var(--color-grey-200);
+    background: color-mix(in srgb, var(--color-white) 3%, var(--color-night));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-white) 9%, transparent);
+    transition:
+      color 0.3s,
+      box-shadow 0.3s;
+  }
+  .other:hover {
+    color: var(--color-white);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 45%, transparent);
+  }
+</style>

@@ -1,6 +1,8 @@
 ---
 name: Testing and QA
 blurb: Catch problems before your customers do
+icon: test
+group: run
 summary: We test your software the way your customers will use it, so you find the problems before they do.
 problem: "Every release breaks something, and we only find out when a customer complains."
 whatWeDo:
@@ -14,6 +16,18 @@ deliverables:
   - Automated tests that run before every release
   - A short summary of how ready the release is
 visual: tests
+diagram:
+  kind: layers
+  layers:
+    - label: Real phones
+      sub: The Android phones your customers use
+    - label: Slow networks
+      sub: Patchy data, not just office Wi-Fi
+    - label: Every path
+      sub: What happens when things go wrong, too
+    - label: Clear results
+      sub: What passed, what failed, what to fix first
+  caption: We test where your software will actually be used, and you get results you can act on.
 faqs:
   - q: Can you test software we built ourselves?
     a: Yes. We work alongside your team and hand the tests over so you can keep running them.

@@ -1,33 +1,50 @@
 ---
+/** Insights: every article, newest first, each with its short answer. */
 import { getEntry } from 'astro:content';
 import Page from '../../layouts/Page.astro';
+import Icon from '../../components/ui/Icon.astro';
 import { insights } from '../../lib/content';
-const page = (await getEntry('pages', 'insights'))!;
+import { itemList } from '../../lib/schema';
+
+const page = (await getEntry('pages', 'insights'))!.data;
 const posts = await insights();
-const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const fmt = (date: Date) => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
 
-<Page title={page.data.seo.title} description={page.data.seo.description} heading={page.data.title} lead={page.data.lead} crumbs={[{ name: 'Insights', href: '/insights/' }]} pageType="CollectionPage">
-  <section class="section" data-theme="dark">
-    <div class="wrap">
+<Page
+  title={page.seo.title}
+  description={page.seo.description}
+  heading={page.title}
+  lead={page.lead}
+  eyebrow="From the notebook"
+  icon="book"
+  pageType="CollectionPage"
+  crumbs={[{ name: 'Insights', href: '/insights/' }]}
+  schema={[itemList('/insights/', 'list', 'Synovika insights', posts.map((p) => ({ name: p.data.title, path: `/insights/${p.id}/` })))]}
+>
+  <section class="section" data-theme="dark" aria-label="Articles">
+    <div class="gutter">
       {
-        posts.length ? (
-          <ul class="list">
+        posts.length === 0 ? (
+          <p class="lead">The first articles are on their way.</p>
+        ) : (
+          <ul class="posts">
             {posts.map((p) => (
-              <li>
-                <a href={`/insights/${p.id}/`}>
-                  <p class="t-label t-muted">
-                    <time datetime={p.data.published.toISOString()}>{fmt(p.data.published)}</time>
-                    {p.data.draft && <span class="to-confirm">DRAFT</span>}
+              <li data-reveal>
+                <a href={`/insights/${p.id}/`} class="card card-hover post">
+                  <p class="post-meta">
+                    <span>{p.data.tags[0] ?? 'Insights'}</span>
+                    <time datetime={p.data.published.toISOString().slice(0, 10)}>{fmt(p.data.published)}</time>
                   </p>
-                  <h2 class="t-h3">{p.data.title}</h2>
-                  <p class="t-muted">{p.data.description}</p>
+                  <h2 class="h3 mt-3">{p.data.title}</h2>
+                  <p class="mt-3 text-grey-200">{p.data.description}</p>
+                  <span class="link-arrow mt-auto pt-5">
+                    Read it<span class="sr-only">: {p.data.title}</span> <Icon name="arrow" />
+                  </span>
                 </a>
               </li>
             ))}
           </ul>
-        ) : (
-          <p class="t-muted">The first articles are on their way.</p>
         )
       }
     </div>
@@ -35,21 +52,36 @@ const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 
 </Page>
 
 <style>
-  .section {
-    padding-block: clamp(4rem, 8vw, 7rem);
-  }
-  .list {
+  .posts {
     display: grid;
-    gap: 0;
+    gap: 1rem;
   }
-  .list a {
-    display: grid;
-    gap: 0.6rem;
-    padding: 1.75rem 0;
-    border-top: 1px solid var(--color-line);
+  @media (min-width: 768px) {
+    .posts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
-  .list a:hover h2 {
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  .posts > li {
+    display: flex;
+  }
+  .post {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 1.7rem;
+  }
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+  .post-meta time {
+    color: var(--color-grey-400);
   }
 </style>

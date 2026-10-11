@@ -1,0 +1,197 @@
+---
+/**
+ * 11 · From the notebook (raleston-web's case files, put to honest use).
+ * Three glass files float open as the section arrives, the top one lit. Beside
+ * them, the latest Insights articles. There are no case studies yet, so none
+ * are shown or hinted at.
+ */
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import { blk } from '../../lib/iso';
+import { home, insights } from '../../lib/content';
+
+const head = (await home()).notebook!;
+const posts = (await insights()).slice(0, 3);
+const date = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+{
+  posts.length > 0 && (
+    <section id="notebook" class="section nb" data-theme="dark" aria-labelledby="nb-title">
+      <div class="gutter nb-grid">
+        <div class="s3d nb-scene" data-s3d aria-hidden="true">
+          <div class="s3d-world">
+            <span class="nb-pool" />
+            {[0, 1, 2].map((i) => (
+              <div class={`blk nb-file ${i === 2 ? 'is-lit' : ''}`} style={blk(0, 0, 210, 6, 0, `--i:${i}`)}>
+                <b class="blk-top">
+                  <span class="nb-ghost">
+                    <i class="w-[46%]" />
+                    <i class="w-[70%]" />
+                    <i class="w-[58%]" />
+                    <i class="nb-seal" />
+                  </span>
+                </b>
+                <b class="blk-e" />
+                <b class="blk-s" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div class="nb-copy">
+          <p class="eyebrow">{head.eyebrow}</p>
+          <h2 id="nb-title" class="h2 mt-4" data-reveal>
+            <Lit text={head.heading} lit={head.lit} />
+          </h2>
+          <p class="lead mt-4" data-reveal>
+            {head.lead}
+          </p>
+          <ul class="nb-list">
+            {posts.map((p) => (
+              <li data-reveal>
+                <a href={`/insights/${p.id}/`} class="nb-row">
+                  <span class="nb-text">
+                    <b>{p.data.title}</b>
+                    <span>
+                      <time datetime={p.data.published.toISOString().slice(0, 10)}>{date(p.data.published)}</time>
+                      {p.data.tags[0] && <> · {p.data.tags[0]}</>}
+                    </span>
+                  </span>
+                  <Icon name="arrow" class="nb-arrow" />
+                </a>
+              </li>
+            ))}
+          </ul>
+          <a href="/insights/" class="link-arrow mt-6" data-reveal>
+            All insights <Icon name="arrow" />
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .nb {
+    overflow: hidden;
+    background:
+      radial-gradient(40% 50% at 25% 45%, color-mix(in srgb, var(--color-iris) 10%, transparent), transparent 70%),
+      var(--color-night);
+  }
+  .nb-grid {
+    display: grid;
+    gap: 1rem;
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .nb-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 3rem;
+    }
+  }
+  .nb-scene {
+    --k: 0.7;
+    height: 330px;
+    order: 2;
+  }
+  @media (min-width: 1024px) {
+    .nb-scene {
+      --k: 1;
+      height: 470px;
+      order: 0;
+    }
+  }
+  .nb-scene .s3d-world {
+    top: 62%;
+  }
+  .nb-pool {
+    position: absolute;
+    left: -260px;
+    top: -260px;
+    width: 520px;
+    height: 520px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 16%, transparent), transparent);
+    transform: translateZ(-20px);
+  }
+  /* The files open up as the section arrives, then float. */
+  .nb-file {
+    --dz: calc(var(--i) * (24px + var(--p) * 60px));
+    animation: nb-bob 6s ease-in-out infinite;
+    animation-delay: calc(var(--i) * -2s);
+  }
+  @keyframes nb-bob {
+    50% {
+      translate: 0 0 10px;
+    }
+  }
+  .nb-ghost {
+    position: absolute;
+    inset: 14% 12%;
+    display: grid;
+    align-content: start;
+    gap: 9%;
+  }
+  .nb-ghost i {
+    display: block;
+    height: 9px;
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--color-white) 14%, transparent);
+  }
+  .nb-ghost .nb-seal {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background: none;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--color-iris-soft) 50%, transparent);
+  }
+  .nb-file.is-lit .nb-seal {
+    box-shadow:
+      inset 0 0 0 1.5px var(--color-gold),
+      0 0 18px color-mix(in srgb, var(--color-gold) 60%, transparent);
+  }
+  .nb-list {
+    display: grid;
+    margin-top: 1.75rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+  }
+  .nb-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-white) 9%, transparent);
+  }
+  .nb-text {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+    gap: 0.2rem;
+  }
+  .nb-text b {
+    font-size: 1.1rem;
+    line-height: 1.3;
+    color: var(--color-white);
+  }
+  .nb-text > span {
+    font-size: 0.9rem;
+    color: var(--color-grey-400);
+  }
+  .nb-row :global(.nb-arrow) {
+    width: 1.2rem;
+    height: 1.2rem;
+    flex: none;
+    color: var(--color-iris-soft);
+    transition: transform 0.4s var(--ease-expo);
+  }
+  .nb-row:hover :global(.nb-arrow),
+  .nb-row:focus-visible :global(.nb-arrow) {
+    transform: translateX(4px);
+  }
+  .nb-row:hover .nb-text b {
+    color: var(--color-iris-soft);
+  }
+</style>

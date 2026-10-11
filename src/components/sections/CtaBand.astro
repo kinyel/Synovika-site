@@ -1,0 +1,149 @@
+---
+/**
+ * The closing call to action (the reference image's "Ready to build around
+ * reality?" band): flowing teal and amber waves drawn in SVG, a soft glow,
+ * and the two ways to start. Used at the end of every page.
+ */
+import Icon from '../ui/Icon.astro';
+import { SITE } from '../../data/site';
+
+interface Props {
+  title?: string;
+  lit?: string;
+  lead?: string;
+  /** The main button (defaults to "Start a project"). */
+  primary?: { label: string; href: string };
+}
+const {
+  title = 'Ready to build around reality?',
+  lit = 'around reality?',
+  lead = "Tell us how your business really works, and we'll tell you honestly what we'd build, fix or change.",
+  primary = { label: 'Start a project', href: '/contact/' },
+} = Astro.props;
+const at = title.indexOf(lit);
+---
+
+<section class="cta-band" data-theme="dark" aria-labelledby="cta-band-title">
+  <svg class="cta-waves" viewBox="0 0 1440 520" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="wave-teal" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="var(--color-teal-500)" stop-opacity="0"></stop>
+        <stop offset="0.35" stop-color="var(--color-teal-400)" stop-opacity="0.9"></stop>
+        <stop offset="0.7" stop-color="var(--color-teal-300)" stop-opacity="0.55"></stop>
+        <stop offset="1" stop-color="var(--color-teal-500)" stop-opacity="0"></stop>
+      </linearGradient>
+      <linearGradient id="wave-gold" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="var(--color-gold)" stop-opacity="0"></stop>
+        <stop offset="0.6" stop-color="var(--color-gold)" stop-opacity="0.7"></stop>
+        <stop offset="1" stop-color="var(--color-gold-glow)" stop-opacity="0"></stop>
+      </linearGradient>
+      <filter id="wave-glow" x="-10%" y="-50%" width="120%" height="200%"><feGaussianBlur stdDeviation="6"></feGaussianBlur></filter>
+    </defs>
+    {
+      Array.from({ length: 9 }, (_, i) => (
+        <path
+          class="wave"
+          style={`--i:${i}`}
+          d={`M-40 ${300 + i * 9} C 260 ${150 + i * 14}, 520 ${430 - i * 10}, 760 ${280 + i * 6} S 1240 ${120 + i * 16}, 1480 ${250 + i * 8}`}
+          stroke="url(#wave-teal)"
+          stroke-width={i === 4 ? 2.2 : 1}
+          fill="none"
+          opacity={1 - Math.abs(i - 4) * 0.16}
+        />
+      ))
+    }
+    <path class="wave wave-glow" d="M-40 336 C 260 206, 520 390, 760 304 S 1240 184, 1480 282" stroke="url(#wave-teal)" stroke-width="10" fill="none" filter="url(#wave-glow)" opacity="0.6"></path>
+    <path class="wave" d="M-40 360 C 300 260, 600 420, 900 330 S 1300 240, 1480 300" stroke="url(#wave-gold)" stroke-width="1.4" fill="none"></path>
+  </svg>
+  <div class="cta-glow" aria-hidden="true"></div>
+  <div class="gutter cta-inner">
+    <p class="eyebrow">Start a conversation</p>
+    <h2 id="cta-band-title" class="cta-title" data-reveal>
+      {at >= 0 ? <>{title.slice(0, at)}<span class="text-lit">{lit}</span>{title.slice(at + lit.length)}</> : title}
+    </h2>
+    <p class="cta-lead" data-reveal>{lead}</p>
+    <div class="cta-actions" data-reveal>
+      <a href={primary.href} class="btn btn-primary" data-magnetic>{primary.label} <Icon name="arrow" /></a>
+      <a href="/contact/?topic=call" class="btn btn-outline">Book a call <Icon name="calendar" /></a>
+      <a href={SITE.whatsapp} class="btn btn-quiet" rel="noopener"><Icon name="chat" /><span>WhatsApp us</span></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    padding-block: clamp(5.5rem, 11vw, 9rem);
+    text-align: center;
+    background:
+      radial-gradient(60% 70% at 50% 100%, color-mix(in srgb, var(--color-iris) 13%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--color-night), color-mix(in srgb, var(--color-navy) 70%, var(--color-night)));
+  }
+  .cta-waves {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .wave {
+    stroke-dasharray: 2400;
+    stroke-dashoffset: 0;
+    animation: wave-drift 14s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -1.2s);
+    animation-play-state: paused;
+    transform-origin: 50% 50%;
+  }
+  @keyframes wave-drift {
+    from {
+      transform: translateY(-8px) scaleY(0.96);
+    }
+    to {
+      transform: translateY(10px) scaleY(1.04);
+    }
+  }
+  .cta-glow {
+    position: absolute;
+    left: 50%;
+    top: 60%;
+    z-index: -1;
+    width: 70vw;
+    height: 40vh;
+    translate: -50% -50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-teal-500) 12%, transparent), transparent);
+  }
+  .cta-inner {
+    display: grid;
+    justify-items: center;
+  }
+  .cta-title {
+    margin-top: 1.1rem;
+    max-width: 16ch;
+    font-size: clamp(2rem, 4.4vw, 3.8rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .cta-lead {
+    margin-top: 1.25rem;
+    max-width: 36rem;
+    font-size: clamp(1.02rem, 1.3vw, 1.15rem);
+    line-height: 1.6;
+    color: var(--color-grey-200);
+  }
+  .cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2.2rem;
+  }
+  /* The waves drift for five seconds once in view, then hold still (WCAG 2.2.2): main.ts adds and removes is-playing. */
+  :global(.cta-band.is-playing) .wave {
+    animation-play-state: running;
+  }
+</style>
