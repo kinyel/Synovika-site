@@ -23,7 +23,7 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
     if (prop.startsWith('--')) el.style.setProperty(prop, value);
     else (el.style as unknown as Record<string, string>)[prop] = value;
   };
-  // ── Services: the helix turns and climbs with scroll (after primetrack.rw's spiral, D-057) ──
+  // ── Services: the helix turns and climbs with scroll (built to feel like primetrack.rw's, D-060) ──
   const stair = $('[data-stair-section]');
   if (stair && !reduced) whenNear(stair, () => {
     const ring = $('[data-stair-ring]', stair)!;
@@ -32,54 +32,58 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
     const roll = $('[data-stair-count]', stair);
     const rail = $('[data-stair-rail]', stair);
     const N = cards.length;
-    /** Degrees per card round the helix, and how much higher each card sits. */
+    /** Degrees per card round the helix. */
     const TURN = 60;
+    /**
+     * How lit a card is by its distance from the front, in cards (0, 0.25 ... 1.5):
+     * primetrack's curve, measured on their site. Opacity runs from 0.26 to 1 with it.
+     */
+    const LIT = [1, 0.986, 0.797, 0.527, 0.27, 0.068, 0];
+    const lit = (d: number) => {
+      const x = Math.min(d, 1.5) * 4;
+      const i = Math.floor(x);
+      return i >= LIT.length - 1 ? 0 : LIT[i]! + (LIT[i + 1]! - LIT[i]!) * (x - i);
+    };
+    const smooth = (e0: number, e1: number, x: number) => {
+      const t = gsap.utils.clamp(0, 1, (x - e0) / (e1 - e0));
+      return t * t * (3 - 2 * t);
+    };
     let progress = 0;
-    let c = 0;
     let active = -1;
     const st = ScrollTrigger.create({ trigger: stair, start: 'top top', end: 'bottom bottom', onUpdate: (s) => (progress = s.progress) });
     links.forEach((link, k) =>
       link.addEventListener('click', () => {
-        const y = st.start + (0.06 + (k / (N - 1)) * 0.88) * (st.end - st.start);
-        lenis ? lenis.scrollTo(y, { duration: 1.4 }) : scrollTo({ top: y, behavior: 'smooth' });
+        const y = st.start + (k / (N - 1)) * (st.end - st.start);
+        lenis ? lenis.scrollTo(y, { duration: 1.2 }) : scrollTo({ top: y, behavior: 'smooth' });
       }),
     );
-    let rise = 150;
-    /** Phones: the helix is tighter, so its neighbours dim further to keep the front card clear. */
-    let narrow = false;
-    onRefresh(() => {
-      rise = parseFloat(getComputedStyle(stair).getPropertyValue('--rise')) || 150;
-      narrow = innerWidth < 1024;
-    });
+    let rise = 144;
+    onRefresh(() => (rise = parseFloat(getComputedStyle(stair).getPropertyValue('--rise')) || 144));
     const lastCard = new Map<HTMLElement, string>();
-    gsap.ticker.add((time) => {
+    gsap.ticker.add(() => {
       const rect = rectOf(stair);
       if (rect.bottom < 0 || rect.top > viewport.height) return;
-      // Hold briefly at both ends so the first and last cards get a beat of their own.
-      const raw = gsap.utils.clamp(0, 1, (progress - 0.06) / 0.88) * (N - 1);
-      // Each card rests at the front for the middle of its stretch, then the helix turns on.
-      const seg = Math.min(N - 2, Math.floor(raw));
-      const f = gsap.utils.clamp(0, 1, (raw - seg - 0.3) / 0.4);
-      const target = seg + f * f * (3 - 2 * f);
-      c += (target - c) * 0.1;
-      if (Math.abs(target - c) < 1e-4) c = target;
-      const sway = Math.sin(time * 0.5) * 2;
-      setStyle(ring, 'transform', `translateY(${(c * rise).toFixed(1)}px) rotateY(${(-c * TURN + sway).toFixed(2)}deg)`);
-      // The card at the front is lit and sharp; the others dim and blur with their distance round the turn.
+      // A steady turn, in step with the scroll: one card every fifth of the way, no pauses, no lag.
+      const c = progress * (N - 1);
+      setStyle(ring, 'transform', `translateY(${(c * rise).toFixed(2)}px) rotateY(${(-c * TURN).toFixed(3)}deg)`);
       for (const [k, { el, card }] of cards.entries()) {
         const d = Math.abs(k - c);
-        // The neighbours either side stay readable (about 60%), so the helix reads as a stair.
-        const g = gsap.utils.clamp(0, 1, ((narrow ? 1.36 : 1.62) - d) / (narrow ? 1.14 : 1.3));
-        const op = (0.22 + 0.78 * g).toFixed(3);
-        const blur = g > 0.97 ? 'none' : `blur(${(2 * Math.pow(1 - g, 1.5)).toFixed(2)}px)`;
-        const lit = g.toFixed(2);
-        const key = op + blur + lit;
+        // Two cards at a time: the one at the front and the next one up. A card that has
+        // passed fades as it turns away; the one after next fades in as it comes round.
+        const show = k >= c ? 1 - smooth(1, 1.5, d) : 1 - smooth(0.3, 1, d);
+        const op = ((0.26 + 0.74 * lit(d)) * show).toFixed(3);
+        const angle = Math.min(d * TURN, 90) * (Math.PI / 180);
+        const b = 2.2 * (1 - Math.cos(angle));
+        const blur = b < 0.05 ? 'none' : `blur(${b.toFixed(2)}px)`;
+        const g = lit(d).toFixed(2);
+        const key = op + blur + g;
         if (lastCard.get(el) === key) continue;
         lastCard.set(el, key);
         card.style.opacity = op;
         card.style.filter = blur;
-        card.style.setProperty('--g', lit);
-        el.toggleAttribute('inert', g < 0.5);
+        card.style.setProperty('--g', g);
+        el.style.visibility = +op < 0.01 ? 'hidden' : '';
+        el.toggleAttribute('inert', d > 0.5);
       }
       const k = Math.round(c);
       if (k !== active) {
@@ -87,7 +91,7 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
         if (roll) roll.style.transform = `translateY(${-k * 1.25}em)`;
         links.forEach((l, i) => l.setAttribute('aria-current', String(i === k)));
       }
-      if (rail) setStyle(rail, 'transform', `scaleX(${(c / (N - 1)).toFixed(3)})`);
+      if (rail) setStyle(rail, 'transform', `scaleX(${progress.toFixed(4)})`);
     });
   });
 

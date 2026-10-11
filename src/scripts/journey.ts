@@ -80,11 +80,14 @@ export function initJourney(reduced: boolean) {
   const turn = { v: 0 };
   let turnTo = 0;
   const deg = (name: string) => parseFloat(getComputedStyle(root).getPropertyValue(name)) || 0;
+  /** The stack's tilt and spin, read once per measure: reading styles every frame would force a style recalculation. */
+  let tilt = deg('--tilt');
+  let spin = deg('--spin');
   const tops = all<HTMLElement>('.plate-top');
   const progressBar = one<HTMLElement>('[data-progress-steps]');
   const stage = one<HTMLElement>('[data-stage]');
   const pose = (t: number) => {
-    stack.style.transform = `rotateX(${deg('--tilt')}deg) rotateZ(${(deg('--spin') * (1 - t)).toFixed(3)}deg)`;
+    stack.style.transform = `rotateX(${tilt}deg) rotateZ(${(spin * (1 - t)).toFixed(3)}deg)`;
   };
   let noteAt: Pt[] = [];
   let introShift: Pt = { x: 0, y: 0 };
@@ -140,6 +143,8 @@ export function initJourney(reduced: boolean) {
 
   const measure = () => {
     stages();
+    tilt = deg('--tilt');
+    spin = deg('--spin');
     // Measure the resting pose: no shift, no float, plates not mid-arrival.
     platform.style.transform = 'none';
     const drops = plates.map((pl) => pl.style.getPropertyValue('--drop'));

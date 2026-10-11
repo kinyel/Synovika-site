@@ -112,6 +112,11 @@ Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft
 
 The three weakest things found in each round of the screenshot loop, one section at a time.
 
+**The helix, made to move like primetrack's (11 October 2026, D-060):**
+1. It rested on each card, then eased and lagged behind the scroll, so it never felt attached to your finger. Fixed: a steady, linear turn locked to the scroll, measured against primetrack.rw at 21 positions.
+2. Three or more cards showed at once. Fixed: two, the one at the front and the next one up, with primetrack's fade and blur curves.
+3. "How we work" re-read its tilt from the page's styles every frame while closing, forcing style recalculations (p95 200 ms on a 4x slower phone). Fixed: read once per measure (p95 50 ms; 16.7 ms on desktop). The services helix holds 16.7 ms on both.
+
 **The services helix, fixed (11 October 2026, D-059):**
 1. The front card drifted sideways at every step, up to a full card width, and swung over the list. Fixed: the cards turn about the spine, not their own centres.
 2. Square cards on the old radius cut through each other (the next card's corner came round in front). Fixed: the radius is at least 0.87 × the card's width.

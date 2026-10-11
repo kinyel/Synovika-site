@@ -29,7 +29,8 @@ const $$ = <T extends HTMLElement = HTMLElement>(sel: string, root: ParentNode =
 /* ── Smooth scroll (native touch scrolling kept on phones) ─────────────── */
 let lenis: Lenis | null = null;
 if (!reduced) {
-  lenis = new Lenis({ lerp: 0.085, syncTouch: false, wheelMultiplier: 0.9 });
+  // A light touch: close to the browser's own scroll, just smoothed (D-060). Phones keep native scrolling.
+  lenis = new Lenis({ lerp: 0.1, syncTouch: false, wheelMultiplier: 1 });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis?.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);

@@ -344,3 +344,11 @@ Hero: "remove the 3D laptop and replace with something better... think out of th
 - **Cards never cut through each other.** The radius is at least 0.87 × the card's width (272 px on desktop), or the next card's near edge comes round in front of the front card. Phones use a narrower turn with the steps a full card apart.
 - **The menu matches primetrack's:** title, "What do you need?" and the list, starting below the navigation; the counter shows on phones only. The stage keeps the helix to itself, with soft edges, and faint vertical rays of light behind it.
 - **The neighbours either side stay readable** (about 60%), so the helix reads as a staircase.
+
+**D-060. The services helix moves like primetrack.rw's (Hero: "only two staircase cards should be visible at a time... fix the way the staircase moves on mobile... identical to the way primetrack.rw's staircase feels... a very natural and smooth scroll").** Measured on their site at 21 scroll positions on a phone and on desktop, then matched:
+- **A steady turn locked to the scroll:** 60° per card, linear across the section, with no pauses and no catch-up lag (ours used to rest on each card, then ease and lag behind).
+- **Their geometry:** desktop 264 px squares on a 240 px radius, 144 px per step, perspective 1320 px; phones 200 px squares on a 144 px radius, 84 px per step, perspective 720 px. Their scroll lengths too: 320svh on desktop, 250svh on phones.
+- **Their fade and blur curves,** by distance from the front (opacity 0.26 to 1, blur up to 2.2 px).
+- **Two cards at a time:** the one at the front and the next one up. A card that has passed fades as it turns away; the one after next fades in as it comes round.
+- **The cards say the service's short line** (like primetrack's one-line descriptions), so the squares stay squares at 200 px; the full summary is on each service's page.
+- **Scrolling:** phones use the browser's own scrolling (as primetrack does). On desktop, Lenis is lighter: lerp 0.1 (from 0.085) and the wheel at full speed.
