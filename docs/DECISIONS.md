@@ -337,3 +337,10 @@ Hero: "remove the 3D laptop and replace with something better... think out of th
 - **A tiny loader** imports `src/scripts/main.ts` one frame after the page first paints, so about 60 KB of JavaScript no longer competes with the page for the network (initial JavaScript on the home page: 1.6 KB).
 - **The hero's entrance is pure CSS,** so it plays from the first paint. The city and its glow stay hidden until the engine places them, then rise in; if the engine never arrives, they show after four seconds anyway.
 - **Result:** Lighthouse mobile 100 on every inner page (LCP about 1.5 s, from about 1.95 s), 98 on the home page (LCP 2.24 s, under Google's 2.5 s "good" line but still over the brief's 2.0 s, because the home page's HTML carries every scene). Desktop 100 everywhere.
+
+**D-059. The services helix, fixed and squared (Hero: "fix the 3D staircase design... the staircase cards should remain squares").**
+- **The cards are squares** at every size (290 px on desktop, 280 px from 1024 to 1279 px, 272 px on phones), sized so each one holds all its words; `npm run qa:squares` measures every card at five sizes, in both motion modes.
+- **The front card no longer wanders.** Each card turned about its own centre instead of the spine, so the card at the front sat a little further sideways at every step (a whole card width by the fourth) and swung over the list. It now turns about the spine and stays centred on it.
+- **Cards never cut through each other.** The radius is at least 0.87 × the card's width (272 px on desktop), or the next card's near edge comes round in front of the front card. Phones use a narrower turn with the steps a full card apart.
+- **The menu matches primetrack's:** title, "What do you need?" and the list, starting below the navigation; the counter shows on phones only. The stage keeps the helix to itself, with soft edges, and faint vertical rays of light behind it.
+- **The neighbours either side stay readable** (about 60%), so the helix reads as a staircase.

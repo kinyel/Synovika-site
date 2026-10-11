@@ -26,7 +26,6 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
       <div class="spiral-menu">
         <p class="eyebrow">{head.eyebrow}</p>
         <h2 id="services-title" class="spiral-title"><Lit text={head.heading} lit={head.lit} /></h2>
-        <p class="spiral-lead">{head.lead}</p>
         <p class="spiral-counter" aria-hidden="true">
           <span class="spiral-counter-slot"><span class="spiral-counter-roll" data-stair-count>{services.map((_, i) => <span>{pad(i)}</span>)}</span></span>
           <span class="spiral-counter-total">/ {String(N).padStart(2, '0')}</span>
@@ -49,6 +48,7 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
       </div>
 
       <div class="spiral-stage">
+        <span class="spiral-rays" aria-hidden="true"></span>
         <div class="spiral-spine" aria-hidden="true">
           <span class="spiral-spine-line"></span>
           <span class="spiral-glow"></span>
@@ -82,24 +82,35 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
 </section>
 
 <style>
-  /* One turn of the helix: six cards, 60° apart, a step higher each. */
+  /*
+   * One turn of the helix: six square cards, 60° apart, a step higher each.
+   * The radius is at least 0.87 × the card's width, or a card's near edge would
+   * come round in front of the card at the front and cut through it.
+   */
   .spiral {
-    --R: 250px;
-    --rise: 150px;
-    --card-w: 280px;
-    --card-h: 250px;
+    --R: 272px;
+    --rise: 142px;
+    /* The cards are squares: one size for width and height. */
+    --card: 290px;
     position: relative;
     height: calc(var(--n, 6) * 52svh + 20svh);
     background:
-      radial-gradient(52% 42% at 64% 50%, color-mix(in srgb, var(--color-iris) 13%, transparent), transparent 70%),
-      var(--color-night);
+      radial-gradient(48% 46% at 66% 54%, color-mix(in srgb, var(--color-iris) 15%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--color-night) 0, var(--color-night) 90px, color-mix(in srgb, var(--color-navy) 55%, var(--color-night)) 100%);
+  }
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .spiral {
+      --R: 260px;
+      --rise: 134px;
+      --card: 280px;
+    }
   }
   @media (max-width: 1023px) {
+    /* Phones: a narrower turn, so the steps sit a full card apart and never overlap. */
     .spiral {
-      --R: 130px;
-      --rise: 112px;
-      --card-w: 244px;
-      --card-h: 228px;
+      --R: 200px;
+      --rise: 290px;
+      --card: 272px;
     }
   }
   .spiral-viewport {
@@ -112,12 +123,17 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
   .spiral-layout {
     display: grid;
     height: 100%;
-    align-items: center;
   }
   @media (min-width: 1024px) {
     .spiral-layout {
-      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-      column-gap: 2rem;
+      grid-template-columns: minmax(0, 0.74fr) minmax(0, 1.26fr);
+      column-gap: 1.5rem;
+      align-items: center;
+      padding-top: 5.5rem;
+    }
+    .spiral-menu {
+      position: relative;
+      z-index: 2;
     }
   }
   @media (max-width: 1023px) {
@@ -131,16 +147,10 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
   /* ── The menu ── */
   .spiral-title {
     margin-top: 0.9rem;
-    font-size: clamp(1.9rem, 3.4vw, 3rem);
+    font-size: clamp(1.9rem, 3.2vw, 2.9rem);
     font-weight: 600;
     line-height: 1.08;
     letter-spacing: -0.03em;
-  }
-  .spiral-lead {
-    margin-top: 1rem;
-    max-width: 26rem;
-    line-height: 1.6;
-    color: var(--color-grey-200);
   }
   .spiral-counter {
     display: flex;
@@ -184,7 +194,7 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     box-shadow: 0 0 10px color-mix(in srgb, var(--color-iris) 80%, transparent);
   }
   .spiral-menu-title {
-    margin-top: 2rem;
+    margin-top: 1.8rem;
     font-family: var(--font-mono);
     font-size: 0.68rem;
     letter-spacing: 0.16em;
@@ -212,7 +222,7 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     transition: color 0.5s;
   }
   .spiral-link-name {
-    font-size: 1.12rem;
+    font-size: clamp(1.05rem, 1.35vw, 1.2rem);
     font-weight: 500;
     color: color-mix(in srgb, var(--color-grey-400) 85%, transparent);
     transition: color 0.5s;
@@ -229,8 +239,13 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
   .spiral-all {
     margin-top: 1.25rem;
   }
+  /* The counter is for phones, where the list doesn't fit. */
+  @media (min-width: 1024px) {
+    .spiral-counter {
+      display: none;
+    }
+  }
   @media (max-width: 1023px) {
-    .spiral-lead,
     .spiral-menu-title,
     .spiral-list,
     .spiral-all {
@@ -239,11 +254,28 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
   }
 
   /* ── The helix ── */
+  /* The stage keeps the helix to itself: turning cards fade at its edges, never over the menu. */
   .spiral-stage {
     position: relative;
     height: 100%;
+    overflow: hidden;
     perspective: 1320px;
-    perspective-origin: 50% 40%;
+    perspective-origin: 50% 38%;
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent), linear-gradient(180deg, transparent, #000 7%, #000 93%, transparent);
+    mask-composite: intersect;
+  }
+  @media (min-width: 1024px) {
+    .spiral-stage {
+      height: 92%;
+    }
+  }
+  /* Faint vertical rays of light behind the helix. */
+  .spiral-rays {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, transparent 0 46px, color-mix(in srgb, var(--color-iris-soft) 4%, transparent) 46px 47px, transparent 47px 92px, rgb(255 255 255 / 0.018) 92px 130px);
+    mask-image: radial-gradient(50% 60% at 50% 50%, #000, transparent);
+    pointer-events: none;
   }
   .spiral-spine {
     position: absolute;
@@ -278,22 +310,25 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     transform-style: preserve-3d;
     will-change: transform;
   }
-  /* A card, turned to its place on the helix and pushed out to the radius. */
+  /* A card, turned to its place on the helix and pushed out to the radius. It turns
+     about the spine (the ring's origin), not its own centre, or the front card would
+     drift sideways a little more at every step. */
   .spiral-item {
     position: absolute;
     left: 0;
     top: 0;
-    width: var(--card-w);
-    transform: rotateY(calc(var(--i) * 60deg)) translate3d(calc(var(--card-w) / -2), calc(var(--card-h) / -2 - var(--i) * var(--rise)), var(--R));
+    width: var(--card);
+    transform-origin: 0 0;
+    transform: rotateY(calc(var(--i) * 60deg)) translate3d(calc(var(--card) / -2), calc(var(--card) / -2 - var(--i) * var(--rise)), var(--R));
     backface-visibility: hidden;
   }
   .spiral-card {
     /* --g: how lit the card is, 0 (round the back) to 1 (at the front). scroll.ts sets it. */
     --g: 1;
     display: flex;
-    min-height: var(--card-h);
+    aspect-ratio: 1;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.5rem;
     border-radius: 18px;
     padding: 24px;
     background: linear-gradient(158deg, #0b1816 0%, #07110f 56%, #040908 100%);
@@ -331,14 +366,14 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     color: var(--color-grey-400);
   }
   .spiral-card-label {
-    margin-top: 0.5rem;
-    font-size: 1.2rem;
+    margin-top: 0.35rem;
+    font-size: 1.16rem;
     font-weight: 700;
     line-height: 1.2;
     color: var(--color-white);
   }
   .spiral-card-desc {
-    font-size: 0.94rem;
+    font-size: 0.9rem;
     line-height: 1.5;
     color: var(--color-grey-200);
   }
@@ -363,10 +398,10 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
   }
   @media (max-width: 1023px) {
     .spiral-card {
-      padding: 20px;
+      padding: 18px 20px;
     }
     .spiral-card-desc {
-      font-size: 0.9rem;
+      font-size: 0.86rem;
     }
   }
 
@@ -406,7 +441,6 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     backface-visibility: visible;
   }
   :global(html:is(.reduced-motion, :not(.js))) .spiral-card {
-    height: 100%;
     opacity: 1 !important;
     filter: none !important;
   }

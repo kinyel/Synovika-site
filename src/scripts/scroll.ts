@@ -45,7 +45,12 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
       }),
     );
     let rise = 150;
-    onRefresh(() => (rise = parseFloat(getComputedStyle(stair).getPropertyValue('--rise')) || 150));
+    /** Phones: the helix is tighter, so its neighbours dim further to keep the front card clear. */
+    let narrow = false;
+    onRefresh(() => {
+      rise = parseFloat(getComputedStyle(stair).getPropertyValue('--rise')) || 150;
+      narrow = innerWidth < 1024;
+    });
     const lastCard = new Map<HTMLElement, string>();
     gsap.ticker.add((time) => {
       const rect = rectOf(stair);
@@ -63,9 +68,10 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
       // The card at the front is lit and sharp; the others dim and blur with their distance round the turn.
       for (const [k, { el, card }] of cards.entries()) {
         const d = Math.abs(k - c);
-        const g = gsap.utils.clamp(0, 1, (1.32 - d) / 1.1);
-        const op = (0.26 + 0.74 * g).toFixed(3);
-        const blur = g > 0.97 ? 'none' : `blur(${(2.2 * Math.pow(1 - g, 1.4)).toFixed(2)}px)`;
+        // The neighbours either side stay readable (about 60%), so the helix reads as a stair.
+        const g = gsap.utils.clamp(0, 1, ((narrow ? 1.36 : 1.62) - d) / (narrow ? 1.14 : 1.3));
+        const op = (0.22 + 0.78 * g).toFixed(3);
+        const blur = g > 0.97 ? 'none' : `blur(${(2 * Math.pow(1 - g, 1.5)).toFixed(2)}px)`;
         const lit = g.toFixed(2);
         const key = op + blur + lit;
         if (lastCard.get(el) === key) continue;

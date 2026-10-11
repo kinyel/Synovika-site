@@ -15,7 +15,7 @@ npm run check                            # astro check + tsc
 node scripts/logo-assets.mjs             # Hero's logo crops, icons, manifest (never redraw the logo: D-044)
 npm run indexnow                         # after a production deploy: ping IndexNow (D-052)
 npm run qa:copy | qa:prod-guard | qa:jsonld | qa:html | qa:links | qa:size        # on dist/
-npm run qa:pages | qa:contrast | qa:widths | qa:a11y | qa:nojs | qa:motion | qa:lh   # need the server on 4330
+npm run qa:pages | qa:contrast | qa:widths | qa:a11y | qa:nojs | qa:motion | qa:squares | qa:lh   # need the server on 4330
 npm run qa:fps                           # local only
 ```
 

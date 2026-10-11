@@ -112,6 +112,11 @@ Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft
 
 The three weakest things found in each round of the screenshot loop, one section at a time.
 
+**The services helix, fixed (11 October 2026, D-059):**
+1. The front card drifted sideways at every step, up to a full card width, and swung over the list. Fixed: the cards turn about the spine, not their own centres.
+2. Square cards on the old radius cut through each other (the next card's corner came round in front). Fixed: the radius is at least 0.87 × the card's width.
+3. At 1024 × 768 the heading sat under the navigation. Fixed: a compact menu, like primetrack's, starting below the navigation.
+
 **The night city and the spiral (11 October 2026):**
 1. The city's glass panels lived inside the 3D model, so passing cars and buildings cut through them. Fixed: they float in a flat layer above the city, placed by projecting their anchors through the camera.
 2. On phones the panels rose under the navigation bar. Fixed: they never go above it; if the anchor is too high, the panel slides down over its own beam.

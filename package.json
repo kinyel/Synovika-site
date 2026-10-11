@@ -29,7 +29,8 @@
     "qa:size": "node scripts/size.mjs",
     "qa:prod-guard": "node scripts/prod-guard.mjs",
     "qa:fps": "node scripts/pagefps.mjs",
-    "qa:copy": "node scripts/copy-lint.mjs"
+    "qa:copy": "node scripts/copy-lint.mjs",
+    "qa:squares": "node scripts/squares.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
