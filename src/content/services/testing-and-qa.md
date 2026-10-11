@@ -1,5 +1,6 @@
 ---
 name: Testing and QA
+headline: "Software testing and QA for Nigerian businesses"
 blurb: Catch problems before your customers do
 icon: test
 group: run
@@ -29,11 +30,15 @@ diagram:
       sub: What passed, what failed, what to fix first
   caption: We test where your software will actually be used, and you get results you can act on.
 faqs:
+  - q: "What is software QA?"
+    a: "Quality assurance is the work of checking that software does what it should, on the devices and networks people really use, before and after every release."
+    confirmed: true
   - q: Can you test software we built ourselves?
     a: Yes. We work alongside your team and hand the tests over so you can keep running them.
     confirmed: false
 order: 3
+guides: [testing-on-real-phones, plan-software-project-nigeria]
 seo:
-  title: Software testing and QA in Nigeria | Synovika
+  title: "Software testing and QA services in Nigeria | Synovika"
   description: Software testing for Nigerian businesses. We test on the phones and networks your customers use, and automate the checks that matter.
 ---

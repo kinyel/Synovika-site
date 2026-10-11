@@ -12,6 +12,7 @@ import Icon from '../../components/ui/Icon.astro';
 import StatusCta from '../../components/ui/StatusCta.astro';
 import ToConfirm from '../../components/ui/ToConfirm.astro';
 import ProductScreen from '../../components/laptop/ProductScreen.astro';
+import Guides from '../../components/ui/Guides.astro';
 import { ctaOf, featuresOf, products, stationsOf, unconfirmed, type Product } from '../../lib/content';
 import { shown } from '../../lib/drafts';
 import { STATUS } from '../../data/status';
@@ -157,6 +158,8 @@ const what = d.descriptor.charAt(0).toUpperCase() + d.descriptor.slice(1);
       </section>
     )
   }
+
+  <Guides ids={d.guides} />
 
   {
     others.length > 0 && (

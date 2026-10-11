@@ -58,7 +58,20 @@ const catalogue = {
 };
 const ld = graph([
   organization(
-    [...svc.map((s) => s.data.name), 'Fleet tracking', 'Visitor access control', 'Website content management', 'Custom software for Nigerian businesses'],
+    [
+      ...svc.map((s) => s.data.name),
+      'Software engineering',
+      'Custom software development',
+      'Software requirements specification',
+      'Software project planning',
+      'Fleet management software',
+      'Vehicle tracking',
+      'GPS tracking',
+      'Estate visitor management',
+      'Gate access control',
+      'Business websites',
+      'Website content management',
+    ],
     path === '/' ? catalogue : undefined,
   ),
   website(),

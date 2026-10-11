@@ -63,6 +63,8 @@ const products = defineCollection({
       )
       .default([]),
     faqs: z.array(faq).default([]),
+    /** Insights articles to point readers to (ids), for the "Guides" list and internal links. */
+    guides: z.array(z.string()).default([]),
     seo,
     updated: z.coerce.date().optional(),
     draft: z.boolean().default(false),
@@ -73,6 +75,8 @@ const services = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/services' }),
   schema: z.object({
     name: z.string(),
+    /** The service page's H1, as people search for it (the name is used where it's short). */
+    headline: z.string().optional(),
     /** A few words for the navigation flyout. */
     blurb: z.string().max(48),
     icon,
@@ -93,6 +97,8 @@ const services = defineCollection({
     ]),
     relatedProducts: z.array(z.string()).default([]),
     faqs: z.array(faq).default([]),
+    /** Insights articles to point readers to (ids). */
+    guides: z.array(z.string()).default([]),
     order: z.number(),
     seo,
     updated: z.coerce.date().optional(),

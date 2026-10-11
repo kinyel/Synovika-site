@@ -82,3 +82,27 @@
   term: Waitlist
   definition: A list of people who want to hear first when a product is ready to use.
   see: /products/
+- id: fleet-management-software
+  term: Fleet management software
+  definition: Software that brings every vehicle in a fleet into one place, from a tracker in each, with a live map, alerts, trip reports and the history needed to run the fleet.
+  see: /insights/car-tracker-vs-fleet-management-platform/
+- id: vehicle-tracking
+  term: Vehicle tracking
+  definition: Following where a vehicle is and where it has been, using a GPS tracker that reports its position over the mobile network.
+  see: /products/selvion/
+- id: visitor-management-system
+  term: Visitor management system
+  definition: Software that tells a gate or reception who is expected, checks each visitor against that list, and keeps a record of every entry.
+  see: /insights/estate-visitor-management-system-nigeria/
+- id: srs
+  term: Software requirements specification (SRS)
+  definition: The agreed, written description of what a piece of software must do and how well it must do it, detailed enough to build from and to check the result against.
+  see: /insights/software-requirements-specification-guide/
+- id: custom-software
+  term: Custom software
+  definition: Software designed and built for one organisation's way of working, rather than bought ready-made for everyone.
+  see: /services/software-development/
+- id: website-builder
+  term: Website builder
+  definition: An online service you pay for monthly to build and host a website in your browser, usually with drag-and-drop tools. You rent the site rather than own it.
+  see: /insights/buying-a-website-nigeria/

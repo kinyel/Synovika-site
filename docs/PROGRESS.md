@@ -4,6 +4,10 @@
 
 **The full site is built (11 October 2026), on raleston-web's engine and laid out like Hero's reference image (D-047).** Hero's next round is in too: the night city replaces the laptop (D-056), the site is darker (D-055), and the services spiral follows primetrack.rw (D-057). Every page exists, every QA script passes, and the work is waiting for Hero's review. The questions below are the ones that change what visitors are told.
 
+## Search (D-061)
+
+The site side of search is done: one page per topic, search-style titles and questions, sixteen guides, a glossary, full structured data and AI-search files. The off-site half is Hero's checklist in `docs/SEO-PLAN.md`: Search Console, Bing, a Google Business Profile, directory listings, reviews and links.
+
 ## Questions for Hero
 
 1. **The image's other product names** (FarmTrace, MeterGuard, ComplyRadar, SiteLedger, PatrolProof): are any of these real Synovika products? None are shown until you say so (D-049).

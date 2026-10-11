@@ -1,5 +1,6 @@
 ---
 name: Fixing and debugging
+headline: "Software bug fixing and debugging, even if someone else built it"
 blurb: Find the real cause, then fix it properly
 icon: bug
 group: run
@@ -30,6 +31,7 @@ faqs:
     a: Yes. Most of the fixing we do is on code we didn't write. We start by reading it.
     confirmed: false
 order: 2
+guides: [inheriting-software-rescue-checklist, choosing-software-development-company-nigeria]
 seo:
   title: Software bug fixing and debugging in Nigeria | Synovika
   description: Broken, slow or unreliable software? Synovika finds the real cause and fixes it properly, including systems someone else built.

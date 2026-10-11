@@ -1,6 +1,6 @@
 ---
 name: Estate Entrance Security System
-headline: Estate Entrance Security System for residential estates
+headline: "Estate Entrance Security System: visitor management for estates in Nigeria"
 descriptor: code-based visitor access for residential estates
 summary: Code-based visitor access for residential estates, so the gate knows who's expected.
 status: in-development
@@ -56,12 +56,22 @@ stations:
     body: The entry goes in the log and the resident gets a message that their visitor has arrived.
     readout: 14:06 · Visitor for House 12 · Verified
 faqs:
+  - q: "What is an estate visitor management system?"
+    a: "Software that tells the gate who is expected. Residents register their visitors in advance, usually with a code, and guards check each visitor against it instead of phoning the house. Every entry is recorded, so the estate keeps a log it can rely on."
+    confirmed: true
+  - q: "How do visitor access codes work?"
+    a: "A resident creates a short code for a visitor and sends it by message. At the gate, the visitor gives the code and the guard checks it. If it's valid for that house and that time, the visitor goes in, and the entry is logged."
+    confirmed: true
+  - q: "Is a visitor code system better than a gate logbook?"
+    a: "For most estates, yes: it's quicker at the gate, residents don't have to answer calls, and the record can be searched. It does need a plan for power cuts and network outages, which a paper logbook doesn't."
+    confirmed: true
   - q: Is the Estate Entrance Security System ready?
     a: Not yet. We're designing it now. Join the waitlist and we'll talk to your estate as soon as it's ready to try.
     confirmed: false
+guides: [estate-visitor-management-system-nigeria, estate-visitor-codes-vs-logbooks]
 seo:
-  title: Estate Entrance Security System | Synovika
-  description: Code-based visitor access for residential estates in Nigeria, from Synovika. It's in development, so join the waitlist to be one of the first estates to use it.
+  title: "Estate visitor management system in Nigeria | Synovika"
+  description: "The Estate Entrance Security System from Synovika: code-based visitor access and gate security for residential estates in Nigeria. In development; join the waitlist."
 ---
 
 The Estate Entrance Security System is code-based visitor access for residential estates. We're designing how it works with estates now.

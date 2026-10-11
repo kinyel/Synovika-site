@@ -1,0 +1,88 @@
+---
+/**
+ * Insights articles that go further on a page's subject: helpful to readers,
+ * and the internal links that tell search engines which pages belong together.
+ */
+import Icon from './Icon.astro';
+import { insights } from '../../lib/content';
+
+interface Props {
+  ids: string[];
+  title?: string;
+}
+const { ids, title = 'Guides worth reading' } = Astro.props;
+const all = await insights();
+const posts = ids.map((id) => all.find((p) => p.id === id)).filter((p): p is NonNullable<typeof p> => !!p);
+---
+
+{
+  posts.length > 0 && (
+    <section class="section guides" data-theme="dark" aria-labelledby="guides-title">
+      <div class="gutter">
+        <p class="eyebrow">From the notebook</p>
+        <h2 id="guides-title" class="h3 mt-4">
+          {title}
+        </h2>
+        <ul class="guides-grid">
+          {posts.map((p) => (
+            <li>
+              <a href={`/insights/${p.id}/`} class="card card-hover guide">
+                <span class="guide-tag">{p.data.tags[0] ?? 'Guide'}</span>
+                <b>{p.data.title}</b>
+                <span class="guide-desc">{p.data.description}</span>
+                <span class="link-arrow mt-auto pt-3">
+                  Read the guide <Icon name="arrow" />
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .guides-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .guides-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1200px) {
+    .guides-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .guides-grid > li {
+    display: flex;
+  }
+  .guide {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.4rem;
+  }
+  .guide-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+  .guide b {
+    font-size: 1.08rem;
+    line-height: 1.3;
+    color: var(--color-white);
+  }
+  .guide-desc {
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--color-grey-400);
+  }
+</style>

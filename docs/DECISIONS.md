@@ -352,3 +352,10 @@ Hero: "remove the 3D laptop and replace with something better... think out of th
 - **Two cards at a time:** the one at the front and the next one up. A card that has passed fades as it turns away; the one after next fades in as it comes round.
 - **The cards say the service's short line** (like primetrack's one-line descriptions), so the squares stay squares at 200 px; the full summary is on each service's page.
 - **Scrolling:** phones use the browser's own scrolling (as primetrack does). On desktop, Lenis is lighter: lerp 0.1 (from 0.085) and the wheel at full speed.
+
+**D-061. Search targeting for Nigeria (Hero: "anything concerning software engineering, requirement engineering, software projects, fleet or vehicle tracking, estate entrance security, websites you can buy, affordable websites... in Nigeria... my site will show up first").** The plan, the keyword map and Hero's checklist are in `docs/SEO-PLAN.md`.
+- **One strong page per topic,** with titles, descriptions and H1s written the way people search, so our pages don't compete with each other. Services gain an optional `headline` for the H1.
+- **"People also ask" questions** on each product and service page, as FAQPage data. They explain terms (what fleet management software is, what an SRS is); they make no new claims about Synovika, so they're marked confirmed.
+- **Eight new guides** (sixteen in all): custom software cost, planning a software project, writing an SRS, choosing a software company, car tracker vs fleet platform, estate visitor management systems, affordable websites, buying a website. No invented prices or statistics: cost guides explain what drives the price instead.
+- **Internal links:** each product and service page lists its guides (`guides` in the content), and each guide links back with plain, descriptive words.
+- **Not done, on purpose:** copy-and-paste city pages (Google treats them as doorway pages), bought links, published prices.

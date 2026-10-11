@@ -1,6 +1,6 @@
 ---
 name: Selvion
-headline: Selvion fleet tracking for Nigerian businesses
+headline: "Selvion: fleet management and vehicle tracking for Nigerian businesses"
 descriptor: fleet tracking platform
 summary: See every vehicle live, get told when one starts, leaves a zone or needs stopping, and get a report on every trip.
 status: in-development
@@ -61,15 +61,25 @@ stations:
     heading: Trip report
     body: When the trip ends you get the whole of it in one card. Distance, time, stops and top speed.
 faqs:
+  - q: "What is fleet management software?"
+    a: "Software that shows you where your vehicles are and how they're being used, from a tracker fitted in each one. Good fleet software also tells you when something needs attention and keeps a record of every trip, so you run the fleet from facts rather than phone calls."
+    confirmed: true
+  - q: "How does vehicle tracking work?"
+    a: "A small GPS tracker in the vehicle works out its position from satellite signals and sends it over the mobile network. The tracking software puts that position on a map, checks it against the rules you've set, such as zones around your depots, and alerts you when one is broken."
+    confirmed: true
+  - q: "What's the difference between a car tracker and a fleet management platform?"
+    a: "A car tracker tells you where one vehicle is. A fleet management platform brings every vehicle into one place, with alerts, trip reports and the history you need to run the fleet day to day."
+    confirmed: true
   - q: Can I use Selvion today?
     a: Not yet. Selvion is in development. Join the waitlist and we'll tell you as soon as you can use it.
     confirmed: true
   - q: Do I need special hardware?
     a: Each vehicle needs a GPS tracker fitted. We'll tell you which trackers work with Selvion before you buy anything.
     confirmed: false
+guides: [choosing-fleet-tracking-nigeria, car-tracker-vs-fleet-management-platform, geofences-explained]
 seo:
-  title: 'Selvion: fleet tracking software for Nigeria | Synovika'
-  description: Selvion is our fleet tracking platform for Nigerian businesses. Live map, ignition and zone alerts, trip reports and remote immobilisation.
+  title: "Fleet and vehicle tracking software in Nigeria | Selvion"
+  description: "Selvion is fleet management and vehicle tracking software for Nigerian businesses: a live map, ignition and geofence alerts, trip reports and remote immobilisation."
 ---
 
 Selvion, our fleet tracking platform, is for businesses that live on the road. It shows you where every vehicle is and what it's doing, tells you when something needs your attention, and writes up every trip so you don't have to piece it together from phone calls.

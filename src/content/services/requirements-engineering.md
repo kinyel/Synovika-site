@@ -1,5 +1,6 @@
 ---
 name: Requirements engineering
+headline: "Requirements engineering: write down what your software must do"
 blurb: Write down what you need, first
 icon: spec
 group: build
@@ -29,11 +30,18 @@ diagram:
       sub: Speed, security, phones and networks
   caption: A good requirements list moves from why to who to what to how well, so nothing important is missed.
 faqs:
+  - q: "What is requirements engineering?"
+    a: "The work of finding out what a piece of software must do, writing it down clearly and getting everyone to agree before it's built. It covers who will use it, what they need to do, the rules it must follow and how well it must work."
+    confirmed: true
+  - q: "What is a software requirements specification (SRS)?"
+    a: "A document that describes what a system must do and how well it must do it, in enough detail that a developer can build it and you can check the finished software against it."
+    confirmed: true
   - q: Can we use the requirements with another developer?
     a: Yes. They're yours, written so any competent team can build from them.
     confirmed: false
 order: 4
+guides: [software-requirements-specification-guide, requirements-for-small-businesses, plan-software-project-nigeria]
 seo:
-  title: Requirements engineering in Nigeria | Synovika
+  title: "Requirements engineering and SRS writing in Nigeria | Synovika"
   description: Write down what you need before you pay for software. Synovika turns how your business works into clear requirements any developer can build.
 ---

@@ -1,5 +1,6 @@
 ---
 name: System architecture
+headline: "System architecture: how your software fits together"
 blurb: How the parts fit, and keep fitting
 icon: architecture
 group: build
@@ -34,6 +35,7 @@ faqs:
     a: Either. We can hand the design to your team or build it with you.
     confirmed: false
 order: 5
+guides: [plan-software-project-nigeria, custom-software-cost-nigeria]
 seo:
   title: System architecture consulting in Nigeria | Synovika
   description: Synovika designs how your systems fit together, so they stay fast, secure and affordable as your business grows. Clear diagrams, staged plans.

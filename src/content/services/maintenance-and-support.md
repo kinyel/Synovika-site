@@ -1,5 +1,6 @@
 ---
 name: Maintenance and support
+headline: "Software maintenance and support after launch"
 blurb: Updates, monitoring and fixes after launch
 icon: heartbeat
 group: run
@@ -30,6 +31,7 @@ faqs:
     a: Yes. We'll start with a review so we know what we're taking on.
     confirmed: false
 order: 6
+guides: [inheriting-software-rescue-checklist, testing-on-real-phones]
 seo:
   title: Software maintenance and support in Nigeria | Synovika
   description: Synovika keeps your software running after launch. Updates, security patches, monitoring and fixes, with a plain monthly summary.
