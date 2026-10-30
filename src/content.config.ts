@@ -36,6 +36,8 @@ const products = defineCollection({
     descriptor: z.string(),
     /** One line for flyouts and cards. */
     summary: z.string(),
+    /** Two or three words on the hero's product links. */
+    tag: z.string(),
     status: z.enum(['live', 'pilot', 'in-development']).default('in-development'),
     icon,
     accent: tint,

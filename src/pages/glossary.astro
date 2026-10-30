@@ -20,7 +20,7 @@ const letters = [...new Set(terms.map((t) => t.data.term[0]!.toUpperCase()))];
   crumbs={[{ name: 'Glossary', href: '/glossary/' }]}
   schema={[glossary('/glossary/', terms.map((t) => ({ id: t.id, term: t.data.term, definition: t.data.definition })))]}
 >
-  <section class="section" data-theme="dark" aria-label="Terms">
+  <section class="section" data-theme="paper" aria-label="Terms">
     <div class="gutter">
       <nav class="letters" aria-label="Jump to a letter">
         {letters.map((l) => <a href={`#letter-${l.toLowerCase()}`}>{l}</a>)}

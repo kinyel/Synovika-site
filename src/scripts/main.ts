@@ -5,7 +5,7 @@ import { $introDone, $progress, $reducedMotion, live } from '../lib/store';
 import { whenIdle, whenNear } from '../lib/layout';
 import { initNav } from './nav';
 import { initScroll } from './scroll';
-import { initCity } from './city';
+import { initHero } from './hero';
 import { initJourney } from './journey';
 import { initScenes } from './scenes';
 
@@ -44,7 +44,9 @@ for (const a of $$<HTMLAnchorElement>('a[href^="#"]:not([data-nav-jump]), a[href
     if (!target) return;
     e.preventDefault();
     closeMenu();
-    if (lenis) lenis.scrollTo(target, { duration: 1.8, easing: (t) => 1 - Math.pow(1 - t, 4) });
+    // A negative scroll margin lands past the start of the section (the services' handover).
+    const offset = Math.max(0, -parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
+    if (lenis) lenis.scrollTo(target, { offset, duration: 1.8, easing: (t) => 1 - Math.pow(1 - t, 4) });
     else target.scrollIntoView();
     // Keyboard focus follows the jump (skip links, "Skip the product tour").
     if (!target.hasAttribute('tabindex') && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) target.setAttribute('tabindex', '-1');
@@ -63,13 +65,13 @@ gsap.ticker.add(() => {
 });
 
 /* ── Hero entrance ───────────────────────────────────────────────────── */
-// Played in CSS (City.astro), so it starts with the first paint and never waits
+// Played in CSS (Hero.astro), so it starts with the first paint and never waits
 // for this script, which loads just after that paint (Base.astro).
 $introDone.set(true);
 
 /* ── Scroll choreography ───────────────────────────────────────────────── */
-// The hero's city starts at once; everything further down starts as it comes near.
-initCity(reduced);
+// The hero starts at once; everything further down starts as it comes near.
+initHero(reduced);
 initScroll(reduced, lenis);
 whenNear(document.querySelector('[data-journey]'), () => initJourney(reduced));
 whenIdle(() => initScenes(reduced));

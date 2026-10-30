@@ -6,7 +6,6 @@ import { home } from '../lib/content';
 import { SITE } from '../data/site';
 
 const why = (await home()).why!;
-const tints = ['teal', 'blue', 'amber', 'wine'];
 ---
 
 <ContentPage id="about" crumbs={[{ name: 'About', href: '/about/' }]} pageType="AboutPage" icon="people">
@@ -14,9 +13,9 @@ const tints = ['teal', 'blue', 'amber', 'wine'];
     <h2 class="h2" id="promises">The promises <span class="text-lit">we keep</span></h2>
     <ul class="promises">
       {
-        why.items.map((r, i) => (
+        why.items.map((r) => (
           <li class="card promise" data-reveal>
-            <span class={`icon-tile tint-${tints[i % tints.length]}`}>
+            <span class="icon-tile">
               <Icon name={r.icon ?? 'check'} />
             </span>
             <h3 class="h3 mt-5">{r.title}</h3>

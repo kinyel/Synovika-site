@@ -1,8 +1,9 @@
 ---
 /**
  * The closing call to action (the reference image's "Ready to build around
- * reality?" band): flowing teal and amber waves drawn in SVG, a soft glow,
- * and the two ways to start. Used at the end of every page.
+ * reality?" band): flowing waves drawn in SVG, a soft glow, and the two ways
+ * to start. On a product's page the waves are in its colour, with one teal
+ * thread left through them. Used at the end of every page.
  */
 import Icon from '../ui/Icon.astro';
 import { SITE } from '../../data/site';
@@ -27,15 +28,15 @@ const at = title.indexOf(lit);
   <svg class="cta-waves" viewBox="0 0 1440 520" preserveAspectRatio="none" aria-hidden="true">
     <defs>
       <linearGradient id="wave-teal" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="var(--color-teal-500)" stop-opacity="0"></stop>
-        <stop offset="0.35" stop-color="var(--color-teal-400)" stop-opacity="0.9"></stop>
-        <stop offset="0.7" stop-color="var(--color-teal-300)" stop-opacity="0.55"></stop>
-        <stop offset="1" stop-color="var(--color-teal-500)" stop-opacity="0"></stop>
+        <stop offset="0" stop-color="var(--color-iris)" stop-opacity="0"></stop>
+        <stop offset="0.35" stop-color="var(--color-spark)" stop-opacity="0.9"></stop>
+        <stop offset="0.7" stop-color="var(--color-iris-soft)" stop-opacity="0.55"></stop>
+        <stop offset="1" stop-color="var(--color-iris)" stop-opacity="0"></stop>
       </linearGradient>
-      <linearGradient id="wave-gold" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="var(--color-gold)" stop-opacity="0"></stop>
-        <stop offset="0.6" stop-color="var(--color-gold)" stop-opacity="0.7"></stop>
-        <stop offset="1" stop-color="var(--color-gold-glow)" stop-opacity="0"></stop>
+      <linearGradient id="wave-accent" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="var(--color-teal-400)" stop-opacity="0"></stop>
+        <stop offset="0.6" stop-color="var(--color-teal-400)" stop-opacity="0.7"></stop>
+        <stop offset="1" stop-color="var(--color-teal-300)" stop-opacity="0"></stop>
       </linearGradient>
       <filter id="wave-glow" x="-10%" y="-50%" width="120%" height="200%"><feGaussianBlur stdDeviation="6"></feGaussianBlur></filter>
     </defs>
@@ -53,7 +54,7 @@ const at = title.indexOf(lit);
       ))
     }
     <path class="wave wave-glow" d="M-40 336 C 260 206, 520 390, 760 304 S 1240 184, 1480 282" stroke="url(#wave-teal)" stroke-width="10" fill="none" filter="url(#wave-glow)" opacity="0.6"></path>
-    <path class="wave" d="M-40 360 C 300 260, 600 420, 900 330 S 1300 240, 1480 300" stroke="url(#wave-gold)" stroke-width="1.4" fill="none"></path>
+    <path class="wave" d="M-40 360 C 300 260, 600 420, 900 330 S 1300 240, 1480 300" stroke="url(#wave-accent)" stroke-width="1.4" fill="none"></path>
   </svg>
   <div class="cta-glow" aria-hidden="true"></div>
   <div class="gutter cta-inner">
@@ -113,7 +114,7 @@ const at = title.indexOf(lit);
     width: 70vw;
     height: 40vh;
     translate: -50% -50%;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-teal-500) 12%, transparent), transparent);
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 16%, transparent), transparent);
   }
   .cta-inner {
     display: grid;

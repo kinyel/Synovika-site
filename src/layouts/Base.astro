@@ -32,8 +32,8 @@ interface Props {
   pageType?: 'WebPage' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
   /** The page's name in structured data (defaults to the title without the suffix). */
   name?: string;
-  /** Register of the first section, so the header starts in the right colours. */
-  navTheme?: 'dark' | 'paper' | 'teal';
+  /** The product this page is about: its colour leads the page (D-063). */
+  accent?: 'teal' | 'blue' | 'wine' | 'amber';
   ogType?: 'website' | 'article';
   noindex?: boolean;
   /** The closing "Ready to build around reality?" band; false to leave it out (contact, legal pages). */
@@ -42,7 +42,7 @@ interface Props {
   published?: Date;
   modified?: Date;
 }
-const { title, description, crumbs = [], schema = [], pageType = 'WebPage', name, navTheme = 'dark', ogType = 'website', noindex = false, cta = true, published, modified } = Astro.props;
+const { title, description, crumbs = [], schema = [], pageType = 'WebPage', name, accent, ogType = 'website', noindex = false, cta = true, published, modified } = Astro.props;
 const path = Astro.url.pathname;
 const canonical = absolute(path);
 // Pages without their own card (404, /lab) share the home card.
@@ -91,7 +91,7 @@ const speculation = {
 ---
 
 <!doctype html>
-<html lang="en-NG" data-nav-theme={navTheme}>
+<html lang="en-NG" data-accent={accent}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

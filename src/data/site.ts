@@ -6,6 +6,10 @@
  */
 export const SITE = {
   name: 'Synovika Technologies',
+  /** The company's registered name and number, from its CAC certificate of 29 October 2026 (D-065). */
+  legalName: 'Synovika Technologies Ltd',
+  rc: '9972328',
+  incorporated: '2026-10-29',
   shortName: 'Synovika',
   tagline: 'Built around reality',
   url: (import.meta.env.PUBLIC_SITE_URL || 'https://synovika.com').replace(/\/$/, ''),
@@ -17,8 +21,6 @@ export const SITE = {
   whatsapp: 'https://wa.me/2347062319781',
   /** D-034: Nigeria first, worldwide too. */
   areaServed: { short: 'Nigeria and worldwide', sentence: 'We work with clients across Nigeria and worldwide.' },
-  /** CAC business name number: shown once Hero gives it. */
-  bn: 'TODO(hero): CAC business name (BN) number',
   /** Real profiles only (structured data sameAs and the footer). */
   socials: [] as { label: string; href: string }[],
 } as const;

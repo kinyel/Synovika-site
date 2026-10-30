@@ -40,6 +40,7 @@ const what = d.descriptor.charAt(0).toUpperCase() + d.descriptor.slice(1);
   lead={d.summary}
   eyebrow={`Product · ${STATUS[d.status].chip}`}
   icon={d.icon}
+  accent={d.accent}
   crumbs={[
     { name: 'Products', href: '/products/' },
     { name: d.name, href: path },
@@ -76,7 +77,7 @@ const what = d.descriptor.charAt(0).toUpperCase() + d.descriptor.slice(1);
 
   {
     features.length > 0 && (
-      <section class="section feat" data-theme="dark" aria-labelledby="features-title">
+      <section class="section feat" data-theme="paper" aria-labelledby="features-title">
         <div class="gutter">
           <p class="eyebrow">What it does</p>
           <h2 id="features-title" class="h2 mt-4" data-reveal>
@@ -131,7 +132,7 @@ const what = d.descriptor.charAt(0).toUpperCase() + d.descriptor.slice(1);
     )
   }
 
-  <section class="section who" data-theme="dark" aria-labelledby="who-title">
+  <section class="section who" data-theme="paper" aria-labelledby="who-title">
     <div class="gutter who-grid">
       <div>
         <p class="eyebrow">Who it's for</p>
@@ -145,7 +146,7 @@ const what = d.descriptor.charAt(0).toUpperCase() + d.descriptor.slice(1);
 
   {
     questions.length > 0 && (
-      <section class="section" data-theme="dark" aria-labelledby="pfaq-title">
+      <section class="section" data-theme="paper" aria-labelledby="pfaq-title">
         <div class="gutter faq-wrap">
           <div>
             <p class="eyebrow">Questions</p>
@@ -210,7 +211,9 @@ const what = d.descriptor.charAt(0).toUpperCase() + d.descriptor.slice(1);
     color: var(--color-grey-400);
   }
   .feat {
-    background: radial-gradient(40% 50% at 100% 0%, color-mix(in srgb, var(--color-iris) 12%, transparent), transparent 70%);
+    background:
+      radial-gradient(40% 50% at 100% 0%, color-mix(in srgb, var(--color-iris) 12%, transparent), transparent 70%),
+      var(--color-night);
   }
   .feat-grid {
     display: grid;

@@ -82,7 +82,7 @@ const short = (c: Cap) => c.name.replace(' and ', ' · ');
           caps.map((c) => (
             <li data-reveal>
               <a href={c.href} class="caps-row" data-cap={c.key}>
-                <span class={`icon-tile is-sm ${c.key === 'cap-4' ? 'tint-amber' : ''}`}>
+                <span class="icon-tile is-sm">
                   <Icon name={c.icon} />
                 </span>
                 <span class="caps-text">
@@ -116,7 +116,7 @@ const short = (c: Cap) => c.name.replace(' and ', ' · ');
   .caps {
     background:
       radial-gradient(40% 50% at 90% 10%, color-mix(in srgb, var(--color-iris) 11%, transparent), transparent 70%),
-      radial-gradient(35% 40% at 0% 90%, color-mix(in srgb, var(--color-violet) 7%, transparent), transparent 70%),
+      radial-gradient(35% 40% at 0% 90%, color-mix(in srgb, var(--color-iris) 7%, transparent), transparent 70%),
       var(--color-night);
   }
   .caps-grid {
@@ -151,7 +151,7 @@ const short = (c: Cap) => c.name.replace(' and ', ' · ');
     width: 720px;
     height: 720px;
     border-radius: 50%;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 18%, transparent), color-mix(in srgb, var(--color-violet) 6%, transparent) 55%, transparent);
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 18%, transparent), color-mix(in srgb, var(--color-iris) 6%, transparent) 55%, transparent);
     transform: translateZ(-2px);
   }
   /* ── The model ── */
@@ -176,8 +176,7 @@ const short = (c: Cap) => c.name.replace(' and ', ' · ');
   }
   .caps-base .blk-top {
     background:
-      linear-gradient(to right, color-mix(in srgb, var(--color-iris-soft) 10%, transparent) 1px, transparent 1px) 0 0 / 40px 40px,
-      linear-gradient(to bottom, color-mix(in srgb, var(--color-iris-soft) 10%, transparent) 1px, transparent 1px) 0 0 / 40px 40px,
+      repeating-radial-gradient(120% 60% at 78% 8%, var(--lines) 0 1px, transparent 1px 22px),
       radial-gradient(60% 60% at 50% 50%, color-mix(in srgb, var(--color-iris) 14%, transparent), transparent 75%),
       color-mix(in srgb, var(--color-navy) 70%, var(--color-night));
   }
@@ -209,9 +208,9 @@ const short = (c: Cap) => c.name.replace(' and ', ' · ');
     position: absolute;
     inset: 0;
     box-shadow:
-      inset 0 0 0 1.5px var(--color-gold),
-      inset 0 0 26px color-mix(in srgb, var(--color-gold) 30%, transparent),
-      0 0 30px color-mix(in srgb, var(--color-gold) 30%, transparent);
+      inset 0 0 0 1.5px var(--color-spark),
+      inset 0 0 26px color-mix(in srgb, var(--color-spark) 30%, transparent),
+      0 0 30px color-mix(in srgb, var(--color-spark) 30%, transparent);
     opacity: 0;
     animation: caps-turn 10s ease-in-out infinite;
     animation-delay: calc(var(--i) * 2s);
@@ -237,8 +236,8 @@ const short = (c: Cap) => c.name.replace(' and ', ' · ');
     width: 8px;
     height: 8px;
     border-radius: 2px;
-    background: var(--color-gold-glow);
-    box-shadow: 0 0 12px 3px color-mix(in srgb, var(--color-gold) 80%, transparent);
+    background: var(--color-spark-glow);
+    box-shadow: 0 0 12px 3px color-mix(in srgb, var(--color-spark) 80%, transparent);
     animation: caps-packet 2.6s cubic-bezier(0.6, 0, 0.4, 1) infinite;
     animation-delay: calc(var(--i) * -0.65s);
   }

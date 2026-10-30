@@ -235,7 +235,7 @@ const groupActive = (g: Group) => isActive(g.base) || (g.id === 'company' && (is
 </header>
 
 <style>
-  /* The site is dark throughout, so the nav has one palette: white type, lit teal accents. */
+  /* The dock is dark glass on every section, white or dark: white type, lit teal accents. */
   .nav {
     --n-fg: var(--color-white);
     --n-muted: color-mix(in srgb, var(--color-grey-200) 80%, transparent);
@@ -243,7 +243,7 @@ const groupActive = (g: Group) => isActive(g.base) || (g.id === 'company' && (is
     --n-hover: rgb(255 255 255 / 0.07);
     --n-accent: var(--color-iris-soft);
     --n-tint: color-mix(in srgb, var(--color-iris) 22%, transparent);
-    --n-glass: rgb(3 21 20 / 0.74);
+    --n-glass: rgb(3 21 20 / 0.84);
     --n-solid: rgb(4 24 23);
     --n-ease: var(--ease-expo);
     color: var(--n-fg);
@@ -318,7 +318,7 @@ const groupActive = (g: Group) => isActive(g.base) || (g.id === 'company' && (is
   .nav-progress i {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent, var(--color-iris-soft) 35%, var(--color-gold));
+    background: linear-gradient(90deg, transparent, var(--color-iris-soft) 35%, var(--color-teal-400));
     transform: scaleX(0);
     transform-origin: 0 50%;
   }
@@ -677,7 +677,7 @@ const groupActive = (g: Group) => isActive(g.base) || (g.id === 'company' && (is
     overflow-y: auto;
     background:
       radial-gradient(80% 45% at 90% 0%, color-mix(in srgb, var(--color-iris) 26%, transparent), transparent 70%),
-      radial-gradient(70% 40% at 0% 100%, color-mix(in srgb, var(--color-gold) 12%, transparent), transparent 70%),
+      radial-gradient(70% 40% at 0% 100%, color-mix(in srgb, var(--color-teal-500) 12%, transparent), transparent 70%),
       var(--color-night);
     clip-path: inset(0 0 100% 0);
     transition: clip-path 0.75s var(--n-ease);

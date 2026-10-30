@@ -31,7 +31,7 @@ const prod = await products();
           const cta = ctaOf(p);
           const features = featuresOf(p).filter((f) => f.confirmed).slice(0, 4);
           return (
-            <li class:list={['prow', i % 2 && 'is-flipped']}>
+            <li class:list={['prow', i % 2 && 'is-flipped']} data-accent={p.data.accent}>
               <div class="prow-copy" data-reveal>
                 <p class="flex flex-wrap items-center gap-3">
                   <span class={`icon-tile is-sm tint-${p.data.accent}`}>

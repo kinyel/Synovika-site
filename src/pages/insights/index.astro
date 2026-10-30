@@ -22,7 +22,7 @@ const fmt = (date: Date) => date.toLocaleDateString('en-GB', { day: 'numeric', m
   crumbs={[{ name: 'Insights', href: '/insights/' }]}
   schema={[itemList('/insights/', 'list', 'Synovika insights', posts.map((p) => ({ name: p.data.title, path: `/insights/${p.id}/` })))]}
 >
-  <section class="section" data-theme="dark" aria-label="Articles">
+  <section class="section" data-theme="paper" aria-label="Articles">
     <div class="gutter">
       {
         posts.length === 0 ? (

@@ -72,7 +72,7 @@ const X = [-195, -65, 65, 195];
   }
   .flow-line {
     --draw: clamp(0, calc(var(--p) * 1.6 - 0.4), 1);
-    background: linear-gradient(90deg, var(--color-teal-400), var(--color-gold));
+    background: linear-gradient(90deg, var(--color-teal-400), var(--color-spark));
   }
   .flow-blk {
     --q: clamp(0, calc(var(--p) * 1.8 - var(--i) * 0.2), 1);
@@ -87,9 +87,9 @@ const X = [-195, -65, 65, 195];
     position: absolute;
     inset: 0;
     box-shadow:
-      inset 0 0 0 1.5px var(--color-gold),
-      inset 0 0 22px color-mix(in srgb, var(--color-gold) 28%, transparent),
-      0 0 26px color-mix(in srgb, var(--color-gold) 35%, transparent);
+      inset 0 0 0 1.5px var(--color-spark),
+      inset 0 0 22px color-mix(in srgb, var(--color-spark) 28%, transparent),
+      0 0 26px color-mix(in srgb, var(--color-spark) 35%, transparent);
     opacity: 0;
     animation: flow-lit 6s linear infinite;
     animation-delay: calc(var(--i) * 1.5s - 0.4s);
@@ -110,8 +110,8 @@ const X = [-195, -65, 65, 195];
     animation: flow-packet 6s cubic-bezier(0.55, 0, 0.45, 1) infinite;
   }
   .flow-packet > b {
-    background: var(--color-gold-glow) !important;
-    box-shadow: 0 0 18px 4px color-mix(in srgb, var(--color-gold) 70%, transparent) !important;
+    background: var(--color-spark-glow) !important;
+    box-shadow: 0 0 18px 4px color-mix(in srgb, var(--color-spark) 70%, transparent) !important;
     /* Fade the faces, not the cube: opacity on the cube itself would flatten it. */
     animation: flow-fade 6s linear infinite;
   }

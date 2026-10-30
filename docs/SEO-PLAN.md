@@ -55,11 +55,11 @@ What we found in the results (October 2026):
 - [ ] Run `npm run indexnow` after each deploy.
 - [ ] **Google Business Profile:** create it as a *service-area business* (no public address needed), category "Software company", service area Nigeria. Add the products and services, website, phone, WhatsApp and hours. Add real photos (logo, team, work; no stock photos). Verify it.
 - [ ] **Bing Places** and **Apple Business Connect:** the same details.
-- [ ] Give me the **CAC business name number**, so it shows in the footer. It builds trust with people and search engines.
+- [x] **CAC registration:** Synovika Technologies Ltd, RC 9972328, is in the footer and the structured data (D-065).
 
 ### In the first month
 
-- [ ] **Directory listings with links** (keep the name, phone and website identical everywhere: Synovika Technologies, +234 706 231 9781, hero@synovika.com, https://synovika.com):
+- [ ] **Directory listings with links** (keep the name, phone and website identical everywhere: Synovika Technologies Ltd, +234 706 231 9781, hero@synovika.com, https://synovika.com):
   - software: Clutch, GoodFirms, TechBehemoths, DesignRush;
   - Nigerian: VConnect, ConnectNigeria, BusinessList.ng, Finelib.
 - [ ] **Social profiles:** LinkedIn company page, X, Instagram, Facebook. Send me the links; I'll add them to the structured data (`sameAs`) and the footer.

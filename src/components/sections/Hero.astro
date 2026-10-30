@@ -1,0 +1,985 @@
+---
+/**
+ * 01 · Hero and the product tour: one signal, many forms (D-064).
+ *
+ * A cloud of points in WebGL (src/scripts/signal.ts, src/lib/forms.ts). One
+ * pinned stage, driven by scroll (src/scripts/hero.ts):
+ *   screen one   the headline and the three products, and the Earth with
+ *                Nigeria lit, signals leaving it and an orbit round it, like
+ *                the one in the logo
+ *   products     the same points become each product in turn, in its colour:
+ *                a van on its route with a geofence and a pin (Selvion), a
+ *                gate with the homes behind it (Estate Entrance Security
+ *                System), a website with its admin panel and a phone
+ *                (Websites with an Admin Panel). Each product's note carries
+ *                the words; a glass panel plays its moment, with demo data
+ *   closing      the points wind into a DNA helix, which becomes the spine of
+ *                the services staircase and stays there
+ * The lines behind it all are fine, flat rings, as on primetrack.rw (Hero's
+ * choice). Every scene is decorative (aria-hidden). Without JavaScript or
+ * WebGL, or with reduced motion, a still picture of the Earth stands beside
+ * the headline and the products are a list.
+ */
+import { Image } from 'astro:assets';
+import Icon from '../ui/Icon.astro';
+import Lit from '../ui/Lit.astro';
+import earthStill from '../../assets/hero-earth.webp';
+import { SITE } from '../../data/site';
+import { ctaOf, featuresOf, home, products } from '../../lib/content';
+
+const h = (await home()).hero!;
+const prod = await products();
+const total = String(prod.length).padStart(2, '0');
+const tour = (await home()).products!;
+/** Which moment each product plays. */
+const SCENE: Record<string, string> = { selvion: 'selvion', 'estate-entrance-security': 'estate', 'websites-with-admin-panel': 'websites' };
+const scenes = prod.map((p) => SCENE[p.id] ?? '').join(' ');
+---
+
+<section id="hero" class="tour" data-theme="dark" data-tour data-scenes={scenes} aria-labelledby="hero-title" style={`--n:${prod.length};--len-products:${prod.length * 110}svh`}>
+  <a href="#services" class="skip-tour btn btn-outline">Skip the product tour</a>
+  <span id="products-tour" class="tour-mark" aria-hidden="true"></span>
+  <div class="stage" data-stage>
+    <div class="stage-bg" aria-hidden="true">
+      <span class="bg-light" data-stage-light></span>
+      <span class="bg-rings"></span>
+    </div>
+    <canvas class="points" data-signal aria-hidden="true"></canvas>
+
+    <!-- Screen one -->
+    <div class="intro gutter" data-intro>
+      <p class="eyebrow hero-kicker" data-hero-kicker>{h.eyebrow}</p>
+      <h1 id="hero-title" class="hero-title" data-hero-title>
+        {
+          (h.lines ?? []).map((l, i) => (
+            <span class="line-mask" data-line style={`--l:${i}`}>
+              <span class="block">
+                <Lit text={l.text} lit={l.lit} />
+              </span>
+            </span>
+          ))
+        }
+      </h1>
+      <p class="hero-lead" data-hero-intro>{h.lead}</p>
+      <div class="hero-ctas" data-hero-ctas>
+        <a href="#products-tour" class="btn btn-primary hero-go" data-magnetic>{h.ctas[0]!.label} <Icon name="arrow" /></a>
+        <a href={h.ctas[1]!.href} class="hero-link">{h.ctas[1]!.label}</a>
+        <a href={SITE.whatsapp} class="hero-link" rel="noopener">WhatsApp us</a>
+      </div>
+      <ul class="hero-prods" aria-label="Our products">
+        {
+          prod.map((p) => (
+            <li data-accent={p.data.accent}>
+              <a href={`/products/${p.id}/`}>
+                <b>{p.data.name}</b>
+                <span>{p.data.tag}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <!-- The Earth as a still picture: no JavaScript, no WebGL, or reduced motion -->
+    <div class="earth" aria-hidden="true">
+      <Image src={earthStill} alt="" widths={[640, 1000]} sizes="(min-width: 1024px) 50vw, 100vw" loading="lazy" fetchpriority="low" />
+    </div>
+    <span class="earth-label" data-globe-label aria-hidden="true"><i></i>{h.body}</span>
+
+    <!-- Each product's moment, in a glass panel beside its form -->
+    <div class="holo-layer" aria-hidden="true">
+      {
+        prod.map((p, i) => {
+          const scene = SCENE[p.id];
+          if (!scene) return null;
+          return (
+            <div class:list={['holo', `holo-${scene}`]} data-holo={i} data-accent={p.data.accent}>
+              <div class="holo-in">
+                {scene === 'selvion' && (
+                  <>
+                    <p class="holo-top">
+                      <span class="holo-dot" />
+                      Selvion
+                      <span class="holo-tag">Demo data</span>
+                    </p>
+                    <p class="holo-big">Unit 07 left Depot A</p>
+                    <p class="holo-meta">07:18 · Alert sent to your phone</p>
+                    <span class="holo-bar">
+                      <i />
+                    </span>
+                  </>
+                )}
+                {scene === 'estate' && (
+                  <>
+                    <p class="holo-top">
+                      <span class="holo-dot" />
+                      Gate 1 · Visitor code
+                      <span class="holo-tag">Demo data</span>
+                    </p>
+                    <p class="holo-code">
+                      {'482913'.split('').map((d) => (
+                        <b>{d}</b>
+                      ))}
+                    </p>
+                    <p class="holo-ok">Verified · House 12</p>
+                  </>
+                )}
+                {scene === 'websites' && (
+                  <>
+                    <p class="holo-top">
+                      <span class="holo-dot" />
+                      Example Bakery
+                      <span class="holo-tag">Example site</span>
+                    </p>
+                    <p class="holo-label">Open today</p>
+                    <p class="holo-hours">
+                      <span class="old">8:00 to 18:00</span>
+                      <span class="new">7:00 to 19:00</span>
+                    </p>
+                    <p class="holo-meta">Changed by your team, just now</p>
+                  </>
+                )}
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+
+    <!-- The products: the words for what the points show -->
+    <div class="tour-notes" data-notes>
+      <header class="tour-head">
+        <p class="eyebrow">{tour.eyebrow}</p>
+        <h2 class="tour-title"><Lit text={tour.heading} lit={tour.lit} /></h2>
+        <div class="tour-progress" aria-hidden="true" data-progress-steps>{prod.map((p) => <span data-accent={p.data.accent}><i /></span>)}</div>
+      </header>
+      <ol class="tour-list">
+        {
+          prod.map((p, i) => {
+            const cta = ctaOf(p);
+            const features = featuresOf(p)
+              .filter((f) => f.confirmed)
+              .slice(0, 4);
+            return (
+              <li class="tour-note" data-note={i} data-accent={p.data.accent}>
+                <p class="note-level">
+                  <span class="note-num">
+                    {String(i + 1).padStart(2, '0')}
+                    <span class="note-of"> / {total}</span>
+                  </span>
+                  <span class="note-status" data-status={p.data.status}>
+                    {cta.chip}
+                  </span>
+                </p>
+                <h3 class="note-title">{p.data.name}</h3>
+                <p class="note-what">{p.data.descriptor.charAt(0).toUpperCase() + p.data.descriptor.slice(1)}</p>
+                <p class="note-body">{p.data.summary}</p>
+                {features.length > 0 && (
+                  <ul class="note-features">
+                    {features.map((f) => (
+                      <li>{f.title}</li>
+                    ))}
+                  </ul>
+                )}
+                <div class="note-ctas">
+                  <a href={cta.href} class="btn btn-primary">
+                    {cta.label}
+                    <span class="sr-only">: {p.data.name}</span>
+                  </a>
+                  <a href={`/products/${p.id}/`} class="link-arrow">
+                    Learn more<span class="sr-only"> about {p.data.name}</span> <Icon name="arrow" />
+                  </a>
+                </div>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── The stage ──────────────────────────────────────────────────────── */
+  .tour {
+    /* How much scrolling each part takes (hero.ts reads these). */
+    --len-intro: 110svh;
+    /* Set on the element from the number of products (hero.ts reads it, so it must be a plain length). */
+    --len-products: 330svh;
+    --len-close: 105svh;
+    --len: calc(var(--len-intro) + var(--len-products) + var(--len-close));
+    position: relative;
+    background: var(--color-night);
+    color: var(--color-white);
+  }
+  /* For keyboard users: straight past the tour (visible on focus). */
+  .skip-tour {
+    position: absolute;
+    left: 1rem;
+    top: 6rem;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .skip-tour:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .tour-mark {
+    position: absolute;
+    top: var(--len-intro);
+    left: 0;
+  }
+  .stage {
+    position: relative;
+  }
+  .stage-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  /* The night, lit from the top right. The light takes the colour of the product in view (D-063). */
+  .stage-bg {
+    --scene: var(--color-teal-600);
+    transition: --scene 0.9s ease;
+  }
+  :global(.tour[data-scene='selvion']) .stage-bg {
+    --scene: var(--color-gold);
+  }
+  :global(.tour[data-scene='estate']) .stage-bg {
+    --scene: #c0475a;
+  }
+  :global(.tour[data-scene='websites']) .stage-bg {
+    --scene: var(--color-blue-600);
+  }
+  .bg-light {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(68% 85% at 12% 100%, color-mix(in srgb, var(--scene) 22%, transparent) 0%, transparent 60%),
+      var(--color-night);
+  }
+  /* Very flat, fine rings spreading from the top right (primetrack.rw's lines, Hero's choice). */
+  .bg-rings {
+    position: absolute;
+    inset: 0;
+    background: repeating-radial-gradient(120vw 18.4vw at 78% 8%, var(--lines) 0 1px, transparent 1px 34px);
+  }
+  .points {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* ── Screen one ─────────────────────────────────────────────────────── */
+  .intro {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    min-height: 100svh;
+    max-width: 52rem;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 7rem 4rem;
+  }
+  /*
+   * Each line of the headline stays one line, and the type is sized so the
+   * longer line ("Engineered for impact.", 9.4em in Urbanist) always fits.
+   * So the line count can't change when the web font replaces the fallback:
+   * no layout shift.
+   */
+  .hero-kicker {
+    max-width: 100%;
+  }
+  .hero-title {
+    margin-top: 1.5rem;
+    font-size: clamp(2.4rem, 4.85vw, 4.9rem);
+    font-weight: 600;
+    line-height: 1.03;
+    letter-spacing: -0.04em;
+  }
+  /* The lit words stay clean at this size: colour, with only a breath of glow. */
+  .hero-title :global(.text-lit) {
+    color: var(--color-teal-300);
+    text-shadow: 0 0 44px color-mix(in srgb, var(--color-teal-400) 34%, transparent);
+  }
+  .hero-title :global(.line-mask > span) {
+    white-space: nowrap;
+  }
+  @media (max-width: 1023px) {
+    .hero-title {
+      font-size: min(3.4rem, calc((100vw - 2 * max(1rem, min(5vw, 4.5rem))) / 9.6));
+    }
+  }
+  .hero-lead {
+    margin-top: 1.5rem;
+    max-width: 36rem;
+    font-size: clamp(1.08rem, 1.42vw, 1.3rem);
+    font-weight: 400;
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    text-wrap: pretty;
+    color: var(--color-grey-200);
+  }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.75rem;
+    margin-top: 2.25rem;
+  }
+  .hero-go {
+    min-height: 3.4rem;
+    padding-inline: 1.7rem;
+    font-size: 1.06rem;
+  }
+  /* Plain links beside the one button: an underline that slides in. */
+  .hero-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    font-weight: 600;
+    color: var(--color-white);
+    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 0.55rem) / 100% 1px no-repeat;
+    transition:
+      background-size 0.5s var(--ease-expo),
+      color 0.3s;
+  }
+  .hero-link:hover {
+    color: var(--color-teal-300);
+    background-size: 0% 1px;
+    background-position: 100% calc(100% - 0.55rem);
+  }
+  /* The three products: no boxes, just a line in each one's colour, one click from screen one. */
+  .hero-prods {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    max-width: 41rem;
+    margin-top: clamp(2.5rem, 6vh, 3.75rem);
+  }
+  .hero-prods a {
+    position: relative;
+    display: block;
+    height: 100%;
+    padding-top: 0.85rem;
+  }
+  .hero-prods a::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--color-iris-soft), color-mix(in srgb, var(--color-iris) 22%, transparent));
+    transform-origin: left;
+    transition: transform 0.6s var(--ease-expo);
+  }
+  .hero-prods a:hover::before {
+    transform: scaleX(1.06);
+  }
+  .hero-prods b {
+    display: block;
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-white);
+    transition: color 0.3s;
+  }
+  .hero-prods a:hover b {
+    color: var(--color-iris-soft);
+  }
+  .hero-prods span {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.86rem;
+    line-height: 1.3;
+    color: var(--color-grey-400);
+  }
+
+  /*
+   * ── The entrance (raleston-web's, in CSS) ────────────────────────────
+   * It starts with the first paint, before any script. Desktop: the lines
+   * rise out of their masks as their tracking settles. Phones: the headline
+   * and the paragraph are shown as they paint (they're the largest things on
+   * the first screen), and only the smaller pieces fade up. "backwards" fill,
+   * so nothing holds a transform afterwards (the magnetic buttons need it).
+   */
+  @keyframes hero-rise {
+    from {
+      transform: translateY(108%) rotate(3deg);
+      letter-spacing: 0.01em;
+    }
+  }
+  @keyframes hero-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(var(--from, 16px));
+    }
+  }
+  @keyframes hero-up {
+    from {
+      transform: translateY(18px);
+    }
+  }
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  :global(html.js:not(.reduced-motion)) .hero-kicker {
+    animation: hero-fade-up 1s var(--ease-expo) 0.15s backwards;
+    --from: 14px;
+  }
+  :global(html.js:not(.reduced-motion)) .hero-lead {
+    animation: hero-up 1.1s var(--ease-expo) 0.45s backwards;
+  }
+  :global(html.js:not(.reduced-motion)) .hero-ctas > :global(*) {
+    animation: hero-fade-up 1s var(--ease-expo) 0.6s backwards;
+    --from: 18px;
+  }
+  :global(html.js:not(.reduced-motion)) .hero-ctas > :global(*:nth-child(2)) {
+    animation-delay: 0.68s;
+  }
+  :global(html.js:not(.reduced-motion)) .hero-prods > li {
+    animation: hero-fade-up 1s var(--ease-expo) 0.8s backwards;
+  }
+  :global(html.js:not(.reduced-motion)) .hero-prods > li:nth-child(2) {
+    animation-delay: 0.88s;
+  }
+  :global(html.js:not(.reduced-motion)) .hero-prods > li:nth-child(3) {
+    animation-delay: 0.96s;
+  }
+  @media (min-width: 1024px) {
+    :global(html.js:not(.reduced-motion)) .hero-title :global(.line-mask) {
+      overflow: visible clip;
+    }
+    :global(html.js:not(.reduced-motion)) .hero-title :global(.line-mask > span) {
+      animation: hero-rise 1.4s var(--ease-expo) calc(var(--l, 0) * 0.11s) backwards;
+    }
+    :global(html.js:not(.reduced-motion)) .hero-lead {
+      animation-name: hero-fade-up;
+      --from: 18px;
+    }
+  }
+  /*
+   * The still Earth is the fallback. With the engine running it stays hidden;
+   * if the engine never comes, it shows after a few seconds.
+   */
+  :global(html.js:not(.reduced-motion)) .tour:not(.is-ready) .earth {
+    opacity: 0;
+    animation: hero-late 0.8s ease 4s forwards;
+  }
+  :global(html.js:not(.reduced-motion)) .tour.is-ready:not(.no-gl) .earth {
+    display: none;
+  }
+  @keyframes hero-late {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ── The Earth, still ───────────────────────────────────────────────── */
+  .earth {
+    position: relative;
+    overflow: hidden;
+    pointer-events: none;
+    mix-blend-mode: screen;
+  }
+  .earth :global(img) {
+    width: 100%;
+    height: auto;
+  }
+  /* The label on Nigeria: hero.ts keeps it there. */
+  .earth-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    translate: -50% -100%;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-white);
+    text-shadow: 0 0 12px var(--color-night), 0 0 5px var(--color-night), 0 0 2px var(--color-night);
+    pointer-events: none;
+    will-change: transform;
+  }
+  .earth-label i {
+    order: 1;
+    width: 1px;
+    height: 2rem;
+    background: linear-gradient(180deg, var(--color-white), transparent);
+  }
+  :global(html.js:not(.reduced-motion)) .tour.is-ready:not(.no-gl) .earth-label {
+    display: inline-flex;
+  }
+
+  /* ── Each product's moment: a floating glass panel ──────────────────── */
+  .holo-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .holo {
+    position: absolute;
+    right: clamp(1.5rem, 5vw, 5rem);
+    top: 13svh;
+    display: none;
+    width: 19rem;
+  }
+  @media (max-width: 1023px) {
+    .holo {
+      left: 1rem;
+      right: 1rem;
+      top: 5.4rem;
+      width: auto;
+    }
+  }
+  /* No panel, just the words, floating beside the form. A soft pool of night keeps them readable over the points. */
+  .holo-in {
+    position: relative;
+    display: grid;
+    gap: 0.4rem;
+    line-height: 1.3;
+    color: var(--color-white);
+    text-shadow: 0 0 14px var(--color-night), 0 0 5px var(--color-night);
+    opacity: 0;
+    translate: 0 0.7rem;
+    transition:
+      opacity 0.4s,
+      translate 0.7s var(--ease-expo);
+  }
+  .holo-in::before {
+    content: '';
+    position: absolute;
+    inset: -2.5rem -3rem;
+    z-index: -1;
+    background: radial-gradient(closest-side, rgb(1 7 6 / 0.82), rgb(1 7 6 / 0.5) 62%, transparent);
+    pointer-events: none;
+  }
+  .holo-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+  .holo-tag {
+    color: var(--color-grey-200);
+  }
+  .holo-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-iris-soft);
+    box-shadow: 0 0 10px var(--color-iris-soft);
+  }
+  .holo-big {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .holo-meta,
+  .holo-label {
+    font-size: 0.86rem;
+    color: var(--color-grey-200);
+  }
+  .holo-bar {
+    position: relative;
+    height: 2px;
+    margin-top: 0.3rem;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgb(255 255 255 / 0.12);
+  }
+  .holo-bar > i {
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, var(--color-iris), var(--color-iris-soft));
+  }
+  .holo-code {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .holo-code b {
+    font-family: var(--font-mono);
+    font-size: 1.7rem;
+    font-weight: 500;
+    line-height: 1.1;
+  }
+  .holo-ok {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+    opacity: 0;
+    transition: opacity 0.4s 1.1s;
+  }
+  .holo-hours {
+    position: relative;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .holo-hours .new {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--color-iris-soft);
+    clip-path: inset(0 100% 0 0);
+  }
+
+  /* ── Live: each product's moment ────────────────────────────────────── */
+  :global(html.js:not(.reduced-motion)) .holo {
+    display: block;
+  }
+  :global(html.js:not(.reduced-motion)) .holo.is-on .holo-in {
+    opacity: 1;
+    translate: 0 0;
+    transition-delay: 0.35s;
+  }
+  /* Off screen, nothing runs. */
+  :global(.tour.is-paused) :global(*) {
+    animation-play-state: paused !important;
+  }
+  /* Selvion: the alert goes out and its bar fills. */
+  :global(html.js:not(.reduced-motion) .tour[data-scene='selvion']) .holo-bar > i {
+    transform: none;
+    transition: transform 1.6s var(--ease-expo) 0.8s;
+  }
+  /* Estate: the code checks out. */
+  :global(html.js:not(.reduced-motion) .tour[data-scene='estate']) .holo-ok {
+    opacity: 1;
+  }
+  /* Websites: the bakery's hours change on its website. */
+  .holo-hours .old {
+    transition: opacity 0.3s;
+  }
+  :global(html.js:not(.reduced-motion) .tour[data-scene='websites']) .holo-hours .old {
+    opacity: 0;
+    transition-delay: 1.2s;
+  }
+  :global(html.js:not(.reduced-motion) .tour[data-scene='websites']) .holo-hours .new {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.9s steps(13) 1.3s;
+  }
+
+  /* ── The product notes (static: three columns of words under a line in each one's colour) ── */
+  .tour-notes {
+    position: relative;
+    z-index: 4;
+    padding: 3rem max(1rem, min(5vw, 4.5rem)) 6rem;
+  }
+  .tour-title {
+    margin-top: 1rem;
+    max-width: 34rem;
+    font-size: clamp(1.7rem, 2.6vw, 2.6rem);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+  .tour-list {
+    display: grid;
+    gap: 2.5rem 2rem;
+    margin-top: 2.5rem;
+  }
+  @media (min-width: 900px) {
+    .tour-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .tour-note {
+    display: grid;
+    align-content: start;
+    gap: 0.7rem;
+    border-top: 2px solid var(--color-iris-soft);
+    padding-top: 1.25rem;
+  }
+  .note-level {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .note-num {
+    color: var(--color-iris-soft);
+  }
+  .note-of,
+  .note-status {
+    color: var(--color-grey-400);
+  }
+  .note-title {
+    font-size: clamp(1.9rem, 3.7vw, 3.5rem);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .note-what {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-iris-soft);
+  }
+  .note-body {
+    max-width: 30rem;
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    line-height: 1.55;
+    text-wrap: pretty;
+    color: var(--color-grey-200);
+  }
+  /* The features, as one quiet run of words. */
+  .note-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 1.1rem;
+    max-width: 30rem;
+    font-size: 0.95rem;
+    color: var(--color-grey-200);
+  }
+  .note-features li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .note-features li::before {
+    content: '';
+    width: 0.32rem;
+    height: 0.32rem;
+    border-radius: 50%;
+    background: var(--color-iris-soft);
+  }
+  .note-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.4rem;
+    margin-top: 0.9rem;
+  }
+  .tour-progress {
+    display: none;
+    gap: 0.35rem;
+    max-width: 16rem;
+    margin-top: 1rem;
+  }
+  .tour-progress > span {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--color-white) 12%, transparent);
+  }
+  .tour-progress i {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transform-origin: left;
+    transform: scaleX(var(--f, 0));
+    background: linear-gradient(90deg, var(--color-iris), var(--color-iris-soft));
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-iris) 80%, transparent);
+  }
+  /* Desktop static: headline left, the Earth right. */
+  @media (min-width: 1024px) {
+    .stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+    }
+    .intro {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .earth {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .tour-notes {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /*
+   * ── Live: one pinned stage, driven by scroll ─────────────────────────
+   * Everything above is the static version. From here on, the scripted one.
+   */
+  :global(html.js:not(.reduced-motion)) .tour {
+    height: calc(100svh + var(--len));
+  }
+  :global(html.js:not(.reduced-motion)) .stage {
+    position: sticky;
+    top: 0;
+    display: block;
+    height: 100svh;
+    overflow: hidden;
+  }
+  :global(html.js:not(.reduced-motion)) .intro {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: min(50rem, 54vw);
+  }
+  :global(html.js:not(.reduced-motion)) .earth {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: min(52vw, 100svh);
+    translate: 0 -50%;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-notes {
+    position: absolute;
+    left: var(--ov-left, 4vw);
+    top: var(--ov-top, 12vh);
+    display: flex;
+    width: var(--ov-width, 30vw);
+    height: var(--ov-height, 70vh);
+    flex-direction: column;
+    padding: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-notes.is-on {
+    pointer-events: auto;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-head {
+    position: relative;
+    z-index: 2;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-title {
+    font-size: clamp(1.15rem, 1.6vw, 1.6rem);
+  }
+  :global(html.js:not(.reduced-motion)) .tour-progress {
+    display: flex;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-list {
+    position: relative;
+    display: block;
+    flex: 1;
+    margin-top: 1.2rem;
+  }
+  /* No card: the words stand on the night. The points clear out of their way (hero.ts). */
+  :global(html.js:not(.reduced-motion)) .tour-note {
+    position: absolute;
+    inset: 0 0 auto 0;
+    border-top: 0;
+    padding-top: 0;
+    visibility: hidden;
+    transition: visibility 0s linear 0.4s;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-note > * {
+    opacity: 0;
+    transform: translateY(1.1rem);
+    transition:
+      opacity 0.35s ease,
+      transform 0.4s ease;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-note.is-active {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  /* The lines of a note rise in one after another. */
+  :global(html.js:not(.reduced-motion)) .tour-note.is-active > * {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 0.7s var(--ease-expo),
+      transform 0.9s var(--ease-expo);
+  }
+  :global(html.js:not(.reduced-motion)) .tour-note.is-active > :nth-child(2) {
+    transition-delay: 0.06s;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-note.is-active > :nth-child(3) {
+    transition-delay: 0.12s;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-note.is-active > :nth-child(4) {
+    transition-delay: 0.18s;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-note.is-active > :nth-child(5) {
+    transition-delay: 0.24s;
+  }
+  :global(html.js:not(.reduced-motion)) .tour-note.is-active > :nth-child(6) {
+    transition-delay: 0.3s;
+  }
+  /* Phones and tablets: the Earth rises from the foot of the screen; each form fills the top half, its note below. */
+  @media (max-width: 1023px) {
+    .intro {
+      padding-block: calc(max(0.85rem, env(safe-area-inset-top)) + 5.5rem) 2rem;
+    }
+    .hero-kicker {
+      gap: 0.5rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+    }
+    .hero-go {
+      flex: 1 1 100%;
+    }
+    .hero-ctas {
+      gap: 0.25rem 1.5rem;
+      margin-top: 1.6rem;
+    }
+    .bg-rings {
+      background: repeating-radial-gradient(120vw 58vw at 78% 8%, var(--lines) 0 1px, transparent 1px 34px);
+    }
+    .hero-prods {
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .hero-prods a {
+      padding-top: 0.55rem;
+    }
+    .hero-prods b {
+      display: none;
+    }
+    .hero-prods span {
+      margin-top: 0;
+      font-size: 0.78rem;
+      color: var(--color-white);
+    }
+    :global(html.js:not(.reduced-motion)) .intro {
+      width: 100%;
+      justify-content: flex-start;
+    }
+    :global(html.js:not(.reduced-motion)) .tour-head {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .tour-list {
+      margin-top: 0;
+    }
+    :global(html.js:not(.reduced-motion)) .tour-note {
+      inset: 0 0 auto 0;
+      gap: 0.4rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-title {
+      font-size: 2rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-body {
+      font-size: 0.95rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-features {
+      display: none;
+    }
+  }
+</style>

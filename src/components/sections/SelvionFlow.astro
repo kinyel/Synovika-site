@@ -13,7 +13,7 @@ import { home } from '../../lib/content';
 const head = (await home())['selvion-flow']!;
 ---
 
-<section id="inside-selvion" class="section sf" data-theme="dark" aria-labelledby="sf-title">
+<section id="inside-selvion" class="section sf" data-theme="dark" data-accent="amber" aria-labelledby="sf-title">
   <div class="gutter">
     <div class="card sf-card">
       <div>
@@ -55,7 +55,7 @@ const head = (await home())['selvion-flow']!;
     padding: clamp(1.6rem, 4vw, 3rem);
     background:
       radial-gradient(60% 80% at 100% 50%, color-mix(in srgb, var(--color-iris) 11%, transparent), transparent 70%),
-      radial-gradient(40% 50% at 0% 100%, color-mix(in srgb, var(--color-gold) 4%, transparent), transparent 70%),
+      radial-gradient(40% 50% at 0% 100%, color-mix(in srgb, var(--color-spark) 4%, transparent), transparent 70%),
       color-mix(in srgb, var(--color-navy) 60%, var(--color-night));
   }
   @media (min-width: 1024px) {

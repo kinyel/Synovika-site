@@ -2,7 +2,12 @@
 
 ## Now
 
-**The full site is built (11 October 2026), on raleston-web's engine and laid out like Hero's reference image (D-047).** Hero's next round is in too: the night city replaces the laptop (D-056), the site is darker (D-055), and the services spiral follows primetrack.rw (D-057). Every page exists, every QA script passes, and the work is waiting for Hero's review. The questions below are the ones that change what visitors are told.
+**Ready to deploy (30 October 2026).** The site is built on raleston-web's engine and laid out like Hero's reference image (D-047). Latest round: white sections (D-062), a colour for each product with teal as the brand (D-063), a new hero where one cloud of points becomes the Earth, then each product, then a DNA helix that stays on as the spine of the services staircase (D-064), and the registered company details (D-065). Every QA script passes.
+
+**Measured on the final build:**
+- Lighthouse: mobile 99 on the home page (LCP 1.73 s, TBT 4 ms) and 100 on the inner pages tested; desktop 100 throughout. Accessibility, Best Practices and SEO 100.
+- Home: initial JavaScript 1.6 KB, HTML 46.5 KB, 2,065 DOM nodes.
+- Scrolling, p95: 16.7 ms on desktop; on a phone-sized view at 4x CPU throttle, 16.7 ms through the hero and the services, 33.3 ms through How we work (budget 34, met for the first time). The throttle slows the CPU only: the graphics chip was this Mac's, so check the hero on a real low-end Android phone after launch.
 
 ## Search (D-061)
 
@@ -85,7 +90,6 @@ The site side of search is done: one page per topic, search-style titles and que
 Until each one arrives, the site shows a `TODO(hero)` placeholder (dev and draft builds only) and the production guard fails on it. Part A of the brief, which has Hero's own list, has not been shared; this list is built from Part B and Hero's answers.
 
 **Facts**
-- CAC business name (BN) number, once registration completes.
 - Social profiles to list in `sameAs` (only real ones).
 - A privacy contact for the privacy notice (brief section 15). It could be `hero@synovika.com`; Hero to confirm.
 - A public address, only if you want one shown (it switches the structured data to `ProfessionalService`).

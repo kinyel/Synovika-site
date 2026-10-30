@@ -23,6 +23,7 @@ export async function llmsIndex() {
     `Synovika (${SITE.name}) is a software company in Nigeria with the tagline "${SITE.tagline}". It does two kinds of work: it makes its own software products, and it builds, fixes, tests and maintains software for other businesses. All of its products are in development; people can join a waitlist for each one.`,
     '',
     `- Website: ${url('/')}`,
+    `- Registered name: ${SITE.legalName}, RC ${SITE.rc}, Nigeria`,
     `- Email: ${SITE.email}`,
     `- Phone and WhatsApp: ${SITE.phone.schema}`,
     `- Serves: ${SITE.areaServed.short}`,

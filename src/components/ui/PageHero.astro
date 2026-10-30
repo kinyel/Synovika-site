@@ -61,24 +61,14 @@ const { crumbs, eyebrow, title, lit, lead, icon = 'build', compact = false } = A
     color: var(--color-white);
     background: var(--color-night);
   }
+  /* The same lines as the home page's hero: fine, flat rings from the top right, and a soft glow at the bottom left. */
   .page-hero-glow {
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(40% 60% at 85% 10%, color-mix(in srgb, var(--color-iris) 19%, transparent), transparent 70%),
-      radial-gradient(30% 40% at 78% 70%, color-mix(in srgb, var(--color-gold) 5%, transparent), transparent 70%),
-      radial-gradient(40% 50% at 0% 58%, color-mix(in srgb, var(--color-teal-500) 7%, transparent), transparent 70%);
+      radial-gradient(68% 85% at 12% 100%, color-mix(in srgb, var(--color-iris) 18%, transparent) 0%, transparent 60%),
+      repeating-radial-gradient(120% 60% at 78% 8%, var(--lines) 0 1px, transparent 1px 34px);
     pointer-events: none;
-  }
-  .page-hero-glow::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(to right, color-mix(in srgb, var(--color-white) 3.5%, transparent) 1px, transparent 1px),
-      linear-gradient(to bottom, color-mix(in srgb, var(--color-white) 3.5%, transparent) 1px, transparent 1px);
-    background-size: 72px 72px;
-    mask-image: radial-gradient(60% 80% at 75% 20%, #000 20%, transparent 75%);
   }
   .crumbs {
     display: flex;

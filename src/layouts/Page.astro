@@ -29,6 +29,8 @@ interface Props {
   modified?: Date;
   /** A smaller title, for long ones (articles). */
   compact?: boolean;
+  /** The product this page is about (Base). */
+  accent?: 'teal' | 'blue' | 'wine' | 'amber';
 }
 const { heading, lit, lead, eyebrow, crumbs = [], icon, compact, ...rest } = Astro.props;
 ---

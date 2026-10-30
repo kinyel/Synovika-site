@@ -16,10 +16,9 @@ const why = h.why!;
 const facts = h.facts!;
 // 3 × 3 × 3 blocks. --d is how far each sits from the centre: corners assemble last.
 const cubes = [-1, 0, 1].flatMap((gz) => [-1, 0, 1].flatMap((gy) => [-1, 0, 1].map((gx) => ({ gx, gy, gz, d: Math.abs(gx) + Math.abs(gy) + Math.abs(gz) }))));
-const tints = ['teal', 'blue', 'amber', 'wine'];
 ---
 
-<section id="why" class="section why" data-theme="dark" aria-labelledby="why-title">
+<section id="why" class="section why" data-theme="paper" aria-labelledby="why-title">
   <div class="why-kinetic" aria-hidden="true">
     <p class="kin kin-a" data-kinetic-a>BUILT AROUND REALITY · BUILT AROUND REALITY ·</p>
     <p class="kin kin-b" data-kinetic-b>REAL PROBLEMS · PRACTICAL SOFTWARE · REAL PROBLEMS ·</p>
@@ -52,9 +51,9 @@ const tints = ['teal', 'blue', 'amber', 'wine'];
 
   <ul class="gutter relative why-cards">
     {
-      why.items.map((r, i) => (
+      why.items.map((r) => (
         <li class="card card-hover why-card" data-reveal>
-          <span class={`icon-tile tint-${tints[i % tints.length]}`}>
+          <span class="icon-tile">
             <Icon name={r.icon ?? 'check'} />
           </span>
           <h3 class="h3 mt-5">{r.title}</h3>
@@ -88,7 +87,7 @@ const tints = ['teal', 'blue', 'amber', 'wine'];
     overflow: hidden;
     background:
       radial-gradient(45% 45% at 75% 30%, color-mix(in srgb, var(--color-iris) 12%, transparent), transparent 70%),
-      radial-gradient(30% 30% at 10% 90%, color-mix(in srgb, var(--color-gold) 4%, transparent), transparent 70%),
+      radial-gradient(30% 30% at 10% 90%, color-mix(in srgb, var(--color-spark) 4%, transparent), transparent 70%),
       var(--color-night);
   }
   .why-kinetic {
@@ -155,7 +154,7 @@ const tints = ['teal', 'blue', 'amber', 'wine'];
     width: 600px;
     height: 600px;
     border-radius: 50%;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 17%, transparent), color-mix(in srgb, var(--color-gold) 4%, transparent) 60%, transparent);
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--color-iris) 17%, transparent), color-mix(in srgb, var(--color-spark) 4%, transparent) 60%, transparent);
     transform: translateZ(-112px);
   }
   /* Each block flies in from an exploded position; the farther from the centre, the later. */
@@ -188,8 +187,8 @@ const tints = ['teal', 'blue', 'amber', 'wine'];
     height: 230px;
     transform-origin: 50% 0;
     transform: translateZ(108px) rotateX(90deg) scaleY(clamp(0, calc(var(--p) * 3 - 2), 1));
-    background: linear-gradient(180deg, var(--color-gold), var(--color-gold-glow) 30%, transparent);
-    box-shadow: 0 0 14px 2px color-mix(in srgb, var(--color-gold) 70%, transparent);
+    background: linear-gradient(180deg, var(--color-spark), var(--color-spark-glow) 30%, transparent);
+    box-shadow: 0 0 14px 2px color-mix(in srgb, var(--color-spark) 70%, transparent);
   }
 
   /* ── The four promises ── */
@@ -219,7 +218,7 @@ const tints = ['teal', 'blue', 'amber', 'wine'];
     padding: clamp(1.25rem, 3vw, 2rem);
     background:
       radial-gradient(60% 120% at 0% 0%, color-mix(in srgb, var(--color-iris) 10%, transparent), transparent 70%),
-      radial-gradient(40% 120% at 100% 100%, color-mix(in srgb, var(--color-gold) 5%, transparent), transparent 70%),
+      radial-gradient(40% 120% at 100% 100%, color-mix(in srgb, var(--color-spark) 5%, transparent), transparent 70%),
       color-mix(in srgb, var(--color-white) 2.5%, var(--color-night));
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 18%, transparent);
   }
@@ -250,12 +249,6 @@ const tints = ['teal', 'blue', 'amber', 'wine'];
     letter-spacing: -0.03em;
     font-variant-numeric: lining-nums;
     color: var(--color-white);
-  }
-  .fact:nth-child(4) dd {
-    background: linear-gradient(90deg, var(--color-iris-soft), var(--color-gold-glow));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
   }
   .fact dt a {
     display: inline-flex;

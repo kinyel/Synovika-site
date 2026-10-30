@@ -3,6 +3,7 @@ name: Estate Entrance Security System
 headline: "Estate Entrance Security System: visitor management for estates in Nigeria"
 descriptor: code-based visitor access for residential estates
 summary: Code-based visitor access for residential estates, so the gate knows who's expected.
+tag: Estate visitor access
 status: in-development
 icon: gate
 accent: wine

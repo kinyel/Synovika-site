@@ -5,15 +5,19 @@
  * src/lib/tokens.ts. Tailwind's own palette is switched off, so only these
  * colours exist.
  *
- * The colouring follows synov-timer's, in teal (D-045): a teal-black night,
- * soft teal and blue glows, glass, and lit teal emphasis.
+ * Two registers (D-062): a teal-black night and white paper. Each section
+ * names its own with data-theme, and the colours below turn over with it.
  *
- * Colour carries meaning, the same way in every scene:
- *   teal   live, healthy, verified, the primary action
- *   blue   data, interface, links, information
- *   wine   alert, denied, a security event
+ * Colour says whose it is (D-063):
+ *   teal   Synovika: the logo, the navigation, buttons, and anything about the company
+ *   amber  Selvion
+ *   wine   the Estate Entrance Security System
+ *   blue   Websites with an Admin Panel
  *   silver structure, hardware, chrome, borders
  *   grey   secondary text and inactive states
+ * A product's colour leads everywhere that product is the subject, and teal
+ * stays small there (the buttons, the logo). Set data-accent on the page or
+ * section; teal is what shows when nothing sets it.
  */
 @theme {
   --color-*: initial;
@@ -77,8 +81,8 @@
   --color-white: #ffffff;
 
   /*
-   * Night: teal-950 taken almost all the way to black (Hero: "make the site
-   * darker"). The site's stage, as synov-timer's navy night is its stage (D-045, D-055).
+   * Night: teal-950 taken almost all the way to black. The dark register's
+   * stage, as synov-timer's navy night is its stage (D-045, D-055).
    */
   --color-night: #010706;
   --color-deep: #041513;
@@ -104,6 +108,9 @@
   --color-gold: #f59e0b;
   --color-gold-glow: #fcd34d;
   --color-gold-ink: #b45309;
+  /* The highlight in 3D scenes: teal on Synovika's own, a product's colour on its own (D-063). */
+  --color-spark: #2dd4bf;
+  --color-spark-glow: #5eead4;
   --color-grey-50: #fafafa;
   --color-grey-100: #f4f4f4;
   --color-grey-200: #d4d4d4;
@@ -209,6 +216,9 @@
   --grid-max: 90rem;
   --header-height: 4.5rem;
 
+  /* The fine rings behind heroes and scenes (D-064). No grids anywhere. */
+  --lines: rgb(255 255 255 / 0.09);
+
   /* The chrome material: white through silver to a darker steel. */
   --chrome-top: #ffffff;
   --chrome-mid: #c0c0c0;
@@ -218,6 +228,30 @@
   :root {
     --grid-columns: 12;
   }
+}
+
+/* ── Products ─────────────────────────────────────────────────────────
+ * Each product's colour, set with data-accent on a page (Base's accent prop),
+ * a section, or anything inside one. */
+[data-accent='teal'] {
+  --accent: #0d9488;
+  --accent-bright: #5eead4;
+  --accent-deep: #0f766e;
+}
+[data-accent='amber'] {
+  --accent: #f59e0b;
+  --accent-bright: #fcd34d;
+  --accent-deep: #a84a08;
+}
+[data-accent='wine'] {
+  --accent: #c0475a;
+  --accent-bright: #f4a5aa;
+  --accent-deep: #853942;
+}
+[data-accent='blue'] {
+  --accent: #2563eb;
+  --accent-bright: #60a5fa;
+  --accent-deep: #1d4ed8;
 }
 
 /* ── Registers ────────────────────────────────────────────────────────
@@ -237,8 +271,25 @@
   --color-structure: #c0c0c0;
   --color-line: rgb(255 255 255 / 0.1);
   --color-focus: #5eead4;
+  --lines: rgb(255 255 255 / 0.09);
+  /* raleston's names (D-047), reset in case this sits inside white paper. */
+  --color-white: #ffffff;
+  --color-grey-50: #fafafa;
+  --color-grey-100: #f4f4f4;
+  --color-grey-200: #d4d4d4;
+  --color-grey-400: #a3a3a3;
+  --color-night: #010706;
+  --color-navy: #041513;
+  --color-indigo: #08221f;
+  --color-violet-soft: #60a5fa;
+  --color-gold-glow: #fcd34d;
+  /* Lit in the product's colour where one is set. */
+  --color-iris: var(--accent, #0d9488);
+  --color-iris-soft: var(--accent-bright, #5eead4);
+  --color-spark: var(--accent, #2dd4bf);
+  --color-spark-glow: var(--accent-bright, #5eead4);
 }
-/* Brand black: the footer, as synov-timer's footer is black. */
+/* Brand black: the footer, as synov-timer's footer is black. Always teal. */
 [data-theme='black'] {
   --color-surface: #171717;
   --color-surface-raised: #222222;
@@ -255,22 +306,56 @@
   --color-line: rgb(255 255 255 / 0.1);
   --color-focus: #5eead4;
 }
-/* Paper: only inside mock-ups now, such as the example site in the websites demo (D-045). */
+/*
+ * Paper: white sections (D-062). raleston's colour names turn over here, the
+ * same way they were mapped to teal (D-047): --color-white means the
+ * foreground and --color-night the ground, so every component that was
+ * written for the night works on white without a second set of styles. Real
+ * white, for text on a filled button, is --color-on-action.
+ */
 [data-theme='paper'] {
   --color-surface: #ffffff;
-  --color-surface-raised: #fafafa;
-  --color-ink: #171717;
-  --color-ink-soft: #2e2e2e;
-  --color-ink-muted: #5c5c5c;
+  --color-surface-raised: #f3f7f6;
+  --color-ink: #0b1f1c;
+  --color-ink-soft: #33423f;
+  --color-ink-muted: #56635f;
   --color-live: #0d9488;
   --color-live-ink: #0f766e;
   --color-data: #2563eb;
-  --color-data-ink: #2563eb;
+  --color-data-ink: #1d4ed8;
   --color-alert: #722f37;
   --color-alert-ink: #722f37;
   --color-structure: #808080;
-  --color-line: rgb(23 23 23 / 0.12);
-  --color-focus: #2563eb;
+  --color-line: rgb(11 31 28 / 0.12);
+  --color-focus: #0f766e;
+  --lines: rgb(11 31 28 / 0.07);
+  --color-white: #0b1f1c;
+  --color-grey-50: #0b1f1c;
+  --color-grey-100: #1b2d2a;
+  --color-grey-200: #33423f;
+  --color-grey-400: #56635f;
+  --color-night: #ffffff;
+  --color-navy: #f3f7f6;
+  --color-indigo: #e4eeec;
+  --color-violet-soft: #1d4ed8;
+  --color-gold-glow: #92400e;
+  --color-iris: var(--accent, #0d9488);
+  --color-iris-soft: var(--accent-deep, #0f766e);
+  --color-spark: var(--accent, #0d9488);
+  --color-spark-glow: var(--accent-deep, #0f766e);
+}
+/* A product's card or row inside a section. */
+[data-theme='dark'] [data-accent] {
+  --color-iris: var(--accent);
+  --color-iris-soft: var(--accent-bright);
+  --color-spark: var(--accent);
+  --color-spark-glow: var(--accent-bright);
+}
+[data-theme='paper'] [data-accent] {
+  --color-iris: var(--accent);
+  --color-iris-soft: var(--accent-deep);
+  --color-spark: var(--accent);
+  --color-spark-glow: var(--accent-deep);
 }
 [data-theme='teal'] {
   --color-surface: #134e4a;

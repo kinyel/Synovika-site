@@ -20,4 +20,6 @@ That's why we spend so long listening before we build anything, and why we test 
 
 ## Where we work
 
+Synovika Technologies Ltd is a private company registered in Nigeria, RC 9972328.
+
 We're a Nigerian company, and we work with clients across Nigeria and worldwide. We're happy to work over calls, email and WhatsApp, so distance needn't get in the way.

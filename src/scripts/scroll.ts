@@ -50,7 +50,9 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
     };
     let progress = 0;
     let active = -1;
-    const st = ScrollTrigger.create({ trigger: stair, start: 'top top', end: 'bottom bottom', onUpdate: (s) => (progress = s.progress) });
+    // The first stretch holds still while the hero's points hand over to the section.
+    const hold = () => Math.abs(parseFloat(getComputedStyle(stair).scrollMarginTop)) || 0;
+    const st = ScrollTrigger.create({ trigger: stair, start: () => `top+=${hold()} top`, end: 'bottom bottom', onUpdate: (s) => (progress = s.progress) });
     links.forEach((link, k) =>
       link.addEventListener('click', () => {
         const y = st.start + (k / (N - 1)) * (st.end - st.start);
@@ -65,6 +67,7 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
       if (rect.bottom < 0 || rect.top > viewport.height) return;
       // A steady turn, in step with the scroll: one card every fifth of the way, no pauses, no lag.
       const c = progress * (N - 1);
+      live.turn = c;
       setStyle(ring, 'transform', `translateY(${(c * rise).toFixed(2)}px) rotateY(${(-c * TURN).toFixed(3)}deg)`);
       for (const [k, { el, card }] of cards.entries()) {
         const d = Math.abs(k - c);

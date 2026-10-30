@@ -13,7 +13,7 @@ const ind = await industries();
 const rows = [ind, [...ind].reverse()];
 ---
 
-<section class="band" data-theme="dark" aria-labelledby="band-title" data-band>
+<section class="band" data-theme="paper" aria-labelledby="band-title" data-band>
   <h2 id="band-title" class="band-title gutter">The sectors we build for</h2>
   <div class="band-rows">
     {
@@ -102,6 +102,6 @@ const rows = [ind, [...ind].reverse()];
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 45%, transparent);
   }
   .band-row[data-band-row='1'] .band-chip :global(svg) {
-    color: var(--color-gold);
+    color: var(--color-spark);
   }
 </style>

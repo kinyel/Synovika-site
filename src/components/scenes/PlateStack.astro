@@ -122,8 +122,8 @@ const { icon, lit = 2 } = Astro.props;
   .stack-icon :global(svg) {
     width: 64px;
     height: 64px;
-    color: var(--color-gold-glow);
-    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-gold) 60%, transparent));
+    color: var(--color-spark-glow);
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-spark) 60%, transparent));
   }
   /* The thread of light through the centre of every plate, and its spark. */
   .stack-thread {
@@ -134,8 +134,8 @@ const { icon, lit = 2 } = Astro.props;
     height: 330px;
     transform-origin: 50% 0;
     transform: translateZ(-30px) rotateX(90deg);
-    background: linear-gradient(180deg, transparent, var(--color-gold) 20%, var(--color-gold-glow) 70%, transparent);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--color-gold) 70%, transparent);
+    background: linear-gradient(180deg, transparent, var(--color-spark) 20%, var(--color-spark-glow) 70%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--color-spark) 70%, transparent);
   }
   .stack-thread i {
     position: absolute;
@@ -145,7 +145,7 @@ const { icon, lit = 2 } = Astro.props;
     height: 8px;
     border-radius: 50%;
     background: var(--color-white);
-    box-shadow: 0 0 14px 4px var(--color-gold);
+    box-shadow: 0 0 14px 4px var(--color-spark);
     animation: stack-spark 3.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
   @keyframes stack-spark {

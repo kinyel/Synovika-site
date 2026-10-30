@@ -24,7 +24,7 @@ const hasBody = (entry.body ?? '').trim().length > 0;
 <Page title={d.seo.title} description={d.seo.description} heading={d.title} lead={d.lead} crumbs={crumbs} pageType={pageType} icon={icon} noindex={noindex} cta={cta}>
   {d.legalDraft && <p slot="hero" class="legal-draft">Draft: to be reviewed by a lawyer.</p>}
   <slot name="hero" slot="hero" />
-  <section class="section content-page" data-theme="dark">
+  <section class="section content-page" data-theme="paper">
     <div class="gutter">
       {
         hasBody && (

@@ -34,7 +34,7 @@
   width: 0.75em;
   height: 0.75em;
   border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, #fff 0 6%, #99f6e4 16%, #2dd4bf 36%, #0f766e 72%, #042f2e);
+  background: radial-gradient(circle at 34% 30%, #fff 0 6%, var(--color-iris-soft) 16%, var(--color-spark) 36%, var(--color-iris) 72%, #042f2e);
   box-shadow: 0 0 0.8em rgb(45 212 191 / 0.6);
 }
 .app-dot.is-gate {
@@ -70,7 +70,7 @@
   box-shadow: inset 0 0 0 1px rgb(45 212 191 / 0.3);
 }
 .app-side li.is-add {
-  color: #5eead4;
+  color: var(--color-iris-soft);
 }
 .app-main {
   display: flex;
@@ -191,7 +191,7 @@
 }
 .map-route {
   fill: none;
-  stroke: #2dd4bf;
+  stroke: var(--color-spark);
   stroke-width: 2.4;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -217,7 +217,7 @@
   background: #a3a3a3;
 }
 .map-unit.is-live {
-  background: radial-gradient(circle at 34% 30%, #fff 0 8%, #5eead4 30%, #0d9488 80%);
+  background: radial-gradient(circle at 34% 30%, #fff 0 8%, var(--color-iris-soft) 30%, var(--color-iris) 80%);
   box-shadow: 0 0 0.9em rgb(45 212 191 / 0.9);
 }
 .map-unit > span {
@@ -256,7 +256,7 @@
   width: 0.6em;
   height: 0.6em;
   border-radius: 50%;
-  background: #2dd4bf;
+  background: var(--color-spark);
   box-shadow: 0 0 0.6em currentColor;
 }
 .alert.is-alert {
@@ -322,7 +322,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #042f2e;
-  background: #5eead4;
+  background: var(--color-iris-soft);
   box-shadow: 0 0 1.6em rgb(45 212 191 / 0.55);
 }
 .gate-status i {
@@ -369,7 +369,7 @@
   padding: 0.15em 0.6em;
   font-size: 0.85em;
   font-weight: 600;
-  color: #5eead4;
+  color: var(--color-iris-soft);
   box-shadow: inset 0 0 0 1px rgb(94 234 212 / 0.4);
 }
 .log-row.is-denied b {
@@ -451,22 +451,22 @@
   height: 1.1em;
   margin-left: 0.15em;
   vertical-align: -0.2em;
-  background: #2dd4bf;
-  box-shadow: 0 0 0.5em #2dd4bf;
+  background: var(--color-spark);
+  box-shadow: 0 0 0.5em var(--color-spark);
 }
 .web-saved {
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
   font-size: 0.7em;
-  color: #5eead4;
+  color: var(--color-iris-soft);
 }
 .web-saved i {
   width: 0.6em;
   height: 0.6em;
   border-radius: 50%;
-  background: #2dd4bf;
-  box-shadow: 0 0 0.6em #2dd4bf;
+  background: var(--color-spark);
+  box-shadow: 0 0 0.6em var(--color-spark);
 }
 .web-preview {
   overflow: hidden;

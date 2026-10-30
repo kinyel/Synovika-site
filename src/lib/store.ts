@@ -14,6 +14,8 @@ export interface LiveState {
   velocity: number;
   /** Smoothed absolute scroll speed, 0..1. */
   speed: number;
+  /** How far the services helix has turned, in cards. */
+  turn: number;
 }
 
-export const live: LiveState = { velocity: 0, speed: 0 };
+export const live: LiveState = { velocity: 0, speed: 0, turn: 0 };

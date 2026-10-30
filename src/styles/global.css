@@ -14,6 +14,12 @@
   inherits: false;
   initial-value: 0px;
 }
+/* A registered colour, so the city's light can fade from one product to the next. */
+@property --scene {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0d9488;
+}
 @property --p {
   syntax: '<number>';
   inherits: true;
@@ -50,9 +56,6 @@
     outline-offset: 3px;
     border-radius: 6px;
   }
-  [data-theme='paper'] :focus-visible {
-    outline-color: var(--color-blue-600);
-  }
   a {
     color: inherit;
     text-decoration: none;
@@ -81,8 +84,20 @@
     color: var(--color-ink);
   }
   [data-theme='paper'] {
-    background: var(--color-white);
-    font-weight: 400;
+    background: var(--color-surface);
+  }
+  /* A white section is a sheet with rounded corners, lying on the night (D-062). Sheets that touch join up. */
+  :is(main, .is-page) > [data-theme='paper'] {
+    --sheet: clamp(1.75rem, 4vw, 3rem);
+    border-radius: var(--sheet);
+  }
+  :is(main, .is-page) > [data-theme='paper']:has(+ [data-theme='paper']) {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+  :is(main, .is-page) > [data-theme='paper'] + [data-theme='paper'] {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
   }
   .gutter {
     padding-inline: max(1rem, env(safe-area-inset-left), min(5vw, 4.5rem));
@@ -130,6 +145,9 @@
   .text-lit {
     color: var(--color-iris-soft);
     text-shadow: 0 0 30px color-mix(in srgb, var(--color-iris) 70%, transparent);
+  }
+  [data-theme='paper'] .text-lit {
+    text-shadow: none;
   }
   .text-gold-lit {
     color: var(--color-gold);
@@ -242,18 +260,18 @@
   }
   /* Primary: solid teal, white text (teal-700, 5.47:1), glowing. */
   .btn-primary {
-    color: var(--color-white);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--color-teal-600) 55%, var(--color-teal-700)), var(--color-teal-700));
+    color: var(--color-on-action);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--color-teal-600) 55%, var(--color-teal-700)), var(--color-teal-700)) var(--color-teal-700);
     box-shadow:
-      inset 0 1px 0 color-mix(in srgb, var(--color-white) 22%, transparent),
-      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 10%, transparent),
+      inset 0 1px 0 rgb(255 255 255 / 0.22),
+      inset 0 0 0 1px rgb(255 255 255 / 0.1),
       0 12px 34px -10px color-mix(in srgb, var(--color-teal-500) 65%, transparent);
   }
   .btn-primary:hover {
     background: var(--color-teal-700);
     box-shadow:
-      inset 0 1px 0 color-mix(in srgb, var(--color-white) 30%, transparent),
-      inset 0 0 0 1px color-mix(in srgb, var(--color-white) 18%, transparent),
+      inset 0 1px 0 rgb(255 255 255 / 0.3),
+      inset 0 0 0 1px rgb(255 255 255 / 0.18),
       0 0 46px 2px color-mix(in srgb, var(--color-teal-500) 50%, transparent);
   }
   /* Secondary on dark: a white hairline that fills softly. */
@@ -428,6 +446,10 @@
       inset 0 1px 0 color-mix(in srgb, var(--color-white) 10%, transparent),
       0 30px 60px -40px rgb(0 0 0 / 0.8);
   }
+  [data-theme='paper'] .card {
+    background: var(--color-surface-raised);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
   .card-hover {
     transition:
       transform 0.6s var(--ease-expo),
@@ -439,6 +461,11 @@
       inset 0 0 0 1px color-mix(in srgb, var(--color-iris-soft) 35%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--color-white) 14%, transparent),
       0 40px 70px -40px color-mix(in srgb, var(--color-iris) 60%, transparent);
+  }
+  [data-theme='paper'] .card-hover:hover {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--color-iris) 45%, transparent),
+      0 28px 50px -34px color-mix(in srgb, var(--color-ink) 45%, transparent);
   }
   .icon-tile {
     --tint: var(--color-iris);
@@ -477,22 +504,29 @@
     width: 1.8rem;
     height: 1.8rem;
   }
-  /* The reference image's coloured product tiles. */
+  /* The reference image's coloured product tiles: teal is Synovika, the rest are the products (D-063). */
   .tint-teal {
     --tint: var(--color-teal-600);
     --tint-soft: var(--color-teal-300);
+    --tint-deep: #0f766e;
   }
   .tint-blue {
     --tint: var(--color-blue-600);
     --tint-soft: var(--color-blue-400);
+    --tint-deep: #1d4ed8;
   }
   .tint-wine {
-    --tint: var(--color-wine-600);
+    --tint: #c0475a;
     --tint-soft: var(--color-wine-300);
+    --tint-deep: #853942;
   }
   .tint-amber {
     --tint: var(--color-gold);
-    --tint-soft: var(--color-gold-glow);
+    --tint-soft: #fcd34d;
+    --tint-deep: #a84a08;
+  }
+  [data-theme='paper'] :is(.tint-teal, .tint-blue, .tint-wine, .tint-amber) {
+    --tint-soft: var(--tint-deep);
   }
   .ticks {
     display: grid;
@@ -645,7 +679,7 @@
   font-family: var(--font-mono);
   font-size: 0.8em;
   background: var(--color-wine-800);
-  color: var(--color-white);
+  color: #fff;
 }
 .to-confirm {
   display: inline-flex;
@@ -657,7 +691,7 @@
   letter-spacing: 0.12em;
   font-weight: 600;
   background: var(--color-wine-800);
-  color: var(--color-white);
+  color: #fff;
   vertical-align: middle;
 }
 
@@ -832,16 +866,16 @@ html {
 }
 .blk.is-lit .blk-top {
   background:
-    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-gold) 26%, transparent), transparent 75%),
+    radial-gradient(70% 70% at 50% 50%, color-mix(in srgb, var(--color-spark) 26%, transparent), transparent 75%),
     linear-gradient(135deg, color-mix(in srgb, var(--color-white) 16%, transparent), color-mix(in srgb, var(--color-white) 4%, transparent) 55%),
     color-mix(in srgb, var(--color-navy) 88%, var(--color-night));
   box-shadow:
-    inset 0 0 0 1.5px color-mix(in srgb, var(--color-gold) 85%, transparent),
-    0 0 36px color-mix(in srgb, var(--color-gold) 30%, transparent);
+    inset 0 0 0 1.5px color-mix(in srgb, var(--color-spark) 85%, transparent),
+    0 0 36px color-mix(in srgb, var(--color-spark) 30%, transparent);
 }
 .blk.is-lit .blk-e,
 .blk.is-lit .blk-s {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 45%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-spark) 45%, transparent);
 }
 .blk-label {
   position: absolute;
@@ -862,7 +896,7 @@ html {
   color: var(--color-iris-soft);
 }
 .blk.is-lit .blk-label svg {
-  color: var(--color-gold-glow);
+  color: var(--color-spark-glow);
 }
 .s3d-line {
   position: absolute;
@@ -873,8 +907,8 @@ html {
   margin-top: -1px;
   transform-origin: 0 50%;
   transform: translateZ(var(--z, 1px)) rotateZ(var(--ang)) scaleX(var(--draw, 1));
-  background: linear-gradient(90deg, color-mix(in srgb, var(--color-gold) 30%, transparent), var(--color-gold) 60%, var(--color-gold-glow));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--color-gold) 70%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-spark) 30%, transparent), var(--color-spark) 60%, var(--color-spark-glow));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--color-spark) 70%, transparent);
 }
 .s3d.is-off *,
 .s3d.is-off *::before,

@@ -9,7 +9,7 @@ seo:
 
 ## Who we are
 
-This website belongs to Synovika Technologies, a software company in Nigeria. When this notice says "we" or "us", it means Synovika Technologies. You can reach us about anything in this notice at [hero@synovika.com](mailto:hero@synovika.com).
+This website belongs to Synovika Technologies Ltd (RC 9972328), a software company registered in Nigeria. When this notice says "we" or "us", it means Synovika Technologies Ltd. You can reach us about anything in this notice at [hero@synovika.com](mailto:hero@synovika.com).
 
 ## What we collect, and why
 

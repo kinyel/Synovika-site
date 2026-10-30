@@ -17,7 +17,7 @@ const date = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month:
 
 {
   posts.length > 0 && (
-    <section id="notebook" class="section nb" data-theme="dark" aria-labelledby="nb-title">
+    <section id="notebook" class="section nb" data-theme="paper" aria-labelledby="nb-title">
       <div class="gutter nb-grid">
         <div class="s3d nb-scene" data-s3d aria-hidden="true">
           <div class="s3d-world">
@@ -150,8 +150,8 @@ const date = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month:
   }
   .nb-file.is-lit .nb-seal {
     box-shadow:
-      inset 0 0 0 1.5px var(--color-gold),
-      0 0 18px color-mix(in srgb, var(--color-gold) 60%, transparent);
+      inset 0 0 0 1.5px var(--color-spark),
+      0 0 18px color-mix(in srgb, var(--color-spark) 60%, transparent);
   }
   .nb-list {
     display: grid;

@@ -45,16 +45,16 @@ const steps = [
   crumbs={[{ name: 'Pricing', href: '/pricing/' }]}
   schema={questions.length ? [faqPage('/pricing/', questions)] : []}
 >
-  <section class="section" data-theme="dark" aria-labelledby="ways-title">
+  <section class="section" data-theme="paper" aria-labelledby="ways-title">
     <div class="gutter">
       <p class="eyebrow">Ways to work with us</p>
       <h2 id="ways-title" class="h2 mt-4" data-reveal>Four ways in, <span class="text-lit">one way of quoting</span></h2>
       <ul class="ways">
         {
-          ways.map((w, i) => (
+          ways.map((w) => (
             <li data-reveal>
               <a href={w.href} class="card card-hover way">
-                <span class={`icon-tile ${i === 3 ? 'tint-amber' : ''}`}>
+                <span class="icon-tile">
                   <Icon name={w.icon} />
                 </span>
                 <h3 class="h3 mt-5">{w.title}</h3>
@@ -93,7 +93,7 @@ const steps = [
     </div>
   </section>
 
-  <section class="section" data-theme="dark" aria-labelledby="factors-title">
+  <section class="section" data-theme="paper" aria-labelledby="factors-title">
     <div class="gutter">
       <p class="eyebrow">What moves the price</p>
       <h2 id="factors-title" class="h2 mt-4" data-reveal>Six things that <span class="text-lit">make the difference</span></h2>
@@ -179,7 +179,7 @@ const steps = [
     font-size: 0.85rem;
     line-height: 2.2;
     letter-spacing: 0.12em;
-    color: var(--color-gold-glow);
+    color: var(--color-spark-glow);
   }
   .factors {
     display: grid;

@@ -3,9 +3,10 @@ name: Selvion
 headline: "Selvion: fleet management and vehicle tracking for Nigerian businesses"
 descriptor: fleet tracking platform
 summary: See every vehicle live, get told when one starts, leaves a zone or needs stopping, and get a report on every trip.
+tag: Fleet tracking
 status: in-development
 icon: route
-accent: teal
+accent: amber
 audience:
   - Logistics and haulage companies
   - Businesses running delivery vans, buses or pool cars

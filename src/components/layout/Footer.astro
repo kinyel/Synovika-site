@@ -6,16 +6,14 @@
  */
 import Logo from '../brand/Logo.astro';
 import Icon from '../ui/Icon.astro';
-import Todo from '../ui/Todo.astro';
 import { industries, products, services } from '../../lib/content';
 import { SITE } from '../../data/site';
-import { isTodo } from '../../lib/drafts';
 
 const prod = await products();
 const svc = await services();
 const ind = await industries();
 const cols = [
-  { title: 'Products', links: [...prod.map((p) => ({ label: p.data.name, href: `/products/${p.id}/` })), { label: 'All products', href: '/products/' }] },
+  { title: 'Products', links: [...prod.map((p) => ({ label: p.data.name, href: `/products/${p.id}/`, accent: p.data.accent })), { label: 'All products', href: '/products/' }] },
   { title: 'Solutions', links: svc.map((s) => ({ label: s.data.name, href: `/services/${s.id}/` })) },
   {
     title: 'Company',
@@ -70,7 +68,7 @@ const year = new Date().getFullYear();
             <ul>
               {c.links.map((l) => (
                 <li>
-                  <a href={l.href}>{l.label}</a>
+                  <a href={l.href}>{'accent' in l && <i class={`foot-dot tint-${l.accent}`} aria-hidden="true" />}{l.label}</a>
                 </li>
               ))}
             </ul>
@@ -81,8 +79,7 @@ const year = new Date().getFullYear();
   </div>
   <div class="gutter footer-base">
     <p>
-      © {year} {SITE.name}. All rights reserved.
-      {isTodo(SITE.bn) ? <Todo need="CAC business name (BN) number" /> : <span> {SITE.bn}</span>}
+      © {year} {SITE.legalName}. RC {SITE.rc}. Registered in Nigeria. All rights reserved.
     </p>
     <div class="motion" role="group" aria-label="Motion">
       <span>Motion</span>
@@ -98,6 +95,15 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
+  .foot-dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    background: var(--tint-soft);
+    vertical-align: 0.06em;
+  }
   .site-footer {
     position: relative;
     background:

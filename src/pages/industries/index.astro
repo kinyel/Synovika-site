@@ -22,7 +22,7 @@ const ind = await industries();
   crumbs={[{ name: 'Industries', href: '/industries/' }]}
   schema={[itemList('/industries/', 'list', 'Industries Synovika builds for', ind.map((i) => ({ name: i.data.name, path: `/industries/${i.id}/` })))]}
 >
-  <section class="section" data-theme="dark" aria-label="Industries">
+  <section class="section" data-theme="paper" aria-label="Industries">
     <ul class="gutter ind-cards">
       {
         ind.map((i) => (

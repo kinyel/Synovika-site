@@ -3,6 +3,7 @@ name: Websites with an Admin Panel
 headline: "Websites with an Admin Panel: business websites you can edit yourself"
 descriptor: business websites you edit yourself
 summary: A business website with its own admin panel, so your team can change the text and add pages without calling a developer.
+tag: Business websites
 status: in-development
 icon: browser
 accent: blue

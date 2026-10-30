@@ -8,6 +8,12 @@
  * the next one up. Beside it, a rolling counter, a progress rail and the list
  * of services. Pure CSS 3D, so the text stays crisp. Without JavaScript or
  * with reduced motion, it is a grid of cards.
+ *
+ * The spine is the hero's DNA, in points, carried on here on its own canvas
+ * and locked to the turn of the cards (src/scripts/hero.ts, D-064). This
+ * section fades up over the end of the hero, so it starts while the hero is
+ * still pinned: the two overlap, and for the first stretch (--hold) both are
+ * pinned and nothing moves.
  */
 import Icon from '../ui/Icon.astro';
 import Lit from '../ui/Lit.astro';
@@ -21,7 +27,7 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
 ---
 
 <section id="services" class="spiral" data-theme="dark" style={`--n:${N}`} data-stair-section aria-labelledby="services-title">
-  <div class="spiral-viewport">
+  <div class="spiral-viewport" data-stair-view>
     <div class="gutter spiral-layout">
       <div class="spiral-menu">
         <p class="eyebrow">{head.eyebrow}</p>
@@ -47,12 +53,12 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
         <a href="/services/" class="link-arrow spiral-all">All services <Icon name="arrow" /></a>
       </div>
 
-      <div class="spiral-stage">
-        <span class="spiral-rays" aria-hidden="true"></span>
+      <div class="spiral-stage" data-stair-stage>
         <div class="spiral-spine" aria-hidden="true">
           <span class="spiral-spine-line"></span>
           <span class="spiral-glow"></span>
         </div>
+        <canvas class="spiral-dna" data-stair-dna aria-hidden="true"></canvas>
         <div class="spiral-ring" data-stair-ring>
           {
             services.map((s, i) => (
@@ -94,11 +100,20 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     /* The cards are squares: one size for width and height. */
     --card: 264px;
     --persp: 1320px;
+    --hold: 0svh;
     position: relative;
-    height: 320svh;
-    background:
-      radial-gradient(48% 46% at 66% 54%, color-mix(in srgb, var(--color-iris) 15%, transparent), transparent 70%),
-      linear-gradient(180deg, var(--color-night) 0, var(--color-night) 90px, color-mix(in srgb, var(--color-navy) 55%, var(--color-night)) 100%);
+    height: calc(320svh + var(--hold));
+  }
+  :global(html.js:not(.reduced-motion)) .spiral {
+    --hold: 30svh;
+    z-index: 2;
+    margin-top: calc(-100svh - var(--hold));
+    scroll-margin-top: calc(var(--hold) * -1);
+    /* It starts under the last product, so only its stage takes clicks, once it has arrived (hero.ts). */
+    pointer-events: none;
+  }
+  :global(html.js:not(.reduced-motion)) .spiral-viewport {
+    pointer-events: auto;
   }
   @media (max-width: 1023px) {
     .spiral {
@@ -106,7 +121,7 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
       --rise: 84px;
       --card: 200px;
       --persp: 720px;
-      height: 250svh;
+      height: calc(250svh + var(--hold));
     }
   }
   .spiral-viewport {
@@ -115,6 +130,17 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     height: 100svh;
     overflow: hidden;
     color: var(--color-white);
+    /* The hero's lines, in the same place, so they carry straight on from it. */
+    --rings: 120vw 18.4vw;
+    background:
+      repeating-radial-gradient(var(--rings) at 78% 8%, var(--lines) 0 1px, transparent 1px 34px),
+      radial-gradient(48% 46% at 66% 54%, color-mix(in srgb, var(--color-iris) 15%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--color-night) 0, var(--color-night) 90px, color-mix(in srgb, var(--color-navy) 55%, var(--color-night)) 100%);
+  }
+  @media (max-width: 1023px) {
+    .spiral-viewport {
+      --rings: 120vw 58vw;
+    }
   }
   .spiral-layout {
     display: grid;
@@ -186,7 +212,7 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     inset: 0;
     transform-origin: left;
     transform: scaleX(0);
-    background: linear-gradient(90deg, var(--color-iris-soft), var(--color-gold));
+    background: linear-gradient(90deg, var(--color-iris-soft), var(--color-spark));
     box-shadow: 0 0 10px color-mix(in srgb, var(--color-iris) 80%, transparent);
   }
   .spiral-menu-title {
@@ -276,14 +302,6 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
       height: 92%;
     }
   }
-  /* Faint vertical rays of light behind the helix. */
-  .spiral-rays {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(90deg, transparent 0 46px, color-mix(in srgb, var(--color-iris-soft) 4%, transparent) 46px 47px, transparent 47px 92px, rgb(255 255 255 / 0.018) 92px 130px);
-    mask-image: radial-gradient(50% 60% at 50% 50%, #000, transparent);
-    pointer-events: none;
-  }
   .spiral-spine {
     position: absolute;
     left: 50%;
@@ -298,6 +316,21 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     bottom: 4%;
     width: 1px;
     background: linear-gradient(transparent, color-mix(in srgb, var(--color-iris-soft) 50%, transparent) 22%, color-mix(in srgb, var(--color-iris-soft) 50%, transparent) 78%, transparent);
+  }
+  /* The thin line is the fallback; the DNA replaces it once it's ready. */
+  :global(.spiral.has-dna) .spiral-spine-line {
+    display: none;
+  }
+  .spiral-dna {
+    position: absolute;
+    inset: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  :global(html.js:not(.reduced-motion)) .spiral-dna {
+    display: block;
   }
   .spiral-glow {
     position: absolute;

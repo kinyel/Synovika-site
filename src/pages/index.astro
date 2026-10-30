@@ -1,7 +1,7 @@
 ---
 /**
  * Home: the reference image's page, on raleston-web's engine (D-047).
- *   01 Hero and product tour   a night city; the camera visits each product's district
+ *   01 Hero and product tour   the Earth, then one cloud of points becoming each product
  *   03 Services                the spiral staircase
  *      Industries band         where the image has client logos (we have none yet)
  *   04 Why Synovika            the cube, four promises, and the plain facts
@@ -15,7 +15,7 @@
  *   13 Ready to build around reality? (the closing band, from Base)
  */
 import Base from '../layouts/Base.astro';
-import City from '../components/sections/City.astro';
+import Hero from '../components/sections/Hero.astro';
 import Services from '../components/sections/Services.astro';
 import IndustriesBand from '../components/sections/IndustriesBand.astro';
 import Why from '../components/sections/Why.astro';
@@ -63,7 +63,7 @@ const ind = await industries();
     ...(questions.length ? [faqPage('/', questions.map((q) => q.data))] : []),
   ]}
 >
-  <City />
+  <Hero />
   <Services />
   <IndustriesBand />
   <Why />

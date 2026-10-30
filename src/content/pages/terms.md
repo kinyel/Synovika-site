@@ -9,7 +9,7 @@ seo:
 
 ## About these terms
 
-These terms apply when you use synovika.com, the website of Synovika Technologies. By using the site, you agree to them. If you don't agree, please don't use the site.
+These terms apply when you use synovika.com, the website of Synovika Technologies Ltd (RC 9972328), a company registered in Nigeria. By using the site, you agree to them. If you don't agree, please don't use the site.
 
 ## Our content
 
@@ -17,7 +17,7 @@ We try hard to keep everything on this site accurate and up to date, but it's ge
 
 ## What you may do
 
-You're welcome to read, share and link to our pages. Please don't copy large parts of the site, our logo or our designs, or present them as your own. The content, logo and designs on this site belong to Synovika Technologies unless we say otherwise.
+You're welcome to read, share and link to our pages. Please don't copy large parts of the site, our logo or our designs, or present them as your own. The content, logo and designs on this site belong to Synovika Technologies Ltd unless we say otherwise.
 
 ## Links to other sites
 
