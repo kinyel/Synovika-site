@@ -30,7 +30,7 @@ for (const [width, height] of SIZES) {
     const t = document.querySelector('[data-tour]');
     const j = document.querySelector('[data-journey]');
     const css = (n) => parseFloat(getComputedStyle(t).getPropertyValue(n));
-    return { tour: t.offsetHeight - document.querySelector('[data-tour] [data-stage]').offsetHeight, a: css('--len-intro'), b: css('--len-products'), c: css('--len-close'), stair: top(document.querySelector('[data-stair-section]')), jTop: top(j), jLen: j.offsetHeight - height };
+    return { tour: t.offsetHeight - document.querySelector('[data-tour] [data-stage]').offsetHeight, a: css('--len-intro'), b: css('--len-products'), c: css('--len-close'), stair: top(document.querySelector('[data-stair-section]')), jTop: top(j), jLen: j.offsetHeight - innerHeight };
   });
   const to = async (y) => {
     await page.evaluate((v) => {

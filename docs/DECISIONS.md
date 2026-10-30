@@ -395,3 +395,5 @@ Hero: "remove the 3D laptop and replace with something better... think out of th
 - **Every screen:** phones held sideways get the desktop layout, words on the left and the form on the right, in the hero, the services and How we work. Short phones are tightened; tablets get bigger forms. `qa:screens` checks 18 sizes from 320 × 568 to 2560 × 1440.
 - **Why Synovika's four cards stay two by two on phones (Hero's request),** and the same on the About page.
 - **Not tested on real hardware.** There's no iOS Simulator or Android emulator on this machine, so the address bar was simulated by changing the height.
+
+**D-067. The legal draft notice is off (Hero: "comment out the 'to be reviewed by a lawyer' texts cross site").** Hero's call under BRIEF section 3, rule 8, made on 31 October 2026. The line is commented out in `src/components/layout/ContentPage.astro`, and `legalDraft: true` stays on the privacy, cookie and terms pages, so restoring that one line brings the notice back on all three. The pages themselves have not been reviewed by a lawyer.

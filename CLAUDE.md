@@ -30,7 +30,7 @@ Port 4322 on this machine runs synov-timer's preview: don't use it.
 5. Product status sets the CTA: live gives "Book a demo", pilot gives "Join the pilot", in development gives "Join the waitlist" (Hero's change, D-032). The default is in development.
 6. Demo data is labelled "Demo data" and uses made-up names (Unit 07, Depot A, House 12).
 7. No stock photos and no AI-generated people.
-8. Legal pages show "Draft: to be reviewed by a lawyer" until Hero removes it.
+8. Legal pages used to show "Draft: to be reviewed by a lawyer". Hero turned it off on 31 October 2026 (D-067); it's commented out in `ContentPage.astro`.
 9. Copy: British spelling, plain words, short sentences, no buzzwords. Every headline has one plain sentence under it. It must sound like a person wrote it (D-037).
    **No em dashes anywhere, ever:** not in copy, alt text, metadata, structured data, comments or docs. No spaced en dash used as a dash either. `npm run qa:copy` enforces this.
 10. Placeholders are written `TODO(hero): what's needed`. The production guard fails if `TODO(hero)`, `TO CONFIRM` or an unconfirmed feature reaches `dist/`.
