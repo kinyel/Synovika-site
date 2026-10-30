@@ -1196,17 +1196,18 @@ const ui = (name: string) => name.toLowerCase();
    * every plate lit, the steps listed. From here on, the scripted version.
    */
   :global(html.js:not(.reduced-motion)) .journey {
-    height: calc(100svh + var(--len));
+    height: calc(100lvh + var(--len));
   }
+  /* As in the hero: the stage fills the large viewport, the words stay in the small one. */
   :global(html.js:not(.reduced-motion)) .stage {
     position: sticky;
     top: 0;
-    height: 100svh;
+    height: 100lvh;
     overflow: hidden;
   }
   :global(html.js:not(.reduced-motion)) .intro {
     position: absolute;
-    inset: 0 auto 0 0;
+    inset: 0 auto auto 0;
     width: min(46rem, 50vw);
     min-height: 100svh;
     padding-block: 7rem 5rem;
@@ -1480,8 +1481,8 @@ const ui = (name: string) => name.toLowerCase();
     transition-delay: 0.26s;
   }
 
-  /* Phones and tablets in portrait: platform on top, the note below it. */
-  @media (max-width: 1023px) {
+  /* Phones and tablets upright: platform on top, the note below it. Phones on their side keep the desktop layout. */
+  @media (max-width: 1023px) and (orientation: portrait), (max-width: 1023px) and (min-height: 601px) {
     .bg-floor {
       left: 50%;
       top: 58%;
@@ -1541,9 +1542,11 @@ const ui = (name: string) => name.toLowerCase();
     :global(html.js:not(.reduced-motion)) .datum {
       display: none;
     }
+    /* Only as tall as the small viewport, so the address bar never covers the note at the foot. */
     :global(html.js:not(.reduced-motion)) .notes {
-      inset: 0;
+      inset: 0 0 auto 0;
       width: auto;
+      height: 100svh;
       padding: 0;
     }
     :global(html.js:not(.reduced-motion)) .notes-head {
@@ -1640,6 +1643,83 @@ const ui = (name: string) => name.toLowerCase();
     }
     .cue {
       display: none;
+    }
+  }
+  /* Phones on their side: words on the left, the plates on the right, sized to the height. */
+  @media (max-width: 1023px) and (orientation: landscape) and (max-height: 600px) {
+    .journey {
+      --plate: 30svh;
+      --gap: 6svh;
+    }
+    .intro {
+      justify-content: center;
+    }
+    :global(html.js:not(.reduced-motion)) .intro {
+      width: 56vw;
+      padding-block: 4.4rem 0.5rem;
+    }
+    .j-title {
+      margin-top: 0.4rem;
+      font-size: clamp(1.25rem, 6.4svh, 1.6rem);
+    }
+    .j-lead {
+      margin-top: 0.4rem;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+    .j-ctas {
+      margin-top: 0.6rem;
+    }
+    .j-ctas .btn {
+      min-height: 2.4rem;
+      padding-block: 0.4rem;
+    }
+    .intro-stats,
+    .cue {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .datum {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .notes {
+      bottom: auto;
+      width: 54vw;
+      height: 100svh;
+      padding-top: 3.9rem;
+      padding-bottom: 0.4rem;
+    }
+    :global(html.js:not(.reduced-motion)) .notes-head .eyebrow {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .notes-title {
+      margin-top: 0;
+      font-size: 0.9rem;
+      line-height: 1.2;
+    }
+    :global(html.js:not(.reduced-motion)) .notes-progress {
+      margin-top: 0.3rem;
+    }
+    :global(html.js:not(.reduced-motion)) .notes-body {
+      margin-top: 0.5rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-how {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .note-title {
+      font-size: 1.05rem;
+      line-height: 1.15;
+    }
+    .note-body {
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+  }
+  @media (max-width: 1023px) and (orientation: landscape) and (max-height: 350px) {
+    :global(html.js:not(.reduced-motion)) .notes-title {
+      display: none;
+    }
+    .note-body {
+      font-size: 0.76rem;
     }
   }
   .note-cta {

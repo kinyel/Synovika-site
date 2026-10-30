@@ -48,6 +48,8 @@ export function initHero(reduced: boolean) {
   const steps = all<HTMLElement>('[data-progress-steps] i');
   const label = one<HTMLElement>('[data-globe-label]');
   const backdrop = one<HTMLElement>('[data-stage-light]');
+  const stage = one<HTMLElement>('[data-stage]');
+  const probe = one<HTMLElement>('[data-probe]');
   // The next section, which the last form hands over to.
   const stair = document.querySelector<HTMLElement>('[data-stair-section]');
   const view = stair?.querySelector<HTMLElement>('[data-stair-view]') ?? null;
@@ -91,22 +93,32 @@ export function initHero(reduced: boolean) {
   const NO_MASK = [1, 0, 0, 1];
   let maskEarth: readonly number[] = NO_MASK;
   let maskNotes: readonly number[] = NO_MASK;
+  /** Forms above their words (phones and tablets upright), or beside them. */
+  let stacked = false;
 
   const measure = () => {
     vw = canvas.clientWidth;
     vh = canvas.clientHeight;
     signal?.resize();
-    if (phone()) {
+    stacked = phone() && innerWidth <= innerHeight * 1.3;
+    // The stage fills the large viewport; what has to be seen is placed in the small one, the bar never covers it.
+    const sv = Math.min(vh, probe.offsetHeight || vh);
+    const Y = (px: number) => vh / 2 - px;
+    if (stacked) {
       // A planet rising from the foot of the screen, with Nigeria near its crest.
       const r = Math.max(vw * 0.98, 340);
-      const globe: Spot = { x: 0, y: -vh / 2 - r * 0.42, s: r, rx: -0.72, ry: 0 };
-      const s = Math.min(vw * 0.26, vh * 0.125);
-      spots = [globe, ...scenes.map(() => ({ x: 0, y: vh * 0.17, s, rx: 0.42, ry: -0.5 }))];
+      // Lower on short screens, so it stays under the words.
+      const sink = 0.42 + Math.max(0, 760 - sv) / 620;
+      const globe: Spot = { x: 0, y: Y(sv + r * sink), s: r, rx: -0.72, ry: 0 };
+      // As big as fits between the panel at the top and the note below: bigger on tablets.
+      const s = Math.min(vw * 0.26, Math.max(sv * 0.125, (sv * 0.52 - 170) / 2.3));
+      const formY = Y(sv * (sv < 700 ? 0.365 : 0.33));
+      spots = [globe, ...scenes.map(() => ({ x: 0, y: formY, s, rx: 0.42, ry: -0.5 }))];
       const w = scenes.indexOf('websites');
-      if (w >= 0) spots[w + 1] = { ...spots[w + 1]!, rx: 0.2, ry: -0.5, s: s * 0.96, y: vh * 0.15 };
-      spots[N + 1] = { x: 0, y: vh * 0.04, s: s * 1.4, rx: 0.3, ry: 0 };
+      if (w >= 0) spots[w + 1] = { ...spots[w + 1]!, rx: 0.2, ry: -0.5, s: s * 0.96, y: formY - sv * 0.015 };
+      spots[N + 1] = { x: 0, y: Y(sv * 0.46), s: s * 1.4, rx: 0.3, ry: 0 };
       // Clear of the note under the form.
-      const noteTop = vh / 2 - vh * 0.52;
+      const noteTop = Y(sv * 0.52);
       maskEarth = maskNotes = [0, 1, noteTop - 8, noteTop + 44];
     } else {
       const r = Math.min(vw * 0.29, vh * 0.49);
@@ -122,25 +134,26 @@ export function initHero(reduced: boolean) {
       range.selectNodeContents(title);
       const right = range.getBoundingClientRect().right - vw / 2;
       maskEarth = [1, 0, right - 70, right + 20];
-      const edge = Math.max(16, Math.min(vw * 0.05, 72)) + Math.min(480, vw * 0.34) - vw / 2;
+      const edge = Math.max(16, Math.min(vw * 0.05, 72)) + Math.min(480, vw * (phone() ? 0.42 : 0.34)) - vw / 2;
       maskNotes = [1, 0, edge - 30, edge + 70];
     }
 
     measureHandover();
 
     // The notes: on the left (desktop) or under the form (phones).
-    if (phone()) {
-      const y = vh * 0.52;
+    if (stacked) {
+      const y = sv * 0.52;
       set(notesBox, '--ov-left', '16px');
       set(notesBox, '--ov-top', `${y.toFixed(1)}px`);
       set(notesBox, '--ov-width', `${(vw - 32).toFixed(1)}px`);
-      set(notesBox, '--ov-height', `${(vh - y - 16).toFixed(1)}px`);
+      set(notesBox, '--ov-height', `${(sv - y - 16).toFixed(1)}px`);
     } else {
       const left = Math.max(16, Math.min(vw * 0.05, 72));
+      const top = Math.max(sv * 0.14, 72);
       set(notesBox, '--ov-left', `${left.toFixed(1)}px`);
-      set(notesBox, '--ov-top', `${(vh * 0.14).toFixed(1)}px`);
-      set(notesBox, '--ov-width', `${Math.min(480, vw * 0.34).toFixed(1)}px`);
-      set(notesBox, '--ov-height', `${(vh * 0.8).toFixed(1)}px`);
+      set(notesBox, '--ov-top', `${top.toFixed(1)}px`);
+      set(notesBox, '--ov-width', `${Math.min(480, vw * (phone() ? 0.42 : 0.34)).toFixed(1)}px`);
+      set(notesBox, '--ov-height', `${(sv - top - 12).toFixed(1)}px`);
     }
 
     // Stage lengths from the CSS (all in svh, so the ratios are what count).
@@ -310,7 +323,9 @@ export function initHero(reduced: boolean) {
       mouseY: closing > 0.4 ? 9999 : mouse.y,
       swarm,
       mask: onEarth ? maskEarth.map((v, i) => lerp(v, maskNotes[i]!, t)) : maskNotes,
-      maskOn: (onEarth && phone() ? t : 1) * (1 - clamp(closing / 0.2)),
+      maskOn: (onEarth && stacked ? t : 1) * (1 - clamp(closing / 0.2)),
+      // A phone that can't keep up draws fewer points. The DNA keeps them all: its order matters.
+      count: to <= N ? Math.round(POINTS * quality) : undefined,
     });
     // The label stays on Nigeria, which is the point (0, 0, 1) of the Earth.
     if (onEarth && morph < 0.2) {
@@ -324,8 +339,18 @@ export function initHero(reduced: boolean) {
   };
 
   let visible = true;
-  const tick = (time: number) => {
+  let quality = 1;
+  let frames = 0;
+  let slow = 0;
+  const tick = (time: number, delta: number) => {
     if (!visible) return;
+    // Drops only: a steady picture matters more than the last few thousand points.
+    if (delta > 30) slow++;
+    if (++frames === 90) {
+      if (slow > 30 && quality > 0.5) quality *= 0.8;
+      frames = 0;
+      slow = 0;
+    }
     tiltNow.x += (tiltTo.x - tiltNow.x) * 0.05;
     tiltNow.y += (tiltTo.y - tiltNow.y) * 0.05;
     draw(time);
@@ -367,7 +392,7 @@ export function initHero(reduced: boolean) {
   ScrollTrigger.create({
     trigger: root,
     start: 'top top',
-    end: 'bottom bottom',
+    end: () => `bottom ${stage.offsetHeight}px`,
     onUpdate: (st) => {
       p = st.progress;
       render();

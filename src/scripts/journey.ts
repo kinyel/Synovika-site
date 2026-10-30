@@ -65,7 +65,8 @@ export function initJourney(reduced: boolean) {
   const clamp = gsap.utils.clamp(0, 1);
   const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
   const mix = (a: Pt, b: Pt, t: number): Pt => ({ x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t) });
-  const phone = () => innerWidth < 1024;
+  /** Upright phones and tablets stack the plates over the words; on its side, a phone lays them out like desktop. */
+  const phone = () => innerWidth < 1024 && innerWidth <= innerHeight * 1.3;
 
   // ── Measured geometry (platform-relative px) ───────────────────────────
   type Pose = { c: Pt[]; r: Pt[]; l: Pt[]; f: Pt[] };
@@ -493,7 +494,7 @@ export function initJourney(reduced: boolean) {
   ScrollTrigger.create({
     trigger: root,
     start: 'top top',
-    end: 'bottom bottom',
+    end: () => `bottom ${stage.offsetHeight}px`,
     onUpdate: (st) => {
       p = st.progress;
       render();

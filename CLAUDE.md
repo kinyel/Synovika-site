@@ -15,7 +15,7 @@ npm run check                            # astro check + tsc
 node scripts/logo-assets.mjs             # Hero's logo crops, icons, manifest (never redraw the logo: D-044)
 npm run indexnow                         # after a production deploy: ping IndexNow (D-052)
 npm run qa:copy | qa:prod-guard | qa:jsonld | qa:html | qa:links | qa:size        # on dist/
-npm run qa:pages | qa:contrast | qa:widths | qa:a11y | qa:nojs | qa:motion | qa:squares | qa:lh   # need the server on 4330
+npm run qa:pages | qa:contrast | qa:widths | qa:a11y | qa:nojs | qa:motion | qa:squares | qa:screens | qa:lh   # need the server on 4330
 npm run qa:fps                           # local only
 ```
 
@@ -37,7 +37,7 @@ Port 4322 on this machine runs synov-timer's preview: don't use it.
 
 Use Hero's logo file everywhere a logo appears; never redraw it (D-044). The colouring follows synov-timer's, in teal (D-045); raleston's colour token names are kept and mapped (D-047). There are two registers, a near-black night (D-055) and white paper (D-062): a section names its own with `data-theme`, and those names turn over on paper, so `--color-white` there means the foreground (real white on a button is `--color-on-action`). Teal is Synovika; each product has its own colour (Selvion amber, Estate wine, Websites blue), set with `data-accent` (D-063). Don't use a product's colour for anything else.
 
-**How the motion fits together:** `src/scripts/main.ts` runs one GSAP ticker for Lenis and every scene. It loads one frame after the first paint (D-058), so first-screen motion is CSS. The hero is `hero.ts`: one cloud of points in plain WebGL (`signal.ts`), whose shapes are in `src/lib/forms.ts` and are built in a worker, and which ends by drawing the services section in place (D-064). The services helix (D-057), the band and the kinetic words are `scroll.ts`; the seven plates are `journey.ts`; the small 3D models are `scenes.ts`. Scenes below the first screen start only when they come near (`whenNear` in `src/lib/layout.ts`). Every scene has a static version for no JavaScript and for reduced motion (`html:is(.reduced-motion, :not(.js))`), and the parity scripts check both carry the same text.
+**How the motion fits together:** `src/scripts/main.ts` runs one GSAP ticker for Lenis and every scene. It loads one frame after the first paint (D-058), so first-screen motion is CSS. The hero is `hero.ts`: one cloud of points in plain WebGL (`signal.ts`), whose shapes are in `src/lib/forms.ts` and are built in a worker, and which ends by drawing the services section in place (D-064). The services helix (D-057), the band and the kinetic words are `scroll.ts`; the seven plates are `journey.ts`; the small 3D models are `scenes.ts`. Scenes below the first screen start only when they come near (`whenNear` in `src/lib/layout.ts`). Pinned stages are `100lvh` with their words inside `100svh`, and a height-only resize on a touch screen is the address bar, so it re-measures nothing (D-066). Every scene has a static version for no JavaScript and for reduced motion (`html:is(.reduced-motion, :not(.js))`), and the parity scripts check both carry the same text.
 
 Write "Selvion" exactly. On each page, the first mention says what it is ("Selvion, our fleet tracking platform"). Copy lives in `src/content/`, never in components. Ask Hero only when an answer changes what visitors are told (facts, claims, prices, names); otherwise pick a sensible default and record it in DECISIONS.md.
 

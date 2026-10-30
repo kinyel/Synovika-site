@@ -284,7 +284,17 @@ const groupActive = (g: Group) => isActive(g.base) || (g.id === 'company' && (is
       inset 0 1px 0 rgb(255 255 255 / 0.06),
       0 24px 60px -28px rgb(0 0 0 / 0.85),
       0 0 60px -28px color-mix(in srgb, var(--color-iris) 70%, transparent);
-    backdrop-filter: blur(18px) saturate(1.4);
+  }
+  @media (pointer: fine) {
+    .nav[data-condensed] .nav-dock,
+    :global(html:not(.js)) .nav-dock {
+      backdrop-filter: blur(18px) saturate(1.4);
+    }
+  }
+  @media (pointer: coarse) {
+    .nav {
+      --n-glass: rgb(3 21 20 / 0.96);
+    }
   }
   .nav-brand {
     min-height: 44px;

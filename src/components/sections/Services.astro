@@ -107,13 +107,15 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
   :global(html.js:not(.reduced-motion)) .spiral {
     --hold: 30svh;
     z-index: 2;
-    margin-top: calc(-100svh - var(--hold));
+    margin-top: calc(-100lvh - var(--hold));
     scroll-margin-top: calc(var(--hold) * -1);
     /* It starts under the last product, so only its stage takes clicks, once it has arrived (hero.ts). */
     pointer-events: none;
   }
   :global(html.js:not(.reduced-motion)) .spiral-viewport {
     pointer-events: auto;
+    /* Fades up over the hero: one steady layer, or phones flash as it reaches full opacity. */
+    will-change: opacity;
   }
   @media (max-width: 1023px) {
     .spiral {
@@ -127,7 +129,7 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
   .spiral-viewport {
     position: sticky;
     top: 0;
-    height: 100svh;
+    height: 100lvh;
     overflow: hidden;
     color: var(--color-white);
     /* The hero's lines, in the same place, so they carry straight on from it. */
@@ -142,9 +144,10 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
       --rings: 120vw 58vw;
     }
   }
+  /* The stage fills the large viewport (no gap under it when a phone's address bar hides); the content stays in the small one. */
   .spiral-layout {
     display: grid;
-    height: 100%;
+    height: 100svh;
   }
   @media (min-width: 1024px) {
     .spiral-layout {
@@ -464,6 +467,50 @@ const GROUP = { build: 'Build it right', run: 'Keep it running' } as const;
     /* No room for the group's name on a phone's small square. */
     .spiral-card-group {
       display: none;
+    }
+  }
+
+  /* Phones on their side: the words beside the helix, as on desktop. */
+  @media (max-width: 1023px) and (orientation: landscape) and (max-height: 600px) {
+    .spiral-layout {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      grid-template-rows: minmax(0, 1fr);
+      column-gap: 1rem;
+      align-items: center;
+      padding-top: 3.8rem;
+    }
+    .spiral-counter {
+      margin-top: 0.8rem;
+    }
+  }
+  @media (max-width: 1023px) and (orientation: landscape) and (max-height: 350px) {
+    .spiral-layout {
+      padding-top: 3.2rem;
+    }
+    .spiral-title {
+      margin-top: 0.3rem;
+      font-size: 1.1rem;
+    }
+    .spiral-counter {
+      display: none;
+    }
+    .spiral {
+      --card: 186px;
+    }
+    .spiral-card {
+      padding: 12px;
+      gap: 0.1rem;
+    }
+    .spiral-card-icon {
+      width: 28px;
+      height: 28px;
+    }
+    .spiral-card-label {
+      font-size: 0.92rem;
+    }
+    .spiral-card-desc {
+      font-size: 0.72rem;
+      line-height: 1.3;
     }
   }
 

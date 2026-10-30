@@ -124,19 +124,6 @@ export function createSignal(canvas: HTMLCanvasElement, N: number, phone: boolea
   const gl = canvas.getContext('webgl', { alpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'default' });
   if (!gl) return null;
 
-  const compile = (type: number, src: string) => {
-    const s = gl.createShader(type)!;
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    return s;
-  };
-  const program = gl.createProgram()!;
-  gl.attachShader(program, compile(gl.VERTEX_SHADER, VERTEX));
-  gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAGMENT));
-  gl.linkProgram(program);
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null;
-  gl.useProgram(program);
-
   const seeds = new Float32Array(N * 3);
   let s = 7;
   const rand = () => {
@@ -144,69 +131,121 @@ export function createSignal(canvas: HTMLCanvasElement, N: number, phone: boolea
     return s / 2147483647;
   };
   for (let i = 0; i < seeds.length; i++) seeds[i] = rand();
-  const seedBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, seedBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, seeds, gl.STATIC_DRAW);
-  const aSeed = gl.getAttribLocation(program, 'aSeed');
-  gl.enableVertexAttribArray(aSeed);
-  gl.vertexAttribPointer(aSeed, 3, gl.FLOAT, false, 0, 0);
 
-  const aFrom = gl.getAttribLocation(program, 'aFrom');
-  const aTo = gl.getAttribLocation(program, 'aTo');
-  gl.enableVertexAttribArray(aFrom);
-  gl.enableVertexAttribArray(aTo);
-
-  const u = (name: string) => gl.getUniformLocation(program, name);
-  const U = {
-    mix: u('uMix'),
-    time: u('uTime'),
-    arrive: u('uIn'),
-    scale: u('uScale'),
-    persp: u('uPersp'),
-    point: u('uPoint'),
-    depth: u('uDepth'),
-    fade: u('uFade'),
-    centre: u('uCentre'),
-    half: u('uHalf'),
-    mouse: u('uMouse'),
-    rot: u('uRot'),
-    swarm: u('uSwarm'),
-    mask: u('uMask'),
-    maskOn: u('uMaskOn'),
-    colA: u('uColA'),
-    colB: u('uColB'),
-    brand: u('uBrand'),
+  const compile = (type: number, src: string) => {
+    const sh = gl.createShader(type)!;
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    return sh;
   };
-  gl.uniform1f(U.persp, PERSPECTIVE);
-  gl.uniform3f(U.brand, 0.08, 0.72, 0.65);
-  gl.clearColor(0, 0, 0, 0);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE);
-
+  let aFrom = 0;
+  let aTo = 0;
+  let U: Record<string, WebGLUniformLocation | null> = {};
+  const forms: Float32Array[] = [];
   const buffers: (WebGLBuffer | null)[] = [];
   let bound = '';
+  let lost = false;
+  let width = 0;
+  let height = 0;
+  let ratio = 1;
+
+  /** Everything the GPU holds. Run again if a phone takes the context away and gives it back. */
+  const setup = () => {
+    const program = gl.createProgram()!;
+    gl.attachShader(program, compile(gl.VERTEX_SHADER, VERTEX));
+    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAGMENT));
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return false;
+    gl.useProgram(program);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, seeds, gl.STATIC_DRAW);
+    const aSeed = gl.getAttribLocation(program, 'aSeed');
+    gl.enableVertexAttribArray(aSeed);
+    gl.vertexAttribPointer(aSeed, 3, gl.FLOAT, false, 0, 0);
+
+    aFrom = gl.getAttribLocation(program, 'aFrom');
+    aTo = gl.getAttribLocation(program, 'aTo');
+    gl.enableVertexAttribArray(aFrom);
+    gl.enableVertexAttribArray(aTo);
+
+    const u = (name: string) => gl.getUniformLocation(program, name);
+    U = {
+      mix: u('uMix'),
+      time: u('uTime'),
+      arrive: u('uIn'),
+      scale: u('uScale'),
+      persp: u('uPersp'),
+      point: u('uPoint'),
+      depth: u('uDepth'),
+      fade: u('uFade'),
+      centre: u('uCentre'),
+      half: u('uHalf'),
+      mouse: u('uMouse'),
+      rot: u('uRot'),
+      swarm: u('uSwarm'),
+      mask: u('uMask'),
+      maskOn: u('uMaskOn'),
+      colA: u('uColA'),
+      colB: u('uColB'),
+      brand: u('uBrand'),
+    };
+    gl.uniform1f(U.persp!, PERSPECTIVE);
+    gl.uniform3f(U.brand!, 0.08, 0.72, 0.65);
+    gl.clearColor(0, 0, 0, 0);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    return true;
+  };
+  if (!setup()) return null;
+
+  const upload = (i: number) => {
+    const b = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, forms[i]!, gl.STATIC_DRAW);
+    buffers[i] = b;
+    bound = '';
+  };
+  const applySize = () => {
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform2f(U.half!, width / 2, height / 2);
+    gl.uniform1f(U.point!, (phone ? 1.3 : 1.6) * ratio);
+  };
+
+  // Phones can take a context back when memory runs low. Keep it, and rebuild when it returns.
+  canvas.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    lost = true;
+  });
+  canvas.addEventListener('webglcontextrestored', () => {
+    lost = false;
+    setup();
+    applySize();
+    forms.forEach((_, i) => upload(i));
+  });
 
   return {
     /** Hands over a finished form. */
     setForm(i: number, data: Float32Array) {
-      const b = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, b);
-      gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-      buffers[i] = b;
-      bound = '';
+      forms[i] = data;
+      if (!lost) upload(i);
     },
     has: (i: number) => !!buffers[i],
     resize() {
-      const dpr = Math.min(phone ? 1.75 : 1.5, devicePixelRatio || 1);
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(U.half, w / 2, h / 2);
-      gl.uniform1f(U.point, (phone ? 1.3 : 1.6) * dpr);
+      const r = Math.min(phone ? 1.75 : 1.5, devicePixelRatio || 1);
+      // Setting a canvas's size wipes it, so it's done only when the size has really changed.
+      if (w === width && h === height && r === ratio) return;
+      width = w;
+      height = h;
+      ratio = r;
+      if (!lost) applySize();
     },
     draw(f: Frame) {
+      if (lost) return;
       const key = `${f.from}-${f.to}`;
       if (key !== bound) {
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers[f.from]!);
@@ -215,20 +254,20 @@ export function createSignal(canvas: HTMLCanvasElement, N: number, phone: boolea
         gl.vertexAttribPointer(aTo, 4, gl.FLOAT, false, 0, 0);
         bound = key;
       }
-      gl.uniform1f(U.mix, f.mix);
-      gl.uniform1f(U.time, f.time);
-      gl.uniform1f(U.arrive, f.arrive);
-      gl.uniform1f(U.scale, f.scale);
-      gl.uniform1f(U.depth, f.depth);
-      gl.uniform1f(U.fade, f.fade);
-      gl.uniform1f(U.swarm, f.swarm);
-      gl.uniform1f(U.maskOn, f.maskOn);
-      gl.uniform4fv(U.mask, f.mask as number[]);
-      gl.uniform2f(U.centre, f.x, f.y);
-      gl.uniform2f(U.mouse, f.mouseX, f.mouseY);
-      gl.uniformMatrix3fv(U.rot, false, rotation(f.rx, f.ry));
-      gl.uniform3fv(U.colA, f.colourA as number[]);
-      gl.uniform3fv(U.colB, f.colourB as number[]);
+      gl.uniform1f(U.mix!, f.mix);
+      gl.uniform1f(U.time!, f.time);
+      gl.uniform1f(U.arrive!, f.arrive);
+      gl.uniform1f(U.scale!, f.scale);
+      gl.uniform1f(U.depth!, f.depth);
+      gl.uniform1f(U.fade!, f.fade);
+      gl.uniform1f(U.swarm!, f.swarm);
+      gl.uniform1f(U.maskOn!, f.maskOn);
+      gl.uniform4fv(U.mask!, f.mask as number[]);
+      gl.uniform2f(U.centre!, f.x, f.y);
+      gl.uniform2f(U.mouse!, f.mouseX, f.mouseY);
+      gl.uniformMatrix3fv(U.rot!, false, rotation(f.rx, f.ry));
+      gl.uniform3fv(U.colA!, f.colourA as number[]);
+      gl.uniform3fv(U.colB!, f.colourB as number[]);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.drawArrays(gl.POINTS, 0, f.count ?? N);
     },

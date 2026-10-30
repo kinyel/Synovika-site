@@ -40,6 +40,7 @@ const scenes = prod.map((p) => SCENE[p.id] ?? '').join(' ');
   <a href="#services" class="skip-tour btn btn-outline">Skip the product tour</a>
   <span id="products-tour" class="tour-mark" aria-hidden="true"></span>
   <div class="stage" data-stage>
+    <i class="probe" data-probe aria-hidden="true"></i>
     <div class="stage-bg" aria-hidden="true">
       <span class="bg-light" data-stage-light></span>
       <span class="bg-rings"></span>
@@ -232,6 +233,15 @@ const scenes = prod.map((p) => SCENE[p.id] ?? '').join(' ');
   }
   .stage {
     position: relative;
+  }
+  /* Tells hero.ts the height of the small viewport. */
+  .probe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100svh;
+    pointer-events: none;
   }
   .stage-bg {
     position: absolute;
@@ -828,19 +838,26 @@ const scenes = prod.map((p) => SCENE[p.id] ?? '').join(' ');
    * Everything above is the static version. From here on, the scripted one.
    */
   :global(html.js:not(.reduced-motion)) .tour {
-    height: calc(100svh + var(--len));
+    height: calc(100lvh + var(--len));
   }
+  /*
+   * The stage fills the large viewport, so it covers the screen with the address
+   * bar hidden and never changes size as the bar comes and goes. What has to be
+   * read stays inside the small viewport, so the bar never covers it.
+   */
   :global(html.js:not(.reduced-motion)) .stage {
     position: sticky;
     top: 0;
     display: block;
-    height: 100svh;
+    height: 100lvh;
     overflow: hidden;
   }
   :global(html.js:not(.reduced-motion)) .intro {
     position: absolute;
-    inset: 0 auto 0 0;
+    inset: 0 auto auto 0;
     width: min(50rem, 54vw);
+    height: 100svh;
+    min-height: 0;
   }
   :global(html.js:not(.reduced-motion)) .earth {
     position: absolute;
@@ -980,6 +997,153 @@ const scenes = prod.map((p) => SCENE[p.id] ?? '').join(' ');
     }
     :global(html.js:not(.reduced-motion)) .note-features {
       display: none;
+    }
+  }
+  /* Short phones, upright: tighter, so screen one still fits under the nav. */
+  @media (max-width: 1023px) and (orientation: portrait) and (max-height: 700px) {
+    .intro {
+      padding-block: calc(max(0.85rem, env(safe-area-inset-top)) + 4.6rem) 1rem;
+    }
+    .hero-title {
+      margin-top: 0.8rem;
+    }
+    .hero-lead {
+      margin-top: 0.8rem;
+      font-size: 0.96rem;
+      line-height: 1.45;
+    }
+    .hero-ctas {
+      margin-top: 1rem;
+    }
+    .hero-go {
+      min-height: 3rem;
+    }
+    .hero-prods {
+      margin-top: 0.7rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-title {
+      font-size: 1.6rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-body {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    :global(html.js:not(.reduced-motion)) .tour-note {
+      gap: 0.25rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-what {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+    }
+    :global(html.js:not(.reduced-motion)) .note-ctas {
+      flex-wrap: nowrap;
+      gap: 1rem;
+      margin-top: 0.3rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-ctas .btn {
+      min-height: 2.6rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.94rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-ctas .link-arrow {
+      font-size: 0.94rem;
+      white-space: nowrap;
+    }
+    .holo-big,
+    .holo-hours {
+      font-size: 1.05rem;
+    }
+    .holo-code b {
+      font-size: 1.3rem;
+    }
+  }
+  /* Phones on their side: the same layout as desktop, words on the left and the form on the right. */
+  @media (max-width: 1023px) and (orientation: landscape) and (max-height: 600px) {
+    .bg-rings {
+      background: repeating-radial-gradient(120vw 18.4vw at 78% 8%, var(--lines) 0 1px, transparent 1px 34px);
+    }
+    .intro {
+      justify-content: center;
+      padding-block: 4.8rem 0.5rem;
+    }
+    :global(html.js:not(.reduced-motion)) .intro {
+      width: 56vw;
+    }
+    .hero-title {
+      margin-top: 0.5rem;
+      font-size: min(2.3rem, calc((56vw - 2rem) / 9.6));
+    }
+    .hero-lead {
+      margin-top: 0.5rem;
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+    .hero-ctas {
+      gap: 0.25rem 1.25rem;
+      margin-top: 0.6rem;
+    }
+    .hero-go {
+      flex: none;
+      min-height: 2.6rem;
+      padding-inline: 1.2rem;
+      font-size: 0.92rem;
+    }
+    .hero-link {
+      min-height: 2.6rem;
+      font-size: 0.92rem;
+    }
+    .hero-prods {
+      display: none;
+    }
+    .holo {
+      left: auto;
+      right: 1rem;
+      top: 4.4rem;
+      width: 13rem;
+    }
+    .holo-big,
+    .holo-hours {
+      font-size: 0.98rem;
+    }
+    .holo-code b {
+      font-size: 1.1rem;
+    }
+    .holo-meta,
+    .holo-label {
+      font-size: 0.74rem;
+    }
+    :global(html.js:not(.reduced-motion)) .tour-note {
+      gap: 0.25rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-title {
+      font-size: 1.45rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-what {
+      font-size: 0.62rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-body {
+      font-size: 0.84rem;
+      line-height: 1.38;
+    }
+    :global(html.js:not(.reduced-motion)) .note-ctas {
+      margin-top: 0.2rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-ctas .btn {
+      min-height: 2.5rem;
+      padding-block: 0.5rem;
+    }
+  }
+  /* The smallest phones on their side: only what fits. */
+  @media (max-width: 1023px) and (orientation: landscape) and (max-height: 350px) {
+    .hero-lead,
+    .note-what {
+      display: none;
+    }
+    :global(html.js:not(.reduced-motion)) .note-title {
+      font-size: 1.2rem;
+    }
+    :global(html.js:not(.reduced-motion)) .note-body {
+      font-size: 0.76rem;
     }
   }
 </style>

@@ -52,7 +52,8 @@ export function initScroll(reduced: boolean, lenis: Lenis | null) {
     let active = -1;
     // The first stretch holds still while the hero's points hand over to the section.
     const hold = () => Math.abs(parseFloat(getComputedStyle(stair).scrollMarginTop)) || 0;
-    const st = ScrollTrigger.create({ trigger: stair, start: () => `top+=${hold()} top`, end: 'bottom bottom', onUpdate: (s) => (progress = s.progress) });
+    const view = $('[data-stair-view]', stair)!;
+    const st = ScrollTrigger.create({ trigger: stair, start: () => `top+=${hold()} top`, end: () => `bottom ${view.offsetHeight}px`, onUpdate: (s) => (progress = s.progress) });
     links.forEach((link, k) =>
       link.addEventListener('click', () => {
         const y = st.start + (k / (N - 1)) * (st.end - st.start);

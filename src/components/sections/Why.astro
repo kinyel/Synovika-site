@@ -194,13 +194,9 @@ const cubes = [-1, 0, 1].flatMap((gz) => [-1, 0, 1].flatMap((gy) => [-1, 0, 1].m
   /* ── The four promises ── */
   .why-cards {
     display: grid;
-    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.6rem, 2vw, 1rem);
     margin-top: clamp(1rem, 3vw, 2.5rem);
-  }
-  @media (min-width: 640px) {
-    .why-cards {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
   @media (min-width: 1100px) {
     .why-cards {
@@ -209,6 +205,30 @@ const cubes = [-1, 0, 1].flatMap((gz) => [-1, 0, 1].flatMap((gy) => [-1, 0, 1].m
   }
   .why-card {
     padding: 1.6rem 1.5rem 1.7rem;
+  }
+  /* Two by two on phones, so the words have to be a little smaller. */
+  @media (max-width: 639px) {
+    .why-card {
+      padding: 1rem 0.85rem 1.1rem;
+    }
+    .why-card :global(.icon-tile) {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 0.6rem;
+    }
+    .why-card :global(.icon-tile svg) {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+    .why-card h3 {
+      margin-top: 0.8rem;
+      font-size: 0.98rem;
+      line-height: 1.2;
+    }
+    .why-card p {
+      font-size: 0.86rem;
+      line-height: 1.42;
+    }
   }
 
   /* ── The plain facts (the image's stats band, with true numbers) ── */

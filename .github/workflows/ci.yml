@@ -54,6 +54,7 @@ jobs:
         run: npm run qa:motion
       - name: Square service cards
         run: npm run qa:squares
+        run: npm run qa:screens
       - name: Size budgets
         run: npm run qa:size
       - name: Lighthouse (hard floor on shared runners, D-008)

@@ -50,7 +50,15 @@ export function refreshLayout() {
 }
 
 let t = 0;
+let width = innerWidth;
+const touch = matchMedia('(pointer: coarse)').matches;
 addEventListener('resize', () => {
+  viewport.height = innerHeight;
+  // A phone's address bar shows and hides as the scroll changes direction, and each time the
+  // browser calls it a resize. Nothing has really moved, so nothing is measured again: doing
+  // that wiped the canvases and made the page stutter. Only a change of width counts (turning it).
+  if (touch && innerWidth === width) return;
+  width = innerWidth;
   clearTimeout(t);
   t = window.setTimeout(refreshLayout, 120);
 });

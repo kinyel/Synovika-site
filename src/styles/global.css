@@ -768,6 +768,19 @@ select.input option {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* On touch screens, layers that repaint with every scroll go: they're what made phones stutter. */
+@media (pointer: coarse) {
+  #fx-grain {
+    display: none;
+  }
+  .btn {
+    will-change: auto;
+  }
+  .btn-outline {
+    backdrop-filter: none;
+  }
+}
+
 html {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--color-iris-soft) 60%, transparent) transparent;
@@ -922,6 +935,11 @@ html {
     color: CanvasText;
     -webkit-text-fill-color: CanvasText;
   }
+}
+
+/* A scene that's out of view drops its layers, so phones keep memory for the ones in view. */
+.s3d.is-off .s3d-world {
+  visibility: hidden;
 }
 
 /* Reduced motion: nothing transitions or animates on its own; every scene shows its finished state. */
